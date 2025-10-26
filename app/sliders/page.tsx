@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import BlueSlider from '@/src/components/BlueSlider';
 import RedSlider from '@/src/components/RedSlider';
 
@@ -57,12 +58,12 @@ export default function SlidersTestPage() {
         </div>
 
         <div className="text-center">
-          <a
+          <Link
             href="/"
             className="text-sm text-slate-600 underline hover:text-slate-900"
           >
             ← Back to home
-          </a>
+          </Link>
         </div>
       </div>
     </main>

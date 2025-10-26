@@ -1,8 +1,33 @@
-# Quick Start Guide: Webflow + Next.js Blog Platform
+# Quick Start Guide: Adding Components to BlogFlow
 
-This guide will help you get started quickly with the implementation.
+This guide helps you add NEW components to the existing BlogFlow/Webflow Code Components project.
+
+## Project Context
+
+**BlogFlow** is an EXISTING Next.js 15 + React 19 application that creates custom Webflow Code Components. The infrastructure, build system, and development environment are already set up and working.
+
+### What's Already Built
+
+- Next.js 15 app with Turbopack
+- React 19 with TypeScript
+- Tailwind CSS v4 styling system
+- shadcn/ui component library
+- Webflow Code Components integration (@webflow/react, @webflow/data-types)
+- React Three Fiber for 3D components
+- Zustand for state management
+- Build and deployment configuration
+
+### Existing Components
+
+The project already includes several working components:
+- **Badge** - Simple badge component (demo)
+- **BlueSlider & RedSlider** - Slider components with Zustand state sharing
+- **Lanyard** - 3D physics-based lanyard component using React Three Fiber
+- **OrderConfirmation** - Order confirmation UI component
 
 ## Prerequisites
+
+If you're setting up the project for the first time on your machine:
 
 ```bash
 # Required tools
@@ -11,720 +36,654 @@ pnpm >= 8
 git
 ```
 
-## Step 1: Initialize Projects
+## Initial Setup (First Time Only)
 
-### Backend (Next.js)
+### 1. Clone and Install
 
 ```bash
-# Create Next.js app
-pnpm create next-app@latest blog-backend --typescript --tailwind --app --no-src-dir
-
-cd blog-backend
+# Clone the repository
+git clone <repository-url>
+cd blogflow
 
 # Install dependencies
-pnpm add @orpc/server @orpc/client @orpc/tanstack-query @orpc/react
-pnpm add better-auth drizzle-orm drizzle-kit
-pnpm add @tanstack/react-query zod
-pnpm add pg dotenv
-pnpm add -D @types/pg
-
-# Initialize Drizzle
-pnpm drizzle-kit init
+pnpm install
 ```
 
-### Frontend (Webflow Components)
+### 2. Configure Environment
+
+Create a `.env` file based on `env.example`:
 
 ```bash
-# Create components project
-mkdir blog-webflow-components && cd blog-webflow-components
-pnpm init
-
-# Install dependencies
-pnpm add react react-dom
-pnpm add @webflow/designer
-pnpm add zustand @tanstack/react-query
-pnpm add @tiptap/react @tiptap/starter-kit @tiptap/pm
-pnpm add @orpc/client @orpc/tanstack-query
-pnpm add -D webpack webpack-cli typescript ts-loader
-pnpm add -D @types/react @types/react-dom
-pnpm add -D tailwindcss postcss autoprefixer
+cp env.example .env
 ```
 
-## Step 2: Database Setup
-
-### Create PostgreSQL Database
-
-**Option A: Neon (Recommended)**
-1. Go to [neon.tech](https://neon.tech)
-2. Create new project
-3. Copy connection string
-
-**Option B: Vercel Postgres**
-1. Go to your Vercel dashboard
-2. Add Postgres storage
-3. Copy connection string
-
-### Configure Drizzle
-
-**`drizzle.config.ts`**
-```typescript
-import { defineConfig } from 'drizzle-kit';
-
-export default defineConfig({
-  out: './drizzle',
-  schema: './schema/index.ts',
-  dialect: 'postgresql',
-  dbCredentials: {
-    url: process.env.DATABASE_URL!,
-  },
-});
+Required environment variable:
+```
+WEBFLOW_WORKSPACE_API_TOKEN="ws-xxxxx..."
 ```
 
-### Create Schema Files
+Get your token from: [Webflow Workspace Settings > Code Components](https://webflow.com/dashboard/settings/code-components)
 
-**`schema/auth.ts`**
-```typescript
-import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
-
-export const users = pgTable('users', {
-  id: text('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').notNull().default(false),
-  image: text('image'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
-
-export const sessions = pgTable('sessions', {
-  id: text('id').primaryKey(),
-  expiresAt: timestamp('expires_at').notNull(),
-  token: text('token').notNull().unique(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-  ipAddress: text('ip_address'),
-  userAgent: text('user_agent'),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-});
-
-export const accounts = pgTable('accounts', {
-  id: text('id').primaryKey(),
-  accountId: text('account_id').notNull(),
-  providerId: text('provider_id').notNull(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  accessToken: text('access_token'),
-  refreshToken: text('refresh_token'),
-  idToken: text('id_token'),
-  accessTokenExpiresAt: timestamp('access_token_expires_at'),
-  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
-  scope: text('scope'),
-  password: text('password'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
-```
-
-**`schema/posts.ts`**
-```typescript
-import { pgTable, text, timestamp, jsonb, serial } from 'drizzle-orm/pg-core';
-import { users } from './auth';
-
-export const people = pgTable('people', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' })
-    .unique(),
-  displayName: text('display_name').notNull(),
-  bio: text('bio'),
-  avatar: text('avatar'),
-  website: text('website'),
-  webflowItemId: text('webflow_item_id').unique(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
-
-export const posts = pgTable('posts', {
-  id: serial('id').primaryKey(),
-  slug: text('slug').notNull().unique(),
-  title: text('title').notNull(),
-  content: jsonb('content').notNull(),
-  excerpt: text('excerpt'),
-  coverImage: text('cover_image'),
-  authorId: text('author_id')
-    .notNull()
-    .references(() => people.id, { onDelete: 'cascade' }),
-  status: text('status').notNull().default('draft'),
-  publishedAt: timestamp('published_at'),
-  webflowItemId: text('webflow_item_id').unique(),
-  metadata: jsonb('metadata'),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
-```
-
-**`schema/index.ts`**
-```typescript
-export * from './auth';
-export * from './posts';
-```
-
-### Run Migrations
+### 3. Verify Installation
 
 ```bash
-# Generate migration
-pnpm drizzle-kit generate
+# Start development server
+pnpm dev
 
-# Apply migration
-pnpm drizzle-kit migrate
+# Visit http://localhost:3000
 ```
 
-## Step 3: Configure Better Auth
+## Adding a NEW Component
 
-**`lib/db.ts`**
+This is the main workflow you'll use to add new components to the project.
+
+### Step 1: Create the Implementation Component
+
+Decide where to place your component:
+
+**Option A: Webflow-Specific Implementation**
+- Location: `src/components/YourComponent.tsx`
+- Use for: Components primarily used in Webflow
+
+**Option B: Shared Implementation**
+- Location: `components/YourComponent.tsx`
+- Use for: Components shared between Next.js app and Webflow
+
+**Example: Create a Button Component**
+
 ```typescript
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
-import * as schema from '@/schema';
+// src/components/CustomButton.tsx
+'use client'; // Required for interactive components
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-export const db = drizzle(pool, { schema });
-```
-
-**`lib/auth.ts`**
-```typescript
-import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db } from './db';
-
-export const auth = betterAuth({
-  database: drizzleAdapter(db, {
-    provider: 'pg',
-  }),
-  emailAndPassword: {
-    enabled: true,
-    autoSignIn: true,
-  },
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day
-  },
-});
-
-export type Session = typeof auth.$Infer.Session;
-```
-
-## Step 4: Create oRPC Router
-
-**`server/context.ts`**
-```typescript
-import { auth } from '@/lib/auth';
-import type { IncomingHttpHeaders } from 'http';
-
-export async function createContext({ headers }: { headers: IncomingHttpHeaders }) {
-  const session = await auth.api.getSession({ headers });
-  
-  return {
-    headers,
-    session,
-    user: session?.user,
-  };
+interface CustomButtonProps {
+  label: string;
+  variant?: 'primary' | 'secondary';
+  onClick?: () => void;
 }
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+export default function CustomButton({
+  label,
+  variant = 'primary',
+  onClick
+}: CustomButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-4 py-2 rounded font-medium ${
+        variant === 'primary'
+          ? 'bg-blue-600 text-white hover:bg-blue-700'
+          : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
 ```
 
-**`server/procedures.ts`**
+### Step 2: Create the Webflow Wrapper
+
+Every Webflow component needs a `.webflow.tsx` wrapper file in `src/components/`.
+
+**Pattern: `src/components/YourComponent.webflow.tsx`**
+
 ```typescript
-import { os } from '@orpc/server';
-import type { Context } from './context';
+// src/components/CustomButton.webflow.tsx
+import CustomButton from './CustomButton';
+import { declareComponent } from '@webflow/react';
+import { props } from '@webflow/data-types';
+import '@/app/globals.css'; // CRITICAL: Import global styles
 
-export const publicProcedure = os.$context<Context>();
-
-export const protectedProcedure = publicProcedure.use(async ({ context, next }) => {
-  if (!context.user) {
-    throw new Error('UNAUTHORIZED');
-  }
-  
-  return next({
-    context: {
-      ...context,
-      user: context.user,
-    },
-  });
-});
-```
-
-**`server/routers/auth.ts`**
-```typescript
-import { publicProcedure } from '../procedures';
-import { auth } from '@/lib/auth';
-import { z } from 'zod';
-
-export const authRouter = {
-  register: publicProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        password: z.string().min(8),
-        name: z.string().min(2),
-      })
-    )
-    .handler(async ({ input }) => {
-      const result = await auth.api.signUp.email({
-        body: input,
-      });
-      
-      return result;
+export default declareComponent(CustomButton, {
+  name: 'Custom Button',
+  description: 'A customizable button component',
+  group: 'Interactive', // Category in Webflow
+  props: {
+    label: props.Text({
+      name: 'Button Label',
+      defaultValue: 'Click Me',
+      tooltip: 'The text displayed on the button',
     }),
-    
-  login: publicProcedure
-    .input(
-      z.object({
-        email: z.string().email(),
-        password: z.string(),
-      })
-    )
-    .handler(async ({ input }) => {
-      const result = await auth.api.signIn.email({
-        body: input,
-      });
-      
-      return result;
+    variant: props.Variant({
+      name: 'Variant',
+      defaultValue: 'primary',
+      options: [
+        { label: 'Primary', value: 'primary' },
+        { label: 'Secondary', value: 'secondary' },
+      ],
     }),
-    
-  getSession: publicProcedure
-    .handler(async ({ context }) => {
-      return context.session;
-    }),
-    
-  logout: protectedProcedure
-    .handler(async ({ context }) => {
-      await auth.api.signOut({
-        headers: context.headers,
-      });
-      
-      return { success: true };
-    }),
-};
-```
-
-**`server/routers/posts.ts`**
-```typescript
-import { protectedProcedure, publicProcedure } from '../procedures';
-import { db } from '@/lib/db';
-import { posts, people } from '@/schema/posts';
-import { z } from 'zod';
-import { eq, and } from 'drizzle-orm';
-
-export const postsRouter = {
-  list: protectedProcedure
-    .input(
-      z.object({
-        status: z.enum(['draft', 'published']).optional(),
-      })
-    )
-    .handler(async ({ input, context }) => {
-      // Get user's person profile
-      const person = await db.query.people.findFirst({
-        where: eq(people.userId, context.user.id),
-      });
-      
-      if (!person) return [];
-      
-      const userPosts = await db.query.posts.findMany({
-        where: and(
-          eq(posts.authorId, person.id),
-          input.status ? eq(posts.status, input.status) : undefined
-        ),
-        orderBy: (posts, { desc }) => [desc(posts.updatedAt)],
-      });
-      
-      return userPosts;
-    }),
-    
-  create: protectedProcedure
-    .input(
-      z.object({
-        title: z.string().min(1),
-        content: z.any(),
-        excerpt: z.string().optional(),
-      })
-    )
-    .handler(async ({ input, context }) => {
-      // Get or create person profile
-      let person = await db.query.people.findFirst({
-        where: eq(people.userId, context.user.id),
-      });
-      
-      if (!person) {
-        const [newPerson] = await db.insert(people).values({
-          id: crypto.randomUUID(),
-          userId: context.user.id,
-          displayName: context.user.name,
-        }).returning();
-        person = newPerson;
-      }
-      
-      // Generate slug
-      const slug = input.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-      
-      const [post] = await db.insert(posts).values({
-        title: input.title,
-        content: input.content,
-        excerpt: input.excerpt,
-        slug,
-        authorId: person.id,
-      }).returning();
-      
-      return post;
-    }),
-    
-  update: protectedProcedure
-    .input(
-      z.object({
-        id: z.number(),
-        title: z.string().optional(),
-        content: z.any().optional(),
-        excerpt: z.string().optional(),
-      })
-    )
-    .handler(async ({ input, context }) => {
-      const { id, ...updates } = input;
-      
-      // Verify ownership
-      const post = await db.query.posts.findFirst({
-        where: eq(posts.id, id),
-        with: { author: true },
-      });
-      
-      if (!post || post.author.userId !== context.user.id) {
-        throw new Error('FORBIDDEN');
-      }
-      
-      const [updated] = await db.update(posts)
-        .set(updates)
-        .where(eq(posts.id, id))
-        .returning();
-        
-      return updated;
-    }),
-    
-  publish: protectedProcedure
-    .input(z.object({ id: z.number() }))
-    .handler(async ({ input, context }) => {
-      // Get post
-      const post = await db.query.posts.findFirst({
-        where: eq(posts.id, input.id),
-        with: { author: true },
-      });
-      
-      if (!post || post.author.userId !== context.user.id) {
-        throw new Error('FORBIDDEN');
-      }
-      
-      // TODO: Sync to Webflow
-      
-      const [published] = await db.update(posts)
-        .set({
-          status: 'published',
-          publishedAt: new Date(),
-        })
-        .where(eq(posts.id, input.id))
-        .returning();
-        
-      return published;
-    }),
-    
-  publicList: publicProcedure
-    .handler(async () => {
-      const publishedPosts = await db.query.posts.findMany({
-        where: eq(posts.status, 'published'),
-        with: { author: true },
-        orderBy: (posts, { desc }) => [desc(posts.publishedAt)],
-      });
-      
-      return publishedPosts;
-    }),
-};
-```
-
-**`server/router.ts`**
-```typescript
-import { authRouter } from './routers/auth';
-import { postsRouter } from './routers/posts';
-
-export const router = {
-  auth: authRouter,
-  posts: postsRouter,
-};
-
-export type Router = typeof router;
-```
-
-## Step 5: Create API Route
-
-**`app/api/orpc/[...all]/route.ts`**
-```typescript
-import { router } from '@/server/router';
-import { createContext } from '@/server/context';
-import { createORPCHandler } from '@orpc/server/fetch';
-
-const handler = createORPCHandler({
-  router,
-  context: async (request) => {
-    const headers = Object.fromEntries(request.headers);
-    return createContext({ headers });
   },
 });
-
-export const GET = handler;
-export const POST = handler;
 ```
 
-## Step 6: Create Webflow Components
+### Step 3: Test Locally in Next.js
 
-**`webflow-components/src/lib/orpc-client.ts`**
+Add your component to a Next.js page for testing:
+
 ```typescript
-import { createORPCClient } from '@orpc/client';
-import { RPCLink } from '@orpc/client/fetch';
-import type { Router } from '../../../blog-backend/server/router';
+// app/test-components/page.tsx
+import CustomButton from '@/src/components/CustomButton';
 
-const link = new RPCLink({
-  url: process.env.NEXT_PUBLIC_API_URL + '/api/orpc',
-  headers: () => {
-    const token = localStorage.getItem('auth-token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
+export default function TestPage() {
+  return (
+    <div className="p-8">
+      <h1>Component Testing</h1>
+      <CustomButton label="Primary Button" variant="primary" />
+      <CustomButton label="Secondary Button" variant="secondary" />
+    </div>
+  );
+}
+```
+
+Run the dev server:
+```bash
+pnpm dev
+```
+
+Visit `http://localhost:3000/test-components` to verify your component works.
+
+### Step 4: Deploy to Webflow
+
+Once your component is working locally:
+
+```bash
+# Build and deploy to Webflow
+pnpm webflow:share
+```
+
+This command will:
+1. Bundle your component with Webpack
+2. Upload to your Webflow workspace
+3. Make it available in the Webflow Designer
+
+### Step 5: Use in Webflow Designer
+
+1. Open your Webflow project
+2. Go to the Components panel
+3. Find your component under the category you specified
+4. Drag and drop onto your page
+5. Configure props in the right panel
+6. Publish your site
+
+## Common Component Patterns
+
+### Pattern 1: Simple Presentational Component
+
+For components that just display data:
+
+```typescript
+// Implementation
+interface CardProps {
+  title: string;
+  description: string;
+  imageUrl?: string;
+}
+
+export default function Card({ title, description, imageUrl }: CardProps) {
+  return (
+    <div className="border rounded-lg p-4 shadow">
+      {imageUrl && <img src={imageUrl} alt={title} className="w-full h-48 object-cover rounded" />}
+      <h3 className="text-xl font-bold mt-2">{title}</h3>
+      <p className="text-gray-600 mt-1">{description}</p>
+    </div>
+  );
+}
+
+// Webflow Wrapper
+import Card from './Card';
+import { declareComponent } from '@webflow/react';
+import { props } from '@webflow/data-types';
+import '@/app/globals.css';
+
+export default declareComponent(Card, {
+  name: 'Card',
+  description: 'A simple card component',
+  group: 'Display',
+  props: {
+    title: props.Text({ name: 'Title', defaultValue: 'Card Title' }),
+    description: props.Text({ name: 'Description', defaultValue: 'Card description' }),
+    imageUrl: props.Text({ name: 'Image URL', defaultValue: '' }),
   },
 });
-
-export const orpc = createORPCClient<Router>(link);
 ```
 
-**`webflow-components/src/stores/authStore.ts`**
+### Pattern 2: Interactive Component with State
+
+For components with internal state (requires `'use client'`):
+
 ```typescript
+// Implementation
+'use client';
+
+import { useState } from 'react';
+
+interface CounterProps {
+  initialCount?: number;
+  step?: number;
+}
+
+export default function Counter({ initialCount = 0, step = 1 }: CounterProps) {
+  const [count, setCount] = useState(initialCount);
+
+  return (
+    <div className="flex items-center gap-4">
+      <button
+        onClick={() => setCount(c => c - step)}
+        className="px-4 py-2 bg-red-500 text-white rounded"
+      >
+        -
+      </button>
+      <span className="text-2xl font-bold">{count}</span>
+      <button
+        onClick={() => setCount(c => c + step)}
+        className="px-4 py-2 bg-green-500 text-white rounded"
+      >
+        +
+      </button>
+    </div>
+  );
+}
+
+// Webflow Wrapper
+import Counter from './Counter';
+import { declareComponent } from '@webflow/react';
+import { props } from '@webflow/data-types';
+import '@/app/globals.css';
+
+export default declareComponent(Counter, {
+  name: 'Counter',
+  description: 'An interactive counter component',
+  group: 'Interactive',
+  props: {
+    initialCount: props.Number({ name: 'Initial Count', defaultValue: 0 }),
+    step: props.Number({ name: 'Step', defaultValue: 1 }),
+  },
+});
+```
+
+### Pattern 3: Component with Cross-Component State (Zustand)
+
+For components that need to share state across multiple instances:
+
+```typescript
+// lib/stores/theme-store.ts
+import { create } from 'zustand';
+
+interface ThemeState {
+  isDark: boolean;
+  toggle: () => void;
+}
+
+export const useThemeStore = create<ThemeState>((set) => ({
+  isDark: false,
+  toggle: () => set((state) => ({ isDark: !state.isDark })),
+}));
+
+// src/components/ThemeToggle.tsx
+'use client';
+
+import { useThemeStore } from '@/lib/stores/theme-store';
+
+export default function ThemeToggle() {
+  const { isDark, toggle } = useThemeStore();
+
+  return (
+    <button
+      onClick={toggle}
+      className="px-4 py-2 rounded bg-gray-800 text-white"
+    >
+      {isDark ? 'Light Mode' : 'Dark Mode'}
+    </button>
+  );
+}
+
+// src/components/ThemeDisplay.tsx
+'use client';
+
+import { useThemeStore } from '@/lib/stores/theme-store';
+
+export default function ThemeDisplay() {
+  const isDark = useThemeStore((state) => state.isDark);
+
+  return (
+    <div className={`p-8 ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+      Current theme: {isDark ? 'Dark' : 'Light'}
+    </div>
+  );
+}
+
+// Create .webflow.tsx wrappers for both components
+```
+
+**Why Zustand?** React Context doesn't work across Webflow Code Components because each component renders in its own Shadow DOM. Zustand uses a singleton store that works across boundaries.
+
+### Pattern 4: 3D Component with React Three Fiber
+
+For Three.js/3D components (see `Lanyard.webflow.tsx` for full example):
+
+```typescript
+// src/components/Box3D.tsx
+'use client';
+
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls } from '@react-three/drei';
+
+interface Box3DProps {
+  color?: string;
+  size?: number;
+}
+
+function Box({ color, size }: { color: string; size: number }) {
+  return (
+    <mesh>
+      <boxGeometry args={[size, size, size]} />
+      <meshStandardMaterial color={color} />
+    </mesh>
+  );
+}
+
+export default function Box3D({ color = '#0066ff', size = 1 }: Box3DProps) {
+  return (
+    <div style={{ width: '100%', height: '400px' }}>
+      <Canvas>
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} />
+        <Box color={color} size={size} />
+        <OrbitControls />
+      </Canvas>
+    </div>
+  );
+}
+
+// Create .webflow.tsx wrapper with props for color and size
+```
+
+### Pattern 5: Using shadcn/ui Components
+
+The project includes shadcn/ui components in `components/ui/`:
+
+```typescript
+// src/components/FormExample.tsx
+'use client';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useState } from 'react';
+
+export default function FormExample() {
+  const [name, setName] = useState('');
+
+  return (
+    <div className="space-y-4 p-4">
+      <div>
+        <Label htmlFor="name">Name</Label>
+        <Input
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter your name"
+        />
+      </div>
+      <Button onClick={() => alert(`Hello, ${name}!`)}>
+        Submit
+      </Button>
+    </div>
+  );
+}
+```
+
+## Webflow Props Types Reference
+
+When creating your `.webflow.tsx` wrapper, use these prop types:
+
+### Text Input
+```typescript
+props.Text({
+  name: 'Display Name',
+  defaultValue: 'default value',
+  tooltip: 'Help text shown in Webflow',
+})
+```
+
+### Number Input
+```typescript
+props.Number({
+  name: 'Count',
+  defaultValue: 0,
+  tooltip: 'Numeric value',
+})
+```
+
+### Boolean Toggle
+```typescript
+props.Boolean({
+  name: 'Is Active',
+  defaultValue: false,
+  tooltip: 'True or false',
+})
+```
+
+### Variant Dropdown
+```typescript
+props.Variant({
+  name: 'Style',
+  defaultValue: 'option1',
+  options: [
+    { label: 'Option 1', value: 'option1' },
+    { label: 'Option 2', value: 'option2' },
+  ],
+})
+```
+
+## Development Workflow
+
+### Daily Development
+
+```bash
+# Start dev server (with hot reload)
+pnpm dev
+
+# Run linter
+pnpm lint
+
+# Build for production
+pnpm build
+```
+
+### Testing Components
+
+1. **Local Testing**: Create a test page in `app/` directory
+2. **Component Testing**: Import and render your component with different props
+3. **Style Verification**: Ensure Tailwind classes work correctly
+4. **Interactivity Testing**: Test state changes, events, and user interactions
+
+### Deploying to Webflow
+
+```bash
+# Deploy all components
+pnpm webflow:share
+
+# The CLI will show progress:
+# ✓ Building components...
+# ✓ Bundling with Webpack...
+# ✓ Uploading to Webflow...
+# ✓ Components available in Designer
+```
+
+## Project Structure Reference
+
+```
+blogflow/
+├── app/                      # Next.js app router pages
+│   ├── globals.css          # Global styles (imported by Webflow components)
+│   ├── layout.tsx           # Root layout
+│   └── page.tsx             # Home page
+├── src/
+│   └── components/          # Webflow Code Components
+│       ├── *.tsx            # Component implementations
+│       └── *.webflow.tsx    # Webflow wrappers
+├── components/              # Shared React components
+│   └── ui/                 # shadcn/ui component library
+├── lib/
+│   ├── stores/             # Zustand state stores
+│   └── utils.ts            # Utility functions
+├── hooks/                  # Custom React hooks
+├── public/                 # Static assets
+├── docs/                   # Extended documentation
+├── CLAUDE.md              # Project guidance
+├── webflow.json           # Webflow CLI configuration
+├── webpack.webflow.js     # Webpack config for Webflow bundling
+└── package.json           # Dependencies and scripts
+```
+
+## Common Issues & Solutions
+
+### Issue: Styles Not Appearing in Webflow
+
+**Problem**: Component looks unstyled in Webflow Designer
+
+**Solution**: Ensure you import global styles in your `.webflow.tsx` file:
+```typescript
+import '@/app/globals.css'; // This line is CRITICAL
+```
+
+### Issue: React Context Not Working
+
+**Problem**: Context values are undefined in child components
+
+**Solution**: Use Zustand instead. React Context doesn't work across Shadow DOM boundaries in Webflow Code Components.
+
+### Issue: Component Not Showing in Webflow
+
+**Problem**: After deploying, component doesn't appear in Designer
+
+**Solutions**:
+1. Verify `webflow.json` includes the correct pattern: `./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)`
+2. Ensure `.webflow.tsx` file is in `src/components/`
+3. Check that you exported with `declareComponent()`
+4. Verify `WEBFLOW_WORKSPACE_API_TOKEN` is set correctly
+
+### Issue: TypeScript Errors
+
+**Problem**: Import paths not resolving
+
+**Solution**: Use the configured path aliases:
+- `@/components` → `components/`
+- `@/lib` → `lib/`
+- `@/app` → `app/`
+- `@/src/components` → `src/components/`
+
+### Issue: 3D Component Not Rendering
+
+**Problem**: React Three Fiber component shows blank
+
+**Solutions**:
+1. Ensure `'use client'` directive is present
+2. Set explicit width/height on container div
+3. Verify Three.js dependencies are installed
+4. Check browser console for WebGL errors
+
+## Advanced Topics
+
+### Adding New shadcn/ui Components
+
+```bash
+# Use the CLI to add components
+npx shadcn@latest add <component-name>
+
+# Example: Add a dialog component
+npx shadcn@latest add dialog
+```
+
+Components are added to `components/ui/` and can be imported in your Webflow components.
+
+### Creating Stores for State Management
+
+```typescript
+// lib/stores/my-store.ts
+import { create } from 'zustand';
+
+interface MyState {
+  value: number;
+  increment: () => void;
+  decrement: () => void;
+}
+
+export const useMyStore = create<MyState>((set) => ({
+  value: 0,
+  increment: () => set((state) => ({ value: state.value + 1 })),
+  decrement: () => set((state) => ({ value: state.value - 1 })),
+}));
+```
+
+### Persisting State with localStorage
+
+```typescript
+// lib/stores/persisted-store.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  setAuth: (user: User, token: string) => void;
-  clearAuth: () => void;
-}
-
-export const useAuthStore = create<AuthState>()(
+export const usePersistedStore = create()(
   persist(
     (set) => ({
-      user: null,
-      token: null,
-      setAuth: (user, token) => set({ user, token }),
-      clearAuth: () => set({ user: null, token: null }),
+      count: 0,
+      increment: () => set((state) => ({ count: state.count + 1 })),
     }),
     {
-      name: 'auth-storage',
+      name: 'my-storage-key', // localStorage key
     }
   )
 );
 ```
 
-**`webflow-components/src/components/LoginForm.webflow.tsx`**
+### Adding Custom Fonts
+
+1. Add font files to `public/fonts/`
+2. Import in `app/globals.css`:
+```css
+@font-face {
+  font-family: 'MyFont';
+  src: url('/fonts/my-font.woff2') format('woff2');
+}
+```
+3. Use in Tailwind classes or custom CSS
+
+### Responsive Design
+
+Use Tailwind's responsive prefixes:
+
 ```typescript
-import { declareComponent } from '@webflow/designer';
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { orpc } from '../lib/orpc-client';
-import { useAuthStore } from '../stores/authStore';
-
-const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { setAuth } = useAuthStore();
-  
-  const loginMutation = useMutation({
-    mutationFn: (data: { email: string; password: string }) => 
-      orpc.auth.login(data),
-    onSuccess: (data) => {
-      if (data.user && data.token) {
-        setAuth(data.user, data.token);
-        window.location.href = '/dashboard';
-      }
-    },
-  });
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    loginMutation.mutate({ email, password });
-  };
-  
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full px-4 py-2 border rounded"
-        />
-      </div>
-      
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full px-4 py-2 border rounded"
-        />
-      </div>
-      
-      <button
-        type="submit"
-        disabled={loginMutation.isPending}
-        className="w-full bg-blue-600 text-white py-2 rounded"
-      >
-        {loginMutation.isPending ? 'Logging in...' : 'Log In'}
-      </button>
-      
-      {loginMutation.isError && (
-        <p className="text-red-600">Login failed. Please try again.</p>
-      )}
-    </form>
-  );
-};
-
-export default declareComponent(LoginForm, {
-  displayName: 'Login Form',
-  description: 'User login form',
-});
+<div className="
+  w-full
+  p-4 sm:p-6 md:p-8
+  text-sm sm:text-base md:text-lg
+  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+">
+  {/* Content */}
+</div>
 ```
-
-## Step 7: Environment Variables
-
-**Backend `.env.local`**
-```bash
-DATABASE_URL="postgresql://user:pass@host/db"
-BETTER_AUTH_SECRET="your-secret-key-here"
-BETTER_AUTH_URL="http://localhost:3000"
-NEXT_PUBLIC_API_URL="http://localhost:3000"
-```
-
-**Frontend `.env`**
-```bash
-NEXT_PUBLIC_API_URL="http://localhost:3000"
-```
-
-## Step 8: Test Locally
-
-```bash
-# Backend
-cd blog-backend
-pnpm dev
-
-# Frontend (separate terminal)
-cd blog-webflow-components
-pnpm dev
-```
-
-## Step 9: Deploy to Webflow
-
-```bash
-cd blog-webflow-components
-
-# Build components
-pnpm build
-
-# Install Webflow CLI
-npm install -g @webflow/cli
-
-# Initialize Webflow project
-webflow init
-
-# Publish components
-webflow publish
-```
-
-## Step 10: Deploy Backend
-
-```bash
-cd blog-backend
-
-# Install Vercel CLI
-npm install -g vercel
-
-# Deploy
-vercel
-
-# Set environment variables in Vercel dashboard
-```
-
-## Troubleshooting
-
-### Database Connection Issues
-```bash
-# Test connection
-psql $DATABASE_URL
-
-# Verify migrations
-pnpm drizzle-kit generate
-pnpm drizzle-kit migrate
-```
-
-### Auth Not Working
-- Check BETTER_AUTH_SECRET is set
-- Verify DATABASE_URL is correct
-- Ensure sessions table exists
-
-### Components Not Loading
-- Check NEXT_PUBLIC_API_URL is correct
-- Verify CORS settings
-- Check browser console for errors
 
 ## Next Steps
 
-1. Add image upload functionality
-2. Implement Webflow CMS sync
-3. Create remaining components (PostEditor, Dashboard, etc.)
-4. Add error boundaries and loading states
-5. Implement optimistic updates
+Now that you understand how to add components:
 
-## Useful Commands
+1. **Review Existing Components**: Study the existing components in `src/components/` to see real examples
+2. **Check Documentation**: See `docs/` for advanced patterns and architecture details
+3. **Start Building**: Create your first component following the patterns above
+4. **Iterate**: Test locally, deploy to Webflow, refine based on feedback
 
-```bash
-# Database
-pnpm drizzle-kit generate    # Generate migrations
-pnpm drizzle-kit migrate     # Run migrations
-pnpm drizzle-kit studio      # Open database UI
+## Additional Resources
 
-# Development
-pnpm dev                     # Start dev server
-pnpm build                   # Build for production
-pnpm start                   # Start production server
+- **Project Documentation**: `docs/README.md` - Complete documentation index
+- **Architecture Guide**: `docs/webflow-nextjs-architecture.md` - Full system design
+- **CLAUDE.md**: Project conventions and patterns
+- **Webflow Docs**: https://developers.webflow.com/code-components
+- **Next.js Docs**: https://nextjs.org/docs
+- **React Three Fiber**: https://docs.pmnd.rs/react-three-fiber
+- **Zustand**: https://zustand-demo.pmnd.rs/
+- **shadcn/ui**: https://ui.shadcn.com/
 
-# Webflow
-webflow init                 # Initialize project
-webflow dev                  # Start dev mode
-webflow publish              # Publish components
-```
+---
 
+**Questions or Issues?** Check the `docs/` folder for detailed guides or refer to CLAUDE.md for project-specific conventions.
