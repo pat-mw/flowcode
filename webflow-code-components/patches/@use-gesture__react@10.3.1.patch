@@ -1,0 +1,23 @@
+diff --git a/dist/declarations/src/index.d.ts b/dist/declarations/src/index.d.ts
+index e51cc29fdc5930a1be6597d7e9df18d228d1a7fd..a18f6917c0245e2f15566b0c73f28848619744cc 100644
+--- a/dist/declarations/src/index.d.ts
++++ b/dist/declarations/src/index.d.ts
+@@ -6,6 +6,5 @@ export { useMove } from "./useMove.js";
+ export { useHover } from "./useHover.js";
+ export { useGesture } from "./useGesture.js";
+ export { createUseGesture } from "./createUseGesture.js";
+-export * from '@use-gesture/core/utils';
+ export * from '@use-gesture/core/actions';
+ export * from '@use-gesture/core/types';
+diff --git a/dist/use-gesture-react.esm.js b/dist/use-gesture-react.esm.js
+index 74644b6fb8663ae314fec10448137c9cd110484f..2cb92fb7f83ce0ee4f750172ccd475df10b06c56 100644
+--- a/dist/use-gesture-react.esm.js
++++ b/dist/use-gesture-react.esm.js
+@@ -2,7 +2,6 @@ import { registerAction, dragAction, pinchAction, wheelAction, scrollAction, mov
+ export * from '@use-gesture/core/actions';
+ import React from 'react';
+ import { Controller, parseMergedHandlers } from '@use-gesture/core';
+-export * from '@use-gesture/core/utils';
+ export * from '@use-gesture/core/types';
+ 
+ function useRecognizers(handlers, config = {}, gestureKey, nativeHandlers) {

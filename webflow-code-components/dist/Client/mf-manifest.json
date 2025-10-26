@@ -1,0 +1,247 @@
+{
+  "id": "_WebflowCodeComponents",
+  "name": "_WebflowCodeComponents",
+  "metaData": {
+    "name": "_WebflowCodeComponents",
+    "type": "app",
+    "buildInfo": {
+      "buildVersion": "0.1.0",
+      "buildName": "webflow-code-components"
+    },
+    "remoteEntry": {
+      "name": "remoteEntry.js",
+      "path": "",
+      "type": "global"
+    },
+    "types": {
+      "path": "",
+      "name": "",
+      "zip": "",
+      "api": ""
+    },
+    "globalName": "_WebflowCodeComponents",
+    "pluginVersion": "0.18.3",
+    "prefetchInterface": false,
+    "publicPath": "/dist"
+  },
+  "shared": [
+    {
+      "id": "_WebflowCodeComponents:@radix-ui/react-separator",
+      "name": "@radix-ui/react-separator",
+      "version": "1.1.7",
+      "singleton": true,
+      "requiredVersion": "^1.1.7",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "168.js",
+            "787.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "_WebflowCodeComponents:@radix-ui/react-slot",
+      "name": "@radix-ui/react-slot",
+      "version": "1.2.3",
+      "singleton": true,
+      "requiredVersion": "^1.2.3",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "303.js",
+            "541.js",
+            "922.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "_WebflowCodeComponents:class-variance-authority",
+      "name": "class-variance-authority",
+      "version": "0.7.1",
+      "singleton": true,
+      "requiredVersion": "^0.7.1",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "8.js",
+            "627.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "_WebflowCodeComponents:clsx",
+      "name": "clsx",
+      "version": "2.1.1",
+      "singleton": true,
+      "requiredVersion": "^2.1.1",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "778.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "_WebflowCodeComponents:lucide-react",
+      "name": "lucide-react",
+      "version": "0.545.0",
+      "singleton": true,
+      "requiredVersion": "^0.545.0",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "253.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "_WebflowCodeComponents:react-dom",
+      "name": "react-dom",
+      "version": "19.1.0",
+      "singleton": true,
+      "requiredVersion": "^19.1.0",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "235.js",
+            "616.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "_WebflowCodeComponents:react",
+      "name": "react",
+      "version": "19.1.0",
+      "singleton": true,
+      "requiredVersion": "^19.1.0",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "672.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    },
+    {
+      "id": "_WebflowCodeComponents:tailwind-merge",
+      "name": "tailwind-merge",
+      "version": "3.3.1",
+      "singleton": true,
+      "requiredVersion": "^3.3.1",
+      "assets": {
+        "js": {
+          "async": [],
+          "sync": [
+            "84.js"
+          ]
+        },
+        "css": {
+          "async": [],
+          "sync": []
+        }
+      }
+    }
+  ],
+  "remotes": [],
+  "exposes": [
+    {
+      "id": "_WebflowCodeComponents:@webflow_renderer",
+      "name": "@webflow_renderer",
+      "assets": {
+        "js": {
+          "sync": [
+            "789.js",
+            "__federation_expose_scope_webflow_renderer.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [],
+          "async": []
+        }
+      },
+      "path": "./@webflow_renderer"
+    },
+    {
+      "id": "_WebflowCodeComponents:Badge",
+      "name": "Badge",
+      "assets": {
+        "js": {
+          "sync": [
+            "789.js",
+            "__federation_expose_Badge.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "3e85e3cde51c9747fa58.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./Badge"
+    },
+    {
+      "id": "_WebflowCodeComponents:OrderConfirmation",
+      "name": "OrderConfirmation",
+      "assets": {
+        "js": {
+          "sync": [
+            "789.js",
+            "__federation_expose_OrderConfirmation.js"
+          ],
+          "async": []
+        },
+        "css": {
+          "sync": [
+            "3e85e3cde51c9747fa58.css"
+          ],
+          "async": []
+        }
+      },
+      "path": "./OrderConfirmation"
+    }
+  ]
+}
