@@ -1,6 +1,6 @@
 /**
  * Better Auth server configuration
- * Handles authentication with email/password and session management
+ * Handles authentication with email/password, Google OAuth, and session management
  */
 
 import { betterAuth } from 'better-auth';
@@ -30,6 +30,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false, // Can be enabled later with email service
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      enabled: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
+    },
   },
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
