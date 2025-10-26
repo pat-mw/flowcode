@@ -7,13 +7,14 @@ This directory contains progress updates for all features being implemented in t
 ### Blog Init (`blog-init/`)
 Implementation of the core BlogFlow blogging platform with Webflow integration.
 
-**Latest Update**: [update_02.md](./blog-init/update_02.md) - Phase 1 Complete (2025-10-26)
+**Latest Update**: [update_03.md](./blog-init/update_03.md) - Phase 2A Complete (2025-10-26)
 
-**Status**: ✅ Phase 1 Complete (Code) - Awaiting Environment Setup
+**Status**: ✅ Phase 2A Complete - Authentication & Pages Deployed
 
 **Quick Links**:
 - [Update 01](./blog-init/update_01.md) - Initial Phase 1 Progress
 - [Update 02](./blog-init/update_02.md) - Phase 1 Completion
+- [Update 03](./blog-init/update_03.md) - Phase 2A Completion (Auth & Pages)
 - [Specification](../features/blog-init/SPECIFICATION.md)
 
 ## How to Use This Directory
@@ -41,7 +42,7 @@ Updates are created at significant milestones (phase completion, major blockers 
 
 | Feature | Phase | Status | Latest Update | Git Commit |
 |---------|-------|--------|---------------|------------|
-| blog-init | Phase 1 | ✅ Complete (Code) | 2025-10-26 | c426b83 |
+| blog-init | Phase 2A | ✅ Complete (Deployed) | 2025-10-26 | 6c8bc53 |
 
 ## Legend
 
