@@ -8,15 +8,24 @@ import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
 
 async function runMigrations() {
-  const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  // Use non-pooling connection for migrations if available (recommended for Supabase)
+  const databaseUrl =
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    process.env.POSTGRES_URL;
+
   if (!databaseUrl) {
     throw new Error('DATABASE_URL or POSTGRES_URL is not defined');
   }
 
   console.log('🔄 Running database migrations...');
+  console.log('📡 Using connection:', databaseUrl.replace(/:[^:@]+@/, ':****@'));
 
   const pool = new Pool({
     connectionString: databaseUrl,
+    ssl: databaseUrl.includes('supabase.com') ? {
+      rejectUnauthorized: false, // Required for Supabase
+    } : undefined,
   });
 
   const db = drizzle(pool);

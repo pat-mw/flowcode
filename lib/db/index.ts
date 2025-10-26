@@ -24,6 +24,9 @@ const pool = new Pool({
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // Close idle clients after 30s
   connectionTimeoutMillis: 2000, // Timeout for new client connections
+  ssl: {
+    rejectUnauthorized: false, // Required for Supabase and other cloud providers
+  },
 });
 
 // Initialize Drizzle ORM

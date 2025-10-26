@@ -3,7 +3,9 @@
  * Used in frontend components for authentication
  */
 
-import { createAuthClient } from 'better-auth/client';
+'use client';
+
+import { createAuthClient } from 'better-auth/react';
 
 if (!process.env.NEXT_PUBLIC_API_URL) {
   throw new Error('NEXT_PUBLIC_API_URL is required');
