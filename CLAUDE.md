@@ -101,10 +101,14 @@ pnpm lint         # Run ESLint
 
 ### Webflow CLI
 ```bash
-pnpm webflow:share    # Deploy components to Webflow (requires WEBFLOW_WORKSPACE_API_TOKEN)
+pnpm webflow:share          # Deploy components to Webflow (requires WEBFLOW_WORKSPACE_API_TOKEN)
+pnpm webflow:bundle         # Bundle components locally for testing and debugging
+pnpm webflow:bundle:debug   # Bundle with detailed webpack debug output
 ```
 
 The Webflow CLI is available via `@webflow/webflow-cli` for deploying components to Webflow. Requires `WEBFLOW_WORKSPACE_API_TOKEN` environment variable (see `env.example`).
+
+**Local bundling** allows you to test webpack configuration and inspect bundled code without deploying to Webflow. See `docs/webflow-local-development.md` for detailed debugging guide.
 
 ## Environment Variables
 
@@ -156,6 +160,52 @@ Each prop should have:
 - `defaultValue` - Default value
 - `tooltip` (optional) - Help text
 
+### Shadow DOM Compatibility Requirements
+
+Webflow Code Components run in isolated Shadow DOM environments without Next.js infrastructure. Components must use browser-native APIs only:
+
+**❌ DO NOT USE in Webflow Code Components:**
+- `next/navigation` hooks (`useRouter`, `usePathname`, `useSearchParams`)
+- `next/link` component (`Link`)
+- `next/image` component (`Image` - use `<img>` instead)
+- Direct `process.env` access (use webpack DefinePlugin instead)
+- Node.js modules (`fs`, `path`, etc.)
+- React Context for cross-component state (doesn't cross Shadow DOM boundaries)
+
+**✅ USE in Webflow Code Components:**
+- Browser-native navigation: `window.location.href = '/path'`
+- Standard HTML elements: `<a>`, `<img>`, `<button>`
+- Zustand stores for cross-component state (singleton pattern works across Shadow DOM)
+- `fetch()` for API calls
+- Environment variables via webpack DefinePlugin (see webpack.webflow.js)
+
+**Navigation Pattern:**
+```typescript
+// ❌ DON'T: Use Next.js router
+import { useRouter } from 'next/navigation';
+const router = useRouter();
+router.push('/dashboard');
+
+// ✅ DO: Use browser-native navigation
+window.location.href = '/dashboard';
+
+// ❌ DON'T: Use Next.js Link
+import Link from 'next/link';
+<Link href="/login">Login</Link>
+
+// ✅ DO: Use standard anchor tags
+<a href="/login" className="text-primary hover:underline">Login</a>
+```
+
+**Local Testing:**
+Always test Webflow components locally before deploying:
+```bash
+pnpm webflow:bundle        # Test webpack compilation
+pnpm webflow:bundle:debug  # Debug webpack issues
+```
+
+See `docs/webflow-local-development.md` for detailed debugging guide.
+
 ### State Management with Zustand
 
 For sharing state across multiple Webflow components (which render in separate Shadow DOM roots):
@@ -202,7 +252,10 @@ Defines:
 - Telemetry settings
 
 ### webpack.webflow.js
-Sets up path aliases for bundling components for Webflow (must match tsconfig.json paths).
+Configures webpack for bundling Webflow Code Components:
+- Path aliases (must match tsconfig.json paths)
+- DefinePlugin for environment variable replacement (prevents "process is not defined" errors in browser)
+- Required for all `NEXT_PUBLIC_*` environment variables used in components
 
 ### components.json (shadcn/ui)
 Configures shadcn/ui component generation:
@@ -215,9 +268,10 @@ Configures shadcn/ui component generation:
 ## Additional Documentation
 
 The `docs/` folder contains extended architecture documentation including:
-- Webflow + Next.js integration patterns
-- oRPC and React Query usage
-- Routing strategies (query parameters vs dynamic routes)
-- Database schemas and API design
+- **Webflow + Next.js integration patterns** - Core architecture and component patterns
+- **oRPC and React Query usage** - API client patterns and data fetching
+- **Routing strategies** - Query parameters vs dynamic routes (Webflow constraints)
+- **Database schemas and API design** - PostgreSQL schema and oRPC procedures
+- **Local development and debugging** - `docs/webflow-local-development.md` - Bundling, debugging, and testing Webflow components locally
 
 Refer to `docs/README.md` for a complete overview of available documentation.

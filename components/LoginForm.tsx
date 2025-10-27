@@ -8,8 +8,6 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { Button } from '@/components/ui/button';
@@ -54,7 +52,6 @@ export default function LoginForm({
   redirectTo = '/dashboard',
   onSuccess,
 }: LoginFormProps) {
-  const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -151,7 +148,7 @@ export default function LoginForm({
         }
 
         // Redirect to dashboard or specified route
-        router.push(redirectTo);
+        window.location.href = redirectTo;
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -272,12 +269,12 @@ export default function LoginForm({
             />
 
             <div className="flex justify-end">
-              <Link
+              <a
                 href="/auth/forgot-password"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Forgot password?
-              </Link>
+              </a>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
@@ -289,9 +286,9 @@ export default function LoginForm({
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}
-          <Link href="/auth/register" className="text-primary hover:underline">
+          <a href="/auth/register" className="text-primary hover:underline">
             Register
-          </Link>
+          </a>
         </p>
       </CardFooter>
     </Card>

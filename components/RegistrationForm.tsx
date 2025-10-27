@@ -8,8 +8,6 @@
 import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { signUp, signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { Button } from '@/components/ui/button';
@@ -61,7 +59,6 @@ export default function RegistrationForm({
   redirectTo = '/dashboard',
   onSuccess,
 }: RegistrationFormProps) {
-  const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -182,7 +179,7 @@ export default function RegistrationForm({
         }
 
         // Redirect to dashboard or specified route
-        router.push(redirectTo);
+        window.location.href = redirectTo;
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -353,9 +350,9 @@ export default function RegistrationForm({
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-primary hover:underline">
+          <a href="/auth/login" className="text-primary hover:underline">
             Login
-          </Link>
+          </a>
         </p>
       </CardFooter>
     </Card>
