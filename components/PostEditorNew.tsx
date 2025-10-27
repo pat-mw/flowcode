@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { requestStorageAccess, hasStorageAccess } from '@/lib/storage-access';
 
 type SaveStatus = 'saved' | 'saving' | 'error' | null;
 
@@ -78,6 +79,19 @@ export default function PostEditorNew() {
       setPostId(id);
       setIsEditMode(!!id);
     }
+  }, []);
+
+  // Request storage access on mount (for cross-origin cookie access)
+  React.useEffect(() => {
+    async function checkStorageAccess() {
+      const hasAccess = await hasStorageAccess();
+      if (!hasAccess) {
+        console.log('[PostEditor] No storage access yet. Will request on first interaction.');
+      } else {
+        console.log('[PostEditor] ✅ Already have storage access');
+      }
+    }
+    checkStorageAccess();
   }, []);
 
   // ============================================================================
@@ -242,6 +256,13 @@ export default function PostEditorNew() {
       return;
     }
 
+    // Request storage access for cross-origin cookies (required for auth)
+    const hasAccess = await requestStorageAccess();
+    if (!hasAccess) {
+      toast.error('Storage access required. Please enable cookies and try again.');
+      return;
+    }
+
     setSaveStatus('saving');
 
     try {
@@ -324,6 +345,13 @@ export default function PostEditorNew() {
       return;
     }
 
+    // Request storage access for cross-origin cookies (required for auth)
+    const hasAccess = await requestStorageAccess();
+    if (!hasAccess) {
+      toast.error('Storage access required. Please enable cookies and try again.');
+      return;
+    }
+
     try {
       // Save first if not in edit mode
       if (!isEditMode) {
@@ -353,6 +381,13 @@ export default function PostEditorNew() {
   // Delete handler
   const handleDelete = async () => {
     if (!postId) return;
+
+    // Request storage access for cross-origin cookies (required for auth)
+    const hasAccess = await requestStorageAccess();
+    if (!hasAccess) {
+      toast.error('Storage access required. Please enable cookies and try again.');
+      return;
+    }
 
     try {
       await deletePostMutation.mutateAsync({ id: postId });

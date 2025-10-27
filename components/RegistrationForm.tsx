@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { signUp, signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
+import { requestStorageAccess } from '@/lib/storage-access';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -99,6 +100,14 @@ export default function RegistrationForm({
     try {
       setIsLoading(true);
       setError(null);
+
+      // Request storage access for cross-origin cookies (required for auth)
+      const hasAccess = await requestStorageAccess();
+      if (!hasAccess) {
+        setError('Storage access required. Please enable cookies and try again.');
+        setIsLoading(false);
+        return;
+      }
 
       // Validate with Zod
       const validationResult = registrationSchema.safeParse(data);
