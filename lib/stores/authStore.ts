@@ -76,6 +76,8 @@ export const useAuthStore = create<AuthState>()(
           removeItem: () => {},
         };
       }),
+      // Skip hydration check during SSR
+      skipHydration: typeof window === 'undefined',
     }
   )
 );
@@ -105,17 +107,22 @@ export async function revalidateAuthSession() {
         if (sessionData?.user && sessionData?.person) {
           // Session is valid, update store with fresh data
           store.setAuth(sessionData.user, sessionData.person);
-        } else {
-          // Session invalid or expired, clear auth
+          console.log('[Auth] Session revalidated successfully');
+        } else if (sessionData === null) {
+          // Explicitly null response means session doesn't exist - clear auth
+          console.log('[Auth] No active session, clearing stored auth');
           store.clearAuth();
         }
-      } else {
-        // Session invalid or expired, clear auth
+        // If sessionData is undefined or missing fields, keep existing auth (might be loading)
+      } else if (response.status === 401) {
+        // Explicit unauthorized - session definitely expired
+        console.log('[Auth] Session expired (401), clearing auth');
         store.clearAuth();
       }
+      // For other errors (500, etc), keep existing auth - server might be down
     } catch (error) {
-      console.error('Failed to revalidate session:', error);
-      // On error, keep the stored auth (user might be offline)
+      console.error('[Auth] Failed to revalidate session:', error);
+      // On network error, keep the stored auth (user might be offline)
     }
   }
 }

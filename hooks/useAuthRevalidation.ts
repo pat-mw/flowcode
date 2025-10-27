@@ -6,18 +6,29 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore, revalidateAuthSession } from '@/lib/stores/authStore';
 
 export function useAuthRevalidation() {
+  const [hasHydrated, setHasHydrated] = useState(false);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   useEffect(() => {
-    // Only revalidate if we have stored auth
-    if (isAuthenticated) {
-      revalidateAuthSession();
+    // Mark as hydrated after first render (Zustand persist will have loaded)
+    setHasHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    // Only revalidate after Zustand has hydrated and if we have stored auth
+    if (hasHydrated && isAuthenticated) {
+      // Small delay to ensure Better Auth cookies are readable
+      const timer = setTimeout(() => {
+        revalidateAuthSession();
+      }, 100);
+
+      return () => clearTimeout(timer);
     }
-  }, []); // Run once on mount
+  }, [hasHydrated, isAuthenticated]);
 
   // Return the auth state for convenience
   return { isAuthenticated };
