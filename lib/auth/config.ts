@@ -57,9 +57,9 @@ export const auth = betterAuth({
     useSecureCookies: process.env.NODE_ENV === 'production',
     // Cookie options
     cookieOptions: {
-      sameSite: 'lax', // Allow cookies on same-site navigation (important for login redirects!)
+      sameSite: 'none', // Allow cross-origin cookies (required for Webflow → Vercel)
       httpOnly: true, // Security: prevent JavaScript access
-      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      secure: true, // REQUIRED when sameSite: 'none' - HTTPS only
       path: '/', // Available across entire site
     },
   },
