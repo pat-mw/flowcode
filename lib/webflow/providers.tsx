@@ -11,6 +11,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { useAuthRevalidation } from '@/hooks/useAuthRevalidation';
+import { ThemeProvider } from '@/lib/providers/theme-provider';
 
 /**
  * Singleton QueryClient for Webflow Code Components
@@ -35,10 +36,11 @@ interface WebflowProvidersWrapperProps {
 /**
  * WebflowProvidersWrapper
  *
- * Wraps Webflow Code Components with necessary providers (QueryClient, auth revalidation, etc.)
+ * Wraps Webflow Code Components with necessary providers (QueryClient, auth revalidation, theme, etc.)
  * Use this in all Webflow wrapper files to ensure consistent provider setup.
  *
  * Features:
+ * - ThemeProvider with dark mode default (next-themes)
  * - QueryClient provider for React Query
  * - Auth session revalidation on mount (persists login across refreshes)
  * - Works correctly in Shadow DOM environments
@@ -67,8 +69,15 @@ export function WebflowProvidersWrapper({ children }: WebflowProvidersWrapperPro
   useAuthRevalidation();
 
   return (
-    <QueryClientProvider client={webflowQueryClient}>
-      {children}
-    </QueryClientProvider>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="dark"
+      enableSystem={false}
+      disableTransitionOnChange
+    >
+      <QueryClientProvider client={webflowQueryClient}>
+        {children}
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
