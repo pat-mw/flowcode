@@ -123,6 +123,7 @@ export default function LoginForm({
       if (response.data?.user) {
         // Fetch person profile
         const personResponse = await fetch('/api/orpc/auth/getSession', {
+          method: 'POST',
           credentials: 'include',
         });
 

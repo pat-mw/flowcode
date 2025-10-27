@@ -41,6 +41,11 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
+  // Advanced configuration for Supabase compatibility
+  advanced: {
+    generateId: false, // Use Supabase's UUID generation
+  },
+
   // Callbacks
   callbacks: {
     async afterSignUp(user: { id: string; name: string; email: string; image?: string | null }) {

@@ -154,6 +154,7 @@ export default function RegistrationForm({
       if (loginResponse.data?.user) {
         // Fetch person profile (created by afterSignUp callback)
         const personResponse = await fetch('/api/orpc/auth/getSession', {
+          method: 'POST',
           credentials: 'include',
         });
 

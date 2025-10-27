@@ -7,16 +7,23 @@ import { RPCHandler } from '@orpc/server/fetch';
 import { appRouter } from '@/lib/api';
 import { createContext } from '@/lib/api/context';
 
-const rpcHandler = new RPCHandler(appRouter);
+const rpcHandler = new RPCHandler(appRouter, {
+  prefix: '/api/orpc',
+});
 
-export async function GET(request: Request) {
+async function handleRequest(request: Request) {
   const context = await createContext(request);
-  const result = await rpcHandler.handle(request, { context });
-  return result.matched ? result.response : new Response('Not Found', { status: 404 });
+  const { response } = await rpcHandler.handle(request, {
+    prefix: '/api/orpc',
+    context,
+  });
+
+  return response ?? new Response('Not Found', { status: 404 });
 }
 
-export async function POST(request: Request) {
-  const context = await createContext(request);
-  const result = await rpcHandler.handle(request, { context });
-  return result.matched ? result.response : new Response('Not Found', { status: 404 });
-}
+export const GET = handleRequest;
+export const POST = handleRequest;
+export const HEAD = handleRequest;
+export const PUT = handleRequest;
+export const PATCH = handleRequest;
+export const DELETE = handleRequest;
