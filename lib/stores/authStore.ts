@@ -81,6 +81,46 @@ export const useAuthStore = create<AuthState>()(
 );
 
 /**
+ * Revalidate session with Better Auth on app load
+ * Call this in your root layout or app initialization
+ * This ensures the persisted auth state is still valid with the server
+ */
+export async function revalidateAuthSession() {
+  if (typeof window === 'undefined') return;
+
+  const store = useAuthStore.getState();
+
+  // If we have stored auth, verify it's still valid with Better Auth
+  if (store.isAuthenticated && store.user) {
+    try {
+      // Check if session is still valid by fetching from Better Auth
+      const response = await fetch('/api/orpc/auth/getSession', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const sessionData = await response.json();
+
+        if (sessionData?.user && sessionData?.person) {
+          // Session is valid, update store with fresh data
+          store.setAuth(sessionData.user, sessionData.person);
+        } else {
+          // Session invalid or expired, clear auth
+          store.clearAuth();
+        }
+      } else {
+        // Session invalid or expired, clear auth
+        store.clearAuth();
+      }
+    } catch (error) {
+      console.error('Failed to revalidate session:', error);
+      // On error, keep the stored auth (user might be offline)
+    }
+  }
+}
+
+/**
  * Sync auth state across Shadow DOM components
  * Call this in components that need to react to auth changes from other components
  */
