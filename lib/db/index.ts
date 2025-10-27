@@ -10,7 +10,8 @@ import * as peopleSchema from './schema/people';
 import * as postsSchema from './schema/posts';
 
 // Validate DATABASE_URL or POSTGRES_URL exists
-const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+// Use POSTGRES_URL (pooled) for runtime, POSTGRES_URL_NON_POOLING for migrations
+const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_URL_NON_POOLING;
 if (!databaseUrl) {
   throw new Error(
     'DATABASE_URL or POSTGRES_URL is not defined. Please add it to your .env file.\n' +
@@ -18,15 +19,34 @@ if (!databaseUrl) {
   );
 }
 
+// Determine if we're in production (Vercel) or local dev
+const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+const isLocal = databaseUrl.includes('localhost') || databaseUrl.includes('127.0.0.1');
+
+// For non-local environments, ensure SSL parameters are in the connection string
+// This is more reliable in serverless environments than Pool config alone
+let finalConnectionString = databaseUrl;
+if (!isLocal && !databaseUrl.includes('sslmode=')) {
+  // Append sslmode=require to bypass certificate validation for Supabase/Vercel
+  const separator = databaseUrl.includes('?') ? '&' : '?';
+  finalConnectionString = `${databaseUrl}${separator}sslmode=require`;
+}
+
+// SSL configuration for different environments
+const sslConfig = isLocal
+  ? false // No SSL for localhost
+  : {
+      rejectUnauthorized: false, // Allow self-signed certificates
+      // This combined with sslmode=require handles Supabase/Vercel SSL properly
+    };
+
 // Create PostgreSQL connection pool
 const pool = new Pool({
-  connectionString: databaseUrl,
-  max: 20, // Maximum number of clients in the pool
+  connectionString: finalConnectionString,
+  max: isProduction ? 20 : 10, // More connections in production
   idleTimeoutMillis: 30000, // Close idle clients after 30s
   connectionTimeoutMillis: 2000, // Timeout for new client connections
-  ssl: {
-    rejectUnauthorized: false, // Required for Supabase and other cloud providers
-  },
+  ssl: sslConfig,
 });
 
 // Initialize Drizzle ORM
