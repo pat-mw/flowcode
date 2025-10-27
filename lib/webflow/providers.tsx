@@ -4,30 +4,54 @@
  * This module provides a centralized provider setup for all Webflow Code Components.
  * It ensures consistent QueryClient configuration and eliminates code duplication
  * across multiple Webflow wrapper files.
+ *
+ * Key Features:
+ * - oRPC-compatible QueryClient with serialization support
+ * - Shadow DOM isolation (singleton pattern works across components)
+ * - Authentication session revalidation on mount
+ * - Dark mode theme provider
+ *
+ * Usage in Webflow wrapper files:
+ * ```typescript
+ * import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
+ *
+ * export default declareComponent((props) => (
+ *   <WebflowProvidersWrapper>
+ *     <YourComponent {...props} />
+ *   </WebflowProvidersWrapper>
+ * ), { ... });
+ * ```
  */
 
 'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { useAuthRevalidation } from '@/hooks/useAuthRevalidation';
 import { ThemeProvider } from '@/lib/providers/theme-provider';
+import { createQueryClient } from '@/lib/query-client';
 
 /**
  * Singleton QueryClient for Webflow Code Components
  *
  * This ensures a single QueryClient instance across all Webflow components
- * even in Shadow DOM environments. The configuration is optimized for
- * Webflow's rendering context.
+ * even in Shadow DOM environments. The configuration includes:
+ *
+ * - oRPC serializer support (for Date, BigInt, custom types)
+ * - Optimized cache timing (1min stale, 10min gc)
+ * - Disabled window focus refetching (better for Webflow context)
+ * - Automatic retry on failure (1 attempt)
+ *
+ * Why singleton?
+ * - Webflow components render in separate Shadow DOM roots
+ * - Singleton pattern ensures shared cache across all components
+ * - React Context doesn't cross Shadow DOM boundaries, but module-level
+ *   singletons do!
+ *
+ * Note: This uses the same createQueryClient factory as Next.js pages,
+ * ensuring consistent behavior across both contexts.
  */
-export const webflowQueryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000, // 1 minute
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+export const webflowQueryClient = createQueryClient();
 
 interface WebflowProvidersWrapperProps {
   children: ReactNode;

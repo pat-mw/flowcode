@@ -92,6 +92,11 @@ export async function revalidateAuthSession() {
 
   const store = useAuthStore.getState();
 
+  console.log('[Auth] Starting session revalidation...', {
+    hasStoredAuth: store.isAuthenticated,
+    hasUser: !!store.user,
+  });
+
   // If we have stored auth, verify it's still valid with Better Auth
   if (store.isAuthenticated && store.user) {
     try {
@@ -99,31 +104,51 @@ export async function revalidateAuthSession() {
       const response = await fetch('/api/orpc/auth/getSession', {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('[Auth] Session check response:', {
+        status: response.status,
+        ok: response.ok,
       });
 
       if (response.ok) {
         const sessionData = await response.json();
 
+        console.log('[Auth] Session data received:', {
+          hasUser: !!sessionData?.user,
+          hasPerson: !!sessionData?.person,
+          isNull: sessionData === null,
+        });
+
         if (sessionData?.user && sessionData?.person) {
           // Session is valid, update store with fresh data
           store.setAuth(sessionData.user, sessionData.person);
-          console.log('[Auth] Session revalidated successfully');
+          console.log('[Auth] ✅ Session revalidated successfully');
         } else if (sessionData === null) {
           // Explicitly null response means session doesn't exist - clear auth
-          console.log('[Auth] No active session, clearing stored auth');
+          console.log('[Auth] ❌ No active session, clearing stored auth');
           store.clearAuth();
+        } else {
+          console.warn('[Auth] ⚠️ Unexpected session data format, keeping stored auth');
         }
         // If sessionData is undefined or missing fields, keep existing auth (might be loading)
       } else if (response.status === 401) {
         // Explicit unauthorized - session definitely expired
-        console.log('[Auth] Session expired (401), clearing auth');
+        console.log('[Auth] ❌ Session expired (401), clearing auth');
         store.clearAuth();
+      } else {
+        console.warn('[Auth] ⚠️ Unexpected response status:', response.status);
       }
       // For other errors (500, etc), keep existing auth - server might be down
     } catch (error) {
-      console.error('[Auth] Failed to revalidate session:', error);
+      console.error('[Auth] ❌ Failed to revalidate session:', error);
       // On network error, keep the stored auth (user might be offline)
     }
+  } else {
+    console.log('[Auth] No stored auth to revalidate');
   }
 }
 

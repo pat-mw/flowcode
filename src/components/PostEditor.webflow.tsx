@@ -1,28 +1,29 @@
 /**
- * PostEditor Webflow Component Wrapper
- * Wraps the PostEditor component for use in Webflow Code Components
+ * PostEditor Webflow Component
+ * Rich text editor for creating and editing blog posts
+ * Uses oRPC + TanStack Query for type-safe API calls with automatic caching
  */
 
 'use client';
 
 import { declareComponent } from '@webflow/react';
-import PostEditor from '@/components/PostEditor';
+import PostEditorNew from '@/components/PostEditorNew';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import '@/app/globals.css';
 
 function PostEditorWrapper() {
   return (
     <WebflowProvidersWrapper>
-      <PostEditor />
+      <div className="container mx-auto px-4 py-8">
+        <PostEditorNew />
+      </div>
     </WebflowProvidersWrapper>
   );
 }
 
 export default declareComponent(PostEditorWrapper, {
   name: 'Post Editor',
-  description: 'Rich text editor for creating and editing blog posts. Reads post ID from URL query parameter (?post=123).',
-  group: 'Blog',
-  props: {
-    // No props - reads post ID from URL query parameter
-  },
+  description: 'Rich text editor with auto-save, type-safe API calls, and cross-origin support (Webflow → Vercel). Reads post ID from URL (?post=123).',
+  group: 'BlogFlow',
+  props: {},
 });

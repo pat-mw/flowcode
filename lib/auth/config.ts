@@ -41,6 +41,29 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
+  // Session configuration
+  session: {
+    // Extend session expiration to 7 days
+    expiresIn: 60 * 60 * 24 * 7, // 7 days in seconds
+    // Update session expiration on each request (rolling sessions)
+    updateAge: 60 * 60 * 24, // Update if older than 1 day
+    // Cookie name
+    cookieName: 'better-auth.session_token',
+  },
+
+  // Advanced cookie settings
+  advanced: {
+    // Ensure cookies work in development (localhost)
+    useSecureCookies: process.env.NODE_ENV === 'production',
+    // Cookie options
+    cookieOptions: {
+      sameSite: 'lax', // Allow cookies on same-site navigation (important for login redirects!)
+      httpOnly: true, // Security: prevent JavaScript access
+      secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+      path: '/', // Available across entire site
+    },
+  },
+
   // CORS configuration - allow Webflow domain to make auth requests
   trustedOrigins: [
     'https://blogflow-three.webflow.io',  // Production Webflow site

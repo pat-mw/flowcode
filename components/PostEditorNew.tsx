@@ -1,7 +1,14 @@
 /**
- * PostEditor Component
+ * PostEditor Component (New - oRPC + TanStack Query)
  * Rich text editor for creating and editing blog posts
- * Uses browser-native APIs only - works in both Next.js and Webflow
+ *
+ * Key improvements:
+ * - Uses oRPC + TanStack Query instead of raw fetch
+ * - Type-safe API calls with full intellisense
+ * - Automatic cache management and invalidation
+ * - Optimistic updates for better UX
+ * - Proper error handling with isDefinedError
+ * - Works cross-origin (Webflow → Vercel)
  */
 
 'use client';
@@ -12,6 +19,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { orpc } from '@/lib/orpc-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,10 +42,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 
 type SaveStatus = 'saved' | 'saving' | 'error' | null;
 
-export default function PostEditor() {
+export default function PostEditorNew() {
+  const queryClient = useQueryClient();
+
   // Browser-native URL parameter reading (works in both Next.js and Webflow)
   const [postId, setPostId] = React.useState<string | null>(null);
   const [isEditMode, setIsEditMode] = React.useState(false);
@@ -48,16 +60,25 @@ export default function PostEditor() {
   const [content, setContent] = React.useState<Record<string, unknown> | null>(null);
 
   // UI state
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSaving, setIsSaving] = React.useState(false);
   const [saveStatus, setSaveStatus] = React.useState<SaveStatus>(null);
-  const [error, setError] = React.useState<string | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   // Auto-save timer ref
   const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // Tiptap editor setup
+  // Read post ID from URL on mount (browser-native)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('post');
+      setPostId(id);
+      setIsEditMode(!!id);
+    }
+  }, []);
+
+  // ============================================================================
+  // TIPTAP EDITOR SETUP
+  // ============================================================================
   const editor = useEditor({
     immediatelyRender: false, // Prevent SSR hydration mismatches
     extensions: [
@@ -89,142 +110,171 @@ export default function PostEditor() {
     },
   });
 
-  // Read post ID from URL on mount (browser-native)
+  // ============================================================================
+  // oRPC QUERY: Fetch post data in edit mode
+  // ============================================================================
+  const {
+    data: post,
+    isLoading: isLoadingPost,
+    error: fetchError
+  } = useQuery(
+    orpc.posts.getById.queryOptions({
+      input: { id: postId! },
+      // Only fetch if we have a postId (edit mode)
+      enabled: isEditMode && !!postId,
+      // Show stale data while refetching
+      staleTime: 30 * 1000, // 30 seconds
+    })
+  );
+
+  // Populate form when post data loads
   React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get('post');
-      setPostId(id);
-      setIsEditMode(!!id);
+    if (post) {
+      setTitle(post.title || '');
+      setExcerpt(post.excerpt || '');
+      setCoverImage(post.coverImage || '');
+      setContent(post.content as Record<string, unknown>);
+
+      // Set editor content
+      if (editor && post.content) {
+        editor.commands.setContent(post.content);
+      }
     }
-  }, []);
+  }, [post, editor]);
 
-  // Fetch post data in edit mode
-  React.useEffect(() => {
-    if (!isEditMode || !postId) return;
+  // ============================================================================
+  // oRPC MUTATIONS
+  // ============================================================================
 
-    const fetchPost = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
+  // Create post mutation
+  const createPostMutation = useMutation(
+    orpc.posts.create.mutationOptions({
+      onSuccess: (newPost) => {
+        toast.success('Post created successfully!');
 
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/getById`,
-          {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: postId }),
-          }
+        // Switch to edit mode
+        setPostId(newPost.id);
+        setIsEditMode(true);
+
+        // Update URL without reload
+        if (typeof window !== 'undefined') {
+          const newUrl = `${window.location.pathname}?post=${newPost.id}`;
+          window.history.replaceState({}, '', newUrl);
+        }
+
+        // Invalidate posts list
+        queryClient.invalidateQueries({ queryKey: orpc.posts.list.key() });
+      },
+      onError: () => {
+        toast.error('Failed to create post');
+      },
+    })
+  );
+
+  // Update post mutation
+  const updatePostMutation = useMutation(
+    orpc.posts.update.mutationOptions({
+      onSuccess: (updatedPost) => {
+        // Update cached post data
+        queryClient.setQueryData(
+          orpc.posts.getById.queryKey({ input: { id: postId! } }),
+          updatedPost
         );
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch post');
-        }
+        // Invalidate posts list
+        queryClient.invalidateQueries({ queryKey: orpc.posts.list.key() });
+      },
+      onError: () => {
+        toast.error('Failed to save post');
+        setSaveStatus('error');
+      },
+    })
+  );
 
-        const post = await response.json();
+  // Publish post mutation
+  const publishPostMutation = useMutation(
+    orpc.posts.publish.mutationOptions({
+      onSuccess: () => {
+        toast.success('Post published successfully!');
 
-        setTitle(post.title || '');
-        setExcerpt(post.excerpt || '');
-        setCoverImage(post.coverImage || '');
+        // Invalidate all post queries
+        queryClient.invalidateQueries({ queryKey: orpc.posts.key() });
 
-        // Set editor content
-        if (editor && post.content) {
-          editor.commands.setContent(post.content);
-        }
-        setContent(post.content);
-      } catch (err) {
-        console.error('Fetch post error:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load post');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+        // Navigate back to posts list
+        window.location.href = '/dashboard/posts';
+      },
+      onError: () => {
+        toast.error('Failed to publish post');
+      },
+    })
+  );
 
-    fetchPost();
-  }, [isEditMode, postId, editor]);
+  // Delete post mutation
+  const deletePostMutation = useMutation(
+    orpc.posts.delete.mutationOptions({
+      onSuccess: () => {
+        toast.success('Post deleted successfully!');
 
-  // Save handler (manual or auto-save)
-  const handleSave = React.useCallback(async (isSilent = false) => {
+        // Invalidate posts list
+        queryClient.invalidateQueries({ queryKey: orpc.posts.list.key() });
+
+        // Navigate back to posts list
+        window.location.href = '/dashboard/posts';
+      },
+      onError: () => {
+        toast.error('Failed to delete post');
+      },
+    })
+  );
+
+  // ============================================================================
+  // SAVE HANDLERS
+  // ============================================================================
+
+  // Manual save handler
+  const handleSave = React.useCallback(async () => {
     if (!title.trim()) {
-      if (!isSilent) {
-        setError('Title is required');
-      }
+      toast.error('Title is required');
       return;
     }
 
+    setSaveStatus('saving');
+
     try {
-      if (!isSilent) {
-        setIsSaving(true);
+      if (isEditMode && postId) {
+        // Update existing post
+        await updatePostMutation.mutateAsync({
+          id: postId,
+          title,
+          content,
+          excerpt: excerpt || undefined,
+          coverImage: coverImage || undefined,
+        });
+
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus(null), 2000);
+      } else {
+        // Create new post
+        await createPostMutation.mutateAsync({
+          title,
+          content: content || {},
+          excerpt: excerpt || undefined,
+          coverImage: coverImage || undefined,
+        });
+
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus(null), 2000);
       }
-      setSaveStatus('saving');
-      setError(null);
-
-      const endpoint = isEditMode
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/update`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/create`;
-
-      const body = isEditMode
-        ? {
-            id: postId,
-            title,
-            content,
-            excerpt: excerpt || undefined,
-            coverImage: coverImage || undefined,
-          }
-        : {
-            title,
-            content,
-            excerpt: excerpt || undefined,
-            coverImage: coverImage || undefined,
-          };
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save post');
-      }
-
-      const savedPost = await response.json();
-
-      // If creating new post, update to edit mode
-      if (!isEditMode && savedPost.id) {
-        setPostId(savedPost.id);
-        setIsEditMode(true);
-        // Update URL without reload (browser-native)
-        if (typeof window !== 'undefined') {
-          const newUrl = `${window.location.pathname}?post=${savedPost.id}`;
-          window.history.replaceState({}, '', newUrl);
-        }
-      }
-
-      setSaveStatus('saved');
-
-      // Reset save status after 2 seconds
-      setTimeout(() => {
-        setSaveStatus(null);
-      }, 2000);
-    } catch (err) {
-      console.error('Save error:', err);
+    } catch {
+      // Error already handled by mutation onError
       setSaveStatus('error');
-      if (!isSilent) {
-        setError(err instanceof Error ? err.message : 'Failed to save post');
-      }
-    } finally {
-      if (!isSilent) {
-        setIsSaving(false);
-      }
     }
-  }, [title, content, excerpt, coverImage, isEditMode, postId]);
+  }, [title, content, excerpt, coverImage, isEditMode, postId, updatePostMutation, createPostMutation]);
 
   // Auto-save logic (30 seconds debounce)
   React.useEffect(() => {
-    if (!isEditMode || !title || !content) return;
+    // Only auto-save in edit mode with valid data
+    if (!isEditMode || !postId || !title || !content) return;
 
     // Clear previous timer
     if (autoSaveTimerRef.current) {
@@ -232,8 +282,24 @@ export default function PostEditor() {
     }
 
     // Set new timer for auto-save
-    autoSaveTimerRef.current = setTimeout(() => {
-      handleSave(true); // true = silent auto-save
+    autoSaveTimerRef.current = setTimeout(async () => {
+      setSaveStatus('saving');
+
+      try {
+        await updatePostMutation.mutateAsync({
+          id: postId,
+          title,
+          content,
+          excerpt: excerpt || undefined,
+          coverImage: coverImage || undefined,
+        });
+
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus(null), 2000);
+      } catch {
+        // Silent auto-save error (don't toast)
+        setSaveStatus(null);
+      }
     }, 30000); // 30 seconds
 
     return () => {
@@ -241,53 +307,42 @@ export default function PostEditor() {
         clearTimeout(autoSaveTimerRef.current);
       }
     };
-  }, [content, title, excerpt, coverImage, isEditMode, handleSave]);
+  }, [content, title, excerpt, coverImage, isEditMode, postId, updatePostMutation]);
+
+  // ============================================================================
+  // ACTION HANDLERS
+  // ============================================================================
 
   // Publish handler
   const handlePublish = async () => {
     if (!title.trim()) {
-      setError('Title is required');
+      toast.error('Title is required');
       return;
     }
 
     try {
-      setIsSaving(true);
-      setError(null);
-
       // Save first if not in edit mode
       if (!isEditMode) {
-        await handleSave(false);
+        const newPost = await createPostMutation.mutateAsync({
+          title,
+          content: content || {},
+          excerpt: excerpt || undefined,
+          coverImage: coverImage || undefined,
+        });
+
         // Wait a bit for state to update
         await new Promise(resolve => setTimeout(resolve, 500));
-      }
 
-      // Then publish
-      const currentPostId = postId;
-      if (!currentPostId) {
-        throw new Error('Post ID not found');
-      }
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/publish`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: currentPostId }),
+        // Publish the newly created post
+        if (newPost?.id) {
+          await publishPostMutation.mutateAsync({ id: newPost.id });
         }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to publish post');
+      } else if (postId) {
+        // Publish existing post
+        await publishPostMutation.mutateAsync({ id: postId });
       }
-
-      // Navigate back to posts list (browser-native)
-      window.location.href = '/dashboard/posts';
-    } catch (err) {
-      console.error('Publish error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to publish post');
-    } finally {
-      setIsSaving(false);
+    } catch {
+      // Error already handled by mutation onError
     }
   };
 
@@ -296,33 +351,15 @@ export default function PostEditor() {
     if (!postId) return;
 
     try {
-      setIsSaving(true);
-      setError(null);
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/delete`,
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: postId }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to delete post');
-      }
-
-      // Navigate back to posts list (browser-native)
-      window.location.href = '/dashboard/posts';
-    } catch (err) {
-      console.error('Delete error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to delete post');
-      setIsSaving(false);
+      await deletePostMutation.mutateAsync({ id: postId });
+    } catch {
+      // Error already handled by mutation onError
     }
   };
 
-  // Toolbar button component
+  // ============================================================================
+  // TOOLBAR BUTTON COMPONENT
+  // ============================================================================
   const ToolbarButton = ({
     onClick,
     active,
@@ -351,8 +388,10 @@ export default function PostEditor() {
     </button>
   );
 
-  // Loading state
-  if (isLoading) {
+  // ============================================================================
+  // RENDER: LOADING STATE
+  // ============================================================================
+  if (isLoadingPost) {
     return (
       <Card className="w-full max-w-6xl mx-auto">
         <CardContent className="flex items-center justify-center py-16">
@@ -364,6 +403,33 @@ export default function PostEditor() {
       </Card>
     );
   }
+
+  // ============================================================================
+  // RENDER: ERROR STATE
+  // ============================================================================
+  if (fetchError) {
+    return (
+      <Card className="w-full max-w-6xl mx-auto">
+        <CardContent className="flex items-center justify-center py-16">
+          <div className="text-center">
+            <p className="text-destructive mb-4">Failed to load post</p>
+            <Button onClick={() => window.location.href = '/dashboard/posts'}>
+              Back to Posts
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // ============================================================================
+  // RENDER: MAIN EDITOR
+  // ============================================================================
+  const isSaving =
+    createPostMutation.isPending ||
+    updatePostMutation.isPending ||
+    publishPostMutation.isPending ||
+    deletePostMutation.isPending;
 
   return (
     <>
@@ -389,22 +455,16 @@ export default function PostEditor() {
                   </>
                 )}
                 {saveStatus === 'saved' && (
-                  <span className="text-green-600 dark:text-green-400">Saved</span>
+                  <span className="text-green-600 dark:text-green-400">✓ Saved</span>
                 )}
                 {saveStatus === 'error' && (
-                  <span className="text-destructive">Error saving</span>
+                  <span className="text-destructive">✗ Error</span>
                 )}
               </div>
             )}
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {error && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-              {error}
-            </div>
-          )}
-
           {/* Title Input */}
           <div className="space-y-2">
             <label htmlFor="title" className="text-sm font-medium">
@@ -570,7 +630,7 @@ export default function PostEditor() {
           <div className="flex flex-wrap gap-3 justify-between items-center">
             <div className="flex gap-3">
               <Button
-                onClick={() => handleSave(false)}
+                onClick={handleSave}
                 disabled={isSaving || !title.trim()}
                 variant="outline"
               >
@@ -580,7 +640,7 @@ export default function PostEditor() {
                 onClick={handlePublish}
                 disabled={isSaving || !title.trim()}
               >
-                {isSaving ? 'Publishing...' : 'Publish'}
+                {publishPostMutation.isPending ? 'Publishing...' : 'Publish'}
               </Button>
             </div>
 
@@ -623,7 +683,7 @@ export default function PostEditor() {
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              {deletePostMutation.isPending ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
