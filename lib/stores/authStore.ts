@@ -115,7 +115,9 @@ export async function revalidateAuthSession() {
       });
 
       if (response.ok) {
-        const sessionData = await response.json();
+        const responseData = await response.json();
+        // oRPC wraps the response in a "json" property
+        const sessionData = responseData.json;
 
         console.log('[Auth] Session data received:', {
           hasUser: !!sessionData?.user,

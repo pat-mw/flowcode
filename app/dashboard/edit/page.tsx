@@ -2,7 +2,7 @@
 
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Navigation from '@/components/Navigation';
-import PostEditor from '@/components/PostEditor';
+import PostEditorNew from '@/components/PostEditorNew';
 
 function PostEditorPage() {
   return (
@@ -11,7 +11,7 @@ function PostEditorPage() {
         <Navigation />
 
         <main className="flex-1 container mx-auto px-4 py-16">
-          <PostEditor />
+          <PostEditorNew />
         </main>
       </div>
     </ProtectedRoute>

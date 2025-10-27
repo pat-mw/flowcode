@@ -57,7 +57,11 @@ export default function PostEditorNew() {
   const [title, setTitle] = React.useState('');
   const [excerpt, setExcerpt] = React.useState('');
   const [coverImage, setCoverImage] = React.useState('');
-  const [content, setContent] = React.useState<Record<string, unknown> | null>(null);
+  // Initialize with empty Tiptap document structure (required for notNull constraint)
+  const [content, setContent] = React.useState<Record<string, unknown>>({
+    type: 'doc',
+    content: [],
+  });
 
   // UI state
   const [saveStatus, setSaveStatus] = React.useState<SaveStatus>(null);
@@ -257,7 +261,7 @@ export default function PostEditorNew() {
         // Create new post
         await createPostMutation.mutateAsync({
           title,
-          content: content || {},
+          content,
           excerpt: excerpt || undefined,
           coverImage: coverImage || undefined,
         });
@@ -274,7 +278,7 @@ export default function PostEditorNew() {
   // Auto-save logic (30 seconds debounce)
   React.useEffect(() => {
     // Only auto-save in edit mode with valid data
-    if (!isEditMode || !postId || !title || !content) return;
+    if (!isEditMode || !postId || !title.trim()) return;
 
     // Clear previous timer
     if (autoSaveTimerRef.current) {
@@ -325,7 +329,7 @@ export default function PostEditorNew() {
       if (!isEditMode) {
         const newPost = await createPostMutation.mutateAsync({
           title,
-          content: content || {},
+          content,
           excerpt: excerpt || undefined,
           coverImage: coverImage || undefined,
         });

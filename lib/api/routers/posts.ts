@@ -101,30 +101,57 @@ const create = protectedProcedure
     coverImage: z.string().url().optional(),
   }))
   .handler(async ({ input, context }) => {
-    const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
-    });
+    try {
+      console.log('[posts.create] Starting post creation', {
+        title: input.title,
+        hasContent: !!input.content,
+        contentType: typeof input.content,
+        excerpt: input.excerpt,
+        coverImage: input.coverImage,
+      });
 
-    if (!person) {
-      throw new Error('Person profile not found');
+      const ctx = context as Context;
+      console.log('[posts.create] Context:', { userId: ctx.userId, hasSession: !!ctx.session });
+
+      const person = await db.query.people.findFirst({
+        where: eq(people.userId, ctx.userId!),
+      });
+
+      console.log('[posts.create] Person lookup:', { found: !!person, personId: person?.id });
+
+      if (!person) {
+        console.error('[posts.create] ERROR: Person profile not found for userId:', ctx.userId);
+        throw new Error('Person profile not found');
+      }
+
+      const slug = generateSlug(input.title);
+      const id = nanoid();
+
+      console.log('[posts.create] Inserting post:', { id, slug, authorId: person.id });
+
+      const [newPost] = await db.insert(posts).values({
+        id,
+        authorId: person.id,
+        title: input.title,
+        slug,
+        content: input.content,
+        excerpt: input.excerpt || null,
+        coverImage: input.coverImage || null,
+        status: 'draft',
+      }).returning();
+
+      console.log('[posts.create] Post created successfully:', { id: newPost.id });
+
+      return newPost;
+    } catch (error) {
+      console.error('[posts.create] ERROR:', error);
+      console.error('[posts.create] Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        name: error instanceof Error ? error.name : undefined,
+      });
+      throw error;
     }
-
-    const slug = generateSlug(input.title);
-    const id = nanoid();
-
-    const [newPost] = await db.insert(posts).values({
-      id,
-      authorId: person.id,
-      title: input.title,
-      slug,
-      content: input.content,
-      excerpt: input.excerpt || null,
-      coverImage: input.coverImage || null,
-      status: 'draft',
-    }).returning();
-
-    return newPost;
   });
 
 // Update post procedure
