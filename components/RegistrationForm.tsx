@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { signUp, signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
-import { requestStorageAccess } from '@/lib/storage-access';
+import { setToken } from '@/lib/token-storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -101,14 +101,6 @@ export default function RegistrationForm({
       setIsLoading(true);
       setError(null);
 
-      // Request storage access for cross-origin cookies (required for auth)
-      const hasAccess = await requestStorageAccess();
-      if (!hasAccess) {
-        setError('Storage access required. Please enable cookies and try again.');
-        setIsLoading(false);
-        return;
-      }
-
       // Validate with Zod
       const validationResult = registrationSchema.safeParse(data);
       if (!validationResult.success) {
@@ -158,6 +150,25 @@ export default function RegistrationForm({
 
       // Update Zustand auth store
       if (loginResponse.data?.user) {
+        // Get bearer token for cross-origin authentication
+        try {
+          const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-bearer-token`, {
+            method: 'GET',
+            credentials: 'include', // Send session cookie to get token
+          });
+
+          if (tokenResponse.ok) {
+            const tokenData = await tokenResponse.json();
+            if (tokenData?.token) {
+              setToken(tokenData.token);
+              console.log('[Registration] ✅ Bearer token stored');
+            }
+          }
+        } catch (tokenError) {
+          console.warn('[Registration] Failed to get bearer token:', tokenError);
+          // Continue anyway - cookies might still work in same-origin context
+        }
+
         // Fetch person profile (created by afterSignUp callback)
         const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
           method: 'POST',
@@ -167,8 +178,8 @@ export default function RegistrationForm({
         if (personResponse.ok) {
           const sessionData = await personResponse.json();
 
-          if (sessionData?.person) {
-            setAuth(loginResponse.data.user, sessionData.person);
+          if (sessionData?.json?.person) {
+            setAuth(loginResponse.data.user, sessionData.json.person);
           } else {
             // Create a minimal person object if not found
             setAuth(loginResponse.data.user, {

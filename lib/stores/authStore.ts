@@ -8,6 +8,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { clearToken } from '@/lib/token-storage';
 
 interface User {
   id: string;
@@ -50,12 +51,16 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
         }),
 
-      clearAuth: () =>
+      clearAuth: () => {
+        // Clear bearer token from localStorage
+        clearToken();
+
         set({
           user: null,
           person: null,
           isAuthenticated: false,
-        }),
+        });
+      },
 
       updatePerson: (person) =>
         set(() => ({

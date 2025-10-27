@@ -54,6 +54,7 @@ import { createORPCClient } from '@orpc/client';
 import { RPCLink } from '@orpc/client/fetch';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
 import type { RouterClient } from '@orpc/server';
+import { getToken } from '@/lib/token-storage';
 
 // Validate required environment variable
 if (!process.env.NEXT_PUBLIC_API_URL) {
@@ -91,11 +92,20 @@ const link = new RPCLink({
 
   // Custom headers (optional)
   // Add any custom headers needed for your API
-  headers: () => ({
-    'Content-Type': 'application/json',
-    // Add custom headers here if needed:
-    // 'X-Custom-Header': 'value',
-  }),
+  headers: () => {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    // Add bearer token for authentication (if available)
+    // This bypasses third-party cookie restrictions in cross-origin contexts
+    const token = getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+  },
 });
 
 /**

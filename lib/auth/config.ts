@@ -5,6 +5,7 @@
 
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { bearer } from 'better-auth/plugins';
 import { db } from '@/lib/db';
 import { users, sessions, accounts, verifications } from '@/lib/db';
 import { nanoid } from 'nanoid';
@@ -31,6 +32,9 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false, // Can be enabled later with email service
   },
+  plugins: [
+    bearer(), // Enable bearer token authentication for cross-origin requests
+  ],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
