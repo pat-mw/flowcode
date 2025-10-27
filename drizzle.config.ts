@@ -15,9 +15,6 @@ export default defineConfig({
   dialect: 'postgresql',
   dbCredentials: {
     url: process.env.DATABASE_URL || process.env.POSTGRES_URL!,
-    ssl: {
-      rejectUnauthorized: false, // Required for Supabase and cloud providers
-    },
   },
   verbose: true,
   strict: true,
