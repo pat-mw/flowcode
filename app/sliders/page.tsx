@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import BlueSlider from '@/src/components/BlueSlider';
-import RedSlider from '@/src/components/RedSlider';
+import BlueSlider from '@/webflow_component_examples/BlueSlider';
+import RedSlider from '@/webflow_component_examples/RedSlider';
 
 export default function SlidersTestPage() {
   return (
