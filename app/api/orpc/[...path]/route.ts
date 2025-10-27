@@ -7,9 +7,7 @@ import { RPCHandler } from '@orpc/server/fetch';
 import { appRouter } from '@/lib/api';
 import { createContext } from '@/lib/api/context';
 
-const rpcHandler = new RPCHandler(appRouter, {
-  prefix: '/api/orpc',
-});
+const rpcHandler = new RPCHandler(appRouter);
 
 async function handleRequest(request: Request) {
   const context = await createContext(request);
