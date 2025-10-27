@@ -150,7 +150,7 @@ export default function RegistrationForm({
       // Update Zustand auth store
       if (loginResponse.data?.user) {
         // Fetch person profile (created by afterSignUp callback)
-        const personResponse = await fetch('/api/orpc/auth/getSession', {
+        const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
           method: 'POST',
           credentials: 'include',
         });

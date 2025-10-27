@@ -119,7 +119,7 @@ export default function LoginForm({
       // Update Zustand auth store
       if (response.data?.user) {
         // Fetch person profile
-        const personResponse = await fetch('/api/orpc/auth/getSession', {
+        const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
           method: 'POST',
           credentials: 'include',
         });
