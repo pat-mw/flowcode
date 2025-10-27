@@ -41,6 +41,13 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
 
+  // CORS configuration - allow Webflow domain to make auth requests
+  trustedOrigins: [
+    'https://blogflow-three.webflow.io',  // Production Webflow site
+    'http://localhost:3000',               // Local development
+    'https://blogflow-three.vercel.app',   // Production backend (for testing)
+  ],
+
   // Callbacks
   callbacks: {
     async afterSignUp(user: { id: string; name: string; email: string; image?: string | null }) {
