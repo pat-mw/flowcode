@@ -106,38 +106,63 @@ export default function LoginForm({
         return;
       }
 
-      // Call Better Auth signIn
-      const response = await signIn.email({
-        email: data.email,
-        password: data.password,
-        fetchOptions: {
-          onError(context) {
-            throw new Error(context.error.message || 'Login failed');
-          },
+      // Call Better Auth API directly to get session token
+      const authResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-in/email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
       });
 
-      // Update Zustand auth store
-      if (response.data?.user) {
-        // Get bearer token for cross-origin authentication
+      if (!authResponse.ok) {
+        const errorData = await authResponse.json().catch(() => ({ message: 'Login failed' }));
+        throw new Error(errorData.message || 'Login failed');
+      }
+
+      const authData = await authResponse.json();
+
+      if (!authData?.user) {
+        throw new Error('Login failed - no user returned');
+      }
+
+      // Extract session token for bearer authentication
+      // The token is in the response and is also set as a cookie
+      const sessionToken = authData.session?.token || authData.token;
+
+      if (sessionToken) {
+        setToken(sessionToken);
+        console.log('[Login] ✅ Bearer token stored');
+      } else {
+        console.warn('[Login] No session token in response - trying get-bearer-token endpoint');
+
+        // Fallback: try to get token from endpoint
         try {
           const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-bearer-token`, {
             method: 'GET',
-            credentials: 'include', // Send session cookie to get token
+            credentials: 'include',
           });
 
           if (tokenResponse.ok) {
             const tokenData = await tokenResponse.json();
             if (tokenData?.token) {
               setToken(tokenData.token);
-              console.log('[Login] ✅ Bearer token stored');
+              console.log('[Login] ✅ Bearer token stored (from endpoint)');
             }
           }
         } catch (tokenError) {
           console.warn('[Login] Failed to get bearer token:', tokenError);
-          // Continue anyway - cookies might still work in same-origin context
         }
+      }
 
+      const response = { data: authData }; // Normalize response format
+
+      // Update Zustand auth store
+      if (response.data?.user) {
         // Fetch person profile
         const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
           method: 'POST',

@@ -137,37 +137,44 @@ export default function RegistrationForm({
         throw new Error('Registration failed - no user returned');
       }
 
-      // Auto-login after registration
-      const loginResponse = await signIn.email({
-        email: data.email,
-        password: data.password,
-        fetchOptions: {
-          onError(context) {
-            throw new Error(context.error.message || 'Auto-login failed');
-          },
+      // Auto-login after registration - call API directly to get session token
+      const loginAuthResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-in/email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
       });
+
+      if (!loginAuthResponse.ok) {
+        const errorData = await loginAuthResponse.json().catch(() => ({ message: 'Auto-login failed' }));
+        throw new Error(errorData.message || 'Auto-login failed');
+      }
+
+      const loginAuthData = await loginAuthResponse.json();
+
+      if (!loginAuthData?.user) {
+        throw new Error('Auto-login failed - no user returned');
+      }
+
+      // Extract session token for bearer authentication
+      const sessionToken = loginAuthData.session?.token || loginAuthData.token;
+
+      if (sessionToken) {
+        setToken(sessionToken);
+        console.log('[Registration] ✅ Bearer token stored');
+      } else {
+        console.warn('[Registration] No session token in response');
+      }
+
+      const loginResponse = { data: loginAuthData }; // Normalize response format
 
       // Update Zustand auth store
       if (loginResponse.data?.user) {
-        // Get bearer token for cross-origin authentication
-        try {
-          const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-bearer-token`, {
-            method: 'GET',
-            credentials: 'include', // Send session cookie to get token
-          });
-
-          if (tokenResponse.ok) {
-            const tokenData = await tokenResponse.json();
-            if (tokenData?.token) {
-              setToken(tokenData.token);
-              console.log('[Registration] ✅ Bearer token stored');
-            }
-          }
-        } catch (tokenError) {
-          console.warn('[Registration] Failed to get bearer token:', tokenError);
-          // Continue anyway - cookies might still work in same-origin context
-        }
 
         // Fetch person profile (created by afterSignUp callback)
         const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
