@@ -106,7 +106,9 @@ export async function revalidateAuthSession() {
   if (store.isAuthenticated && store.user) {
     try {
       // Check if session is still valid by fetching from Better Auth
-      const response = await fetch('/api/orpc/auth/getSession', {
+      // Use full URL for cross-origin requests (Webflow → Vercel)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+      const response = await fetch(`${apiUrl}/api/orpc/auth/getSession`, {
         method: 'POST',
         credentials: 'include',
         headers: {
