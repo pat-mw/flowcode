@@ -1,0 +1,97 @@
+name: Webflow Bundle PR Check
+
+on:
+  # Run on every pull request
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/components/**/*.webflow.tsx'
+      - 'src/components/**/*.tsx'
+      - 'components/**/*.tsx'
+      - 'webflow.json'
+      - 'webpack.webflow.js'
+
+  # Run on every push to PR branches
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - 'src/components/**/*.webflow.tsx'
+      - 'src/components/**/*.tsx'
+      - 'components/**/*.tsx'
+      - 'webflow.json'
+      - 'webpack.webflow.js'
+
+jobs:
+  bundle-check:
+    name: Check Webflow Bundle Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: |
+          echo "Installing all dependencies from package.json..."
+          pnpm install
+          echo "Installation complete. Verifying..."
+          pnpm list --depth=0
+
+      - name: Verify Webflow CLI installation
+        run: |
+          echo "Checking for Webflow CLI..."
+          pnpm list @webflow/webflow-cli
+          ls -la node_modules/.bin/ | grep webflow || echo "No webflow binary found"
+          echo "Available scripts:"
+          pnpm run
+
+      - name: Build Webflow Bundle
+        env:
+          NEXT_PUBLIC_API_URL: https://blogflow-three.vercel.app
+          NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED: false
+        run: |
+          echo "Building Webflow components bundle..."
+          pnpm webflow:bundle
+          echo "Bundle build complete!"
+
+      - name: Check bundle output
+        run: |
+          echo "Checking generated bundle files..."
+          ls -lh dist/ || echo "No dist directory found"
+          if [ -d "dist/Client" ]; then
+            echo "Bundle contents:"
+            ls -lh dist/Client/
+          fi
+
+      - name: Bundle check passed
+        if: success()
+        run: |
+          echo "✅ Webflow bundle built successfully!"
+          echo "All components compiled without errors."
+
+      - name: Bundle check failed
+        if: failure()
+        run: |
+          echo "❌ Webflow bundle build failed."
+          echo "Check the logs above for error details."
+          echo "Fix the errors before merging this PR."
