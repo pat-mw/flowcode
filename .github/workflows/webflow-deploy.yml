@@ -32,7 +32,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: latest
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Installing all dependencies from package.json..."
-          pnpm install --frozen-lockfile
+          pnpm install
           echo "Installation complete. Verifying..."
           pnpm list --depth=0
 
