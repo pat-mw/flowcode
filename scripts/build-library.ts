@@ -108,6 +108,7 @@ function buildLibrary({ library, dev = false, publicPath }: BuildOptions) {
 
 /**
  * Check if bundle size is within limit
+ * Uses WEBFLOW_BUNDLE_SIZE_LIMIT_MB env var (defaults to 15MB)
  */
 function checkBundleSize(library: LibraryKey) {
   const lib = libraries[library];
@@ -124,7 +125,7 @@ function checkBundleSize(library: LibraryKey) {
   }).trim();
 
   const sizeMB = parseFloat(sizeKB) / 1024;
-  const limit = lib.bundleSizeLimit || 15;
+  const limit = parseFloat(process.env.WEBFLOW_BUNDLE_SIZE_LIMIT_MB || "15");
 
   console.log(`\n📊 Bundle Size Check: ${lib.name}`);
   console.log(`   Size: ${sizeMB.toFixed(2)}MB`);

@@ -14,9 +14,6 @@ export interface LibraryConfig {
   /** Path to webpack bundle configuration */
   bundleConfig?: string;
 
-  /** Bundle size limit in MB */
-  bundleSizeLimit?: number;
-
   /** External dependencies (not bundled) */
   externals?: string[];
 
@@ -52,10 +49,6 @@ export function validateLibraryConfig(
   if (!config.name) errors.push("Library name is required");
   if (!config.id) errors.push("Library ID is required");
   if (!config.components) errors.push("Component patterns are required");
-
-  if (config.bundleSizeLimit && config.bundleSizeLimit <= 0) {
-    errors.push("Bundle size limit must be positive");
-  }
 
   return {
     valid: errors.length === 0,

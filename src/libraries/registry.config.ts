@@ -12,9 +12,6 @@ export const libraries = defineLibraries({
     // Bundle configuration
     bundleConfig: "./webpack.webflow.js",
 
-    // Size limits
-    bundleSizeLimit: 15, // MB
-
     // Environment variables exposed to this library
     env: {
       NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
@@ -35,7 +32,6 @@ export const libraries = defineLibraries({
     id: "blogflow-analytics",
     components: "./src/libraries/analytics/**/*.webflow.@(ts|tsx)",
     bundleConfig: "./webpack.webflow.js",
-    bundleSizeLimit: 10, // Smaller limit for focused library
 
     env: {
       NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
@@ -53,7 +49,6 @@ export const libraries = defineLibraries({
     id: "blogflow-interactive",
     components: "./src/libraries/interactive/**/*.webflow.@(ts|tsx)",
     bundleConfig: "./webpack.webflow.js",
-    bundleSizeLimit: 25, // Larger limit for Three.js
 
     env: {
       NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
