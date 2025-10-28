@@ -61,7 +61,8 @@ jobs:
     if: fromJson(needs.detect-libraries.outputs.matrix).libraries[0] != null
 
     strategy:
-      matrix: ${{ fromJson(needs.detect-libraries.outputs.matrix) }}
+      matrix:
+        library: ${{ fromJson(needs.detect-libraries.outputs.matrix).libraries }}
       max-parallel: 3  # Limit concurrent deploys to avoid rate limits
 
     steps:
