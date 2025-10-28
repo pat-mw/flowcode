@@ -4,16 +4,16 @@ on:
   # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
 
-  # Optionally trigger on push to main branch (uncomment if desired)
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'src/components/**/*.webflow.tsx'
-  #     - 'src/components/**/*.tsx'
-  #     - 'components/**/*.tsx'
-  #     - 'webflow.json'
-  #     - 'webpack.webflow.js'
+  # Automatically trigger on push to main branch (e.g., PR merges)
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/components/**/*.webflow.tsx'
+      - 'src/components/**/*.tsx'
+      - 'components/**/*.tsx'
+      - 'webflow.json'
+      - 'webpack.webflow.js'
 
 jobs:
   deploy:
