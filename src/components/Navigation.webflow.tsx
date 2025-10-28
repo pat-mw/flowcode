@@ -15,7 +15,7 @@ export function NavigationWrapper(props: NavigationProps) {
   );
 }
 
-export default declareComponent(Navigation, {
+export default declareComponent(NavigationWrapper, {
   name: 'Navigation',
   description: 'A responsive navigation bar with authentication state management',
   group: 'Layout',
