@@ -1,14 +1,14 @@
 "use client";
 
 // Direct implementation imports
-import { DialogTestDefaultWrapper } from "@/src/components_old/DialogTestDefault.webflow";
-import { DialogTestWrappedWrapper } from "@/src/components_old/DialogTestWrapped.webflow";
-import { TooltipTestSharedWrapper } from "@/src/components_old/TooltipTestShared.webflow";
-import { TooltipTestSelfContainedWrapper } from "@/src/components_old/TooltipTestSelfContained.webflow";
-import { PopoverTestDefaultWrapper } from "@/src/components_old/PopoverTestDefault.webflow";
-import { PopoverTestControlledWrapper } from "@/src/components_old/PopoverTestControlled.webflow";
-import { ToastTestWrapper } from "@/src/components_old/ToastTest.webflow";
-import { NavigationWrapper } from "@/src/components_old/Navigation.webflow";
+import { DialogTestDefaultWrapper } from "@/src/components/DialogTestDefault.webflow";
+import { DialogTestWrappedWrapper } from "@/src/components/DialogTestWrapped.webflow";
+import { TooltipTestSharedWrapper } from "@/src/components/TooltipTestShared.webflow";
+import { TooltipTestSelfContainedWrapper } from "@/src/components/TooltipTestSelfContained.webflow";
+import { PopoverTestDefaultWrapper } from "@/src/components/PopoverTestDefault.webflow";
+import { PopoverTestControlledWrapper } from "@/src/components/PopoverTestControlled.webflow";
+import { ToastTestWrapper } from "@/src/components/ToastTest.webflow";
+import { NavigationWrapper } from "@/src/components/Navigation.webflow";
 
 export default function TestWrappersPage() {
   return (
