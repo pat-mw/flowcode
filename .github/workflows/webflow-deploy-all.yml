@@ -80,11 +80,26 @@ jobs:
         with:
           version: latest
 
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Generate manifest
         run: pnpm library:manifests
+
+      - name: Build library
+        env:
+          WEBFLOW_BUNDLE_SIZE_LIMIT_MB: ${{ secrets.WEBFLOW_BUNDLE_SIZE_LIMIT_MB || '15' }}
+        run: |
+          echo "Building ${{ matrix.library.name }} before deployment..."
+          pnpm library:build ${{ matrix.library.key }}
 
       - name: Deploy to Webflow
         env:
