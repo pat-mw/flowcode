@@ -106,9 +106,13 @@ jobs:
           WEBFLOW_WORKSPACE_API_TOKEN: ${{ secrets.WEBFLOW_WORKSPACE_API_TOKEN }}
         run: |
           echo "Deploying ${{ matrix.library.name }} to Webflow..."
+          # Copy manifest to root (CLI requires webflow.json at root to resolve paths correctly)
+          cp src/libraries/${{ matrix.library.key }}/webflow.json ./webflow.json
           npx webflow library share \
-            --manifest src/libraries/${{ matrix.library.key }}/webflow.json \
+            --manifest ./webflow.json \
             --no-input
+          # Clean up temporary manifest
+          rm -f ./webflow.json
           echo "✅ Deployed successfully!"
 
   # Job 3: Deployment summary
