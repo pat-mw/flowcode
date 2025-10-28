@@ -1,2 +1,5 @@
+packages:
+  - '.'
+
 patchedDependencies:
   '@use-gesture/react@10.3.1': patches/@use-gesture__react@10.3.1.patch
