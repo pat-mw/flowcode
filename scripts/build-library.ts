@@ -101,6 +101,7 @@ function buildLibrary({ library, dev = false, publicPath }: BuildOptions) {
 /**
  * Check if bundle size is within limit
  * Uses WEBFLOW_BUNDLE_SIZE_LIMIT_MB env var (defaults to 15MB)
+ * Skips check for libraries with deploy.enabled: false
  */
 function checkBundleSize(library: LibraryKey) {
   const lib = libraries[library];
@@ -121,6 +122,15 @@ function checkBundleSize(library: LibraryKey) {
 
   console.log(`\n📊 Bundle Size Check: ${lib.name}`);
   console.log(`   Size: ${sizeMB.toFixed(2)}MB`);
+
+  // Skip size validation for non-deployable libraries
+  if (lib.deploy?.enabled === false) {
+    console.log(
+      `   ⚠️  Size check skipped (library not deployable)\n`
+    );
+    return;
+  }
+
   console.log(`   Limit: ${limit}MB`);
 
   if (sizeMB > limit) {

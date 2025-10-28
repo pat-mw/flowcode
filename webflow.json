@@ -1,18 +1,16 @@
 {
   "library": {
-    "name": "blogflow-2",
+    "name": "blogflow-interactive",
     "components": [
-      "./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)"
+      "./src/libraries/interactive/**/*.webflow.@(ts|tsx)"
     ],
     "bundleConfig": "./webpack.webflow.js",
-    "description": "blogflow-2-core-components",
-    "id": "blogflow-2"
+    "description": "3D models and interactive experiences",
+    "id": "blogflow-interactive"
   },
   "telemetry": {
     "global": {
-      "allowTelemetry": true,
-      "lastPrompted": 1760462801561,
-      "version": "1.8.44"
+      "allowTelemetry": true
     }
   }
 }
