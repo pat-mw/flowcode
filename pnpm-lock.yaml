@@ -249,7 +249,7 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@webflow/webflow-cli':
-        specifier: 1.8.47
+        specifier: ^1.8.47
         version: 1.8.47(@babel/core@7.28.5)(@rspack/core@1.5.8(@swc/helpers@0.5.17))(@types/node@20.19.21)(esbuild@0.25.11)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
       dotenv:
         specifier: ^17.2.3
