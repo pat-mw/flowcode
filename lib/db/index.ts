@@ -15,13 +15,11 @@ import * as postsSchema from './schema/posts';
 // Use DRIZZLE_DATABASE_URL for Drizzle connections
 // Falls back to other common env vars if not set
 const connectionString =
-  process.env.DRIZZLE_DATABASE_URL ||
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL;
+  process.env.DRIZZLE_DATABASE_URL
 
 if (!connectionString) {
   throw new Error(
-    'DRIZZLE_DATABASE_URL, DATABASE_URL, or POSTGRES_URL is not defined. Please add it to your .env file.\n' +
+    'DRIZZLE_DATABASE_URL is not defined. Please add it to your .env file.\n' +
     'Example: DRIZZLE_DATABASE_URL="postgresql://user:password@host:port/database"'
   );
 }

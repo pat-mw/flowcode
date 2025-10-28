@@ -10,12 +10,10 @@ import { Pool } from 'pg';
 async function runMigrations() {
   // Use non-pooling connection for migrations if available (recommended for Supabase)
   const databaseUrl =
-    process.env.DATABASE_URL ||
-    process.env.POSTGRES_URL_NON_POOLING ||
-    process.env.POSTGRES_URL;
+    process.env.DRIZZLE_DATABASE_URL
 
   if (!databaseUrl) {
-    throw new Error('DATABASE_URL or POSTGRES_URL is not defined');
+    throw new Error('DRIZZLE_DATABASE_URL is not defined. Please add it to your .env file.');
   }
 
   console.log('🔄 Running database migrations...');
