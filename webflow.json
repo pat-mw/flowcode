@@ -1,12 +1,12 @@
 {
   "library": {
-    "name": "blogflow",
+    "name": "blogflow-2",
     "components": [
       "./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)"
     ],
     "bundleConfig": "./webpack.webflow.js",
-    "description": "blogflow-core-components",
-    "id": "blogflow"
+    "description": "blogflow-2-core-components",
+    "id": "blogflow-2"
   },
   "telemetry": {
     "global": {

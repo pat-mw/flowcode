@@ -9,16 +9,15 @@ import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import LoginForm from '@/components/LoginForm';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/app/globals.css';
 
-interface LoginFormWebflowProps {
+export interface LoginFormWebflowProps {
   redirectTo: string;
   showGoogleAuth: boolean;
 }
 
-function LoginFormWrapper({ redirectTo, showGoogleAuth }: LoginFormWebflowProps) {
-  // Note: showGoogleAuth prop is available for future use
-  // Currently, Google OAuth visibility is controlled by NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED env var
+export function LoginFormWrapper({ redirectTo }: LoginFormWebflowProps) {
+  // Note: showGoogleAuth prop is available in the component definition
+  // but currently Google OAuth visibility is controlled by NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED env var
   return (
     <WebflowProvidersWrapper>
       <LoginForm redirectTo={redirectTo} />

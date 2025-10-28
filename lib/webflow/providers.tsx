@@ -9,7 +9,12 @@
  * - oRPC-compatible QueryClient with serialization support
  * - Shadow DOM isolation (singleton pattern works across components)
  * - Authentication session revalidation on mount
- * - Dark mode theme provider
+ * - Dark mode via className (ThemeProvider doesn't work in Shadow DOM)
+ * - TooltipProvider for shared tooltip configuration
+ *
+ * Shadow DOM Compatibility Note:
+ * React Context providers (like next-themes ThemeProvider) don't work across
+ * Shadow DOM boundaries. Instead, we apply dark mode directly via className.
  *
  * Usage in Webflow wrapper files:
  * ```typescript
@@ -23,13 +28,15 @@
  * ```
  */
 
-'use client';
+"use client";
 
-import { QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode } from 'react';
-import { useAuthRevalidation } from '@/hooks/useAuthRevalidation';
-import { ThemeProvider } from '@/lib/providers/theme-provider';
-import { createQueryClient } from '@/lib/query-client';
+import "@/lib/styles/globals.css";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactNode } from "react";
+import { useAuthRevalidation } from "@/hooks/useAuthRevalidation";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { createQueryClient } from "@/lib/query-client";
+import { Toaster } from "sonner";
 
 /**
  * Singleton QueryClient for Webflow Code Components
@@ -64,17 +71,24 @@ interface WebflowProvidersWrapperProps {
  * Use this in all Webflow wrapper files to ensure consistent provider setup.
  *
  * Features:
- * - ThemeProvider with dark mode default (next-themes)
+ * - Dark mode via className (ThemeProvider doesn't work in Shadow DOM)
  * - QueryClient provider for React Query
+ * - TooltipProvider for tooltips (shared across components)
  * - Auth session revalidation on mount (persists login across refreshes)
  * - Font inheritance wrapper (font-family: inherit) for Webflow site typography
  * - Works correctly in Shadow DOM environments
+ *
+ * Shadow DOM Compatibility:
+ * - React Context providers (like ThemeProvider) don't work across Shadow DOM boundaries
+ * - Instead, we apply dark mode directly via className="dark"
+ * - Singleton providers (QueryClient, TooltipProvider) work because each component
+ *   instance creates its own provider, but they share the same singleton store/state
  *
  * Benefits:
  * - DRY principle: No code duplication across wrapper files
  * - Maintainability: Provider logic centralized in one place
  * - Consistency: All Webflow components use the same providers
- * - Future-proof: Easy to add more providers (oRPC client, etc.) here
+ * - Future-proof: Easy to add more providers here
  *
  * @example
  * ```tsx
@@ -89,22 +103,17 @@ interface WebflowProvidersWrapperProps {
  * }
  * ```
  */
-export function WebflowProvidersWrapper({ children }: WebflowProvidersWrapperProps) {
+
+export function WebflowProvidersWrapper({
+  children,
+}: WebflowProvidersWrapperProps) {
   // Revalidate auth session on mount (ensures login persists across refreshes)
   useAuthRevalidation();
-
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="dark"
-      enableSystem={false}
-      disableTransitionOnChange
-    >
-      <QueryClientProvider client={webflowQueryClient}>
-        <div className="font-inherit">
-          {children}
-        </div>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <QueryClientProvider client={webflowQueryClient}>
+      <TooltipProvider delayDuration={200}>
+        <div className="dark font-sans"> {children} <Toaster /> </div>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }

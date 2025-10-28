@@ -2,7 +2,7 @@ import BlueSlider from './BlueSlider';
 import { props } from '@webflow/data-types';
 import { declareComponent } from '@webflow/react';
 
-import '@/app/globals.css';
+import '@/lib/styles/globals.css';
 
 interface WebflowBlueSliderProps {
   label: string;

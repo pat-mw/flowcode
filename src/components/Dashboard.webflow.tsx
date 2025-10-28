@@ -9,7 +9,6 @@ import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import Dashboard from '@/components/Dashboard';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/app/globals.css';
 
 interface DashboardWebflowProps {
   showLogout: boolean;

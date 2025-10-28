@@ -9,9 +9,8 @@
 import { declareComponent } from '@webflow/react';
 import PostEditorNew from '@/components/PostEditorNew';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/app/globals.css';
 
-function PostEditorWrapper() {
+export function PostEditorWrapper() {
   return (
     <WebflowProvidersWrapper>
       <div className="container mx-auto px-4 py-8">
