@@ -43,13 +43,19 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Verify installation
         run: |
-          echo "Checking package.json scripts..."
-          pnpm run --help || true
+          echo "Installing all dependencies from package.json..."
+          pnpm install --frozen-lockfile
+          echo "Installation complete. Verifying..."
+          pnpm list --depth=0
+
+      - name: Verify Webflow CLI installation
+        run: |
+          echo "Checking for Webflow CLI..."
+          pnpm list @webflow/webflow-cli
           ls -la node_modules/.bin/ | grep webflow || echo "No webflow binary found"
+          echo "Available scripts:"
+          pnpm run
 
       - name: Deploy to Webflow
         env:
