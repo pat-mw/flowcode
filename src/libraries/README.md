@@ -111,6 +111,22 @@ Override only when needed by adding explicit fields to library config.
 
 ## Usage
 
+### Developer Workflow (Automated by Default)
+
+**Normal workflow - everything happens automatically:**
+
+1. **Add/modify components** in `src/libraries/{library}/components/*.webflow.tsx`
+2. **Push to PR** - CI/CD automatically:
+   - Generates manifests
+   - Builds all libraries
+   - Validates bundle sizes
+   - Reports status in PR checks
+3. **Merge to main** - CI/CD automatically:
+   - Deploys all enabled libraries to Webflow
+   - No manual intervention needed
+
+**You don't need to run build commands manually.** CI/CD handles everything.
+
 ### Adding a New Library
 
 1. **Create library folder and config**:
@@ -132,7 +148,7 @@ export const myLibrary: LibraryConfig = {
   },
 
   deploy: {
-    enabled: true,
+    enabled: true,  // Auto-deploy on merge to main
     workspaceToken: process.env.WEBFLOW_WORKSPACE_API_TOKEN,
   },
 };
@@ -151,87 +167,121 @@ export const libraries = defineLibraries({
 ```
 
 4. **Add components** to `src/libraries/my-library/components/*.webflow.tsx`
+5. **Push to PR** - CI/CD takes over from here
 
-### Building Libraries
+### Manual Commands (Local Testing Only)
+
+Use these **only for local development/debugging**. CI/CD runs them automatically.
 
 ```bash
-# Generate manifests for all libraries
+# Test manifest generation locally
 pnpm library:manifests
 
-# Build a specific library
+# Test building a specific library locally
 pnpm library:build core
 
-# Build all libraries in parallel
+# Test building all libraries locally
 pnpm library:build:all
 
-# Build with custom size limit
+# Test with custom size limit locally
 WEBFLOW_BUNDLE_SIZE_LIMIT_MB=20 pnpm library:build core
-```
 
-### Deployment
-
-```bash
-# Deploy single library (requires WEBFLOW_WORKSPACE_API_TOKEN)
+# Manual deployment (emergency only - prefer CI/CD)
 npx webflow library share --config src/libraries/core/webflow.json
-
-# Deploy all enabled libraries (via CI/CD)
-# Automatically handled by GitHub Actions on main branch
 ```
+
+**When to use manual commands:**
+- Testing new library setup before pushing
+- Debugging build issues locally
+- Verifying bundle size before creating PR
+- Emergency hotfixes (rare)
 
 ## Automation (CI/CD)
 
-### Current Implementation
+All building and deployment happens automatically via GitHub Actions. **You don't need to run commands manually.**
 
-**PR Checks** (`.github/workflows/webflow-pr-check.yml`):
-- Triggers on changes to `src/libraries/**/*.tsx`, `package.json`, `pnpm-lock.yaml`
-- Builds **all libraries** sequentially (not parallel yet)
-- Validates bundle size against `WEBFLOW_BUNDLE_SIZE_LIMIT_MB` secret (default 15MB)
-- Fails PR if any library exceeds limit
+### What Happens Automatically
 
-### Future Enhancement (TODO)
+**On every PR commit:**
+1. **Workflow triggers** when you change:
+   - `src/libraries/**/*.tsx` (any library component)
+   - `package.json` or `pnpm-lock.yaml` (dependencies)
 
-**Parallel Multi-Library Builds**:
+2. **Build & Validation** (`.github/workflows/webflow-pr-check.yml`):
+   - Installs dependencies
+   - Generates manifests for all libraries
+   - Builds all libraries (currently sequential, parallel coming soon)
+   - Validates each bundle against `WEBFLOW_BUNDLE_SIZE_LIMIT_MB` (default 15MB)
+   - ✅ **PR check passes** if all libraries build successfully and stay under limit
+   - ❌ **PR check fails** if any library exceeds size limit
+
+**On merge to main:**
+- **Auto-Deployment** (coming soon):
+  - Detects which libraries have `deploy.enabled: true`
+  - Deploys only those libraries to Webflow
+  - Runs in parallel for faster deployments
+
+### Current Status
+
+✅ **Working Now:**
+- Automatic PR validation
+- Bundle size enforcement
+- Build error detection
+
+🚧 **Coming Soon (TODO):**
+- Parallel library builds (faster CI)
+- Automatic deployment on merge to main
+- Per-library change detection (build only what changed)
+
+### Configuration
+
+**Set bundle size limit** (one-time setup):
+
+1. Go to Repository Settings → Secrets and variables → Actions
+2. Add new repository secret:
+   - **Name**: `WEBFLOW_BUNDLE_SIZE_LIMIT_MB`
+   - **Value**: `15` (or your preferred limit in MB)
+3. Save
+
+Both local testing and CI/CD use this single source of truth.
+
+**Set Webflow deployment token** (for auto-deploy):
+
+Add secret: `WEBFLOW_WORKSPACE_API_TOKEN` with your workspace token from Webflow.
+
+### Future: Parallel Multi-Library Builds
+
+When implemented, this workflow will:
+
 ```yaml
 # .github/workflows/webflow-build-all.yml
 jobs:
   detect-libraries:
-    # Auto-detect libraries from registry via tsx script
-    # Output matrix: [{ key: "core", name: "BlogFlow Core" }, ...]
+    # Auto-detect all libraries from registry
+    # Outputs: [{ key: "core" }, { key: "analytics" }, ...]
 
   build-library:
+    needs: detect-libraries
     strategy:
-      matrix: ${{ fromJson(needs.detect-libraries.outputs.matrix) }}
-      fail-fast: false  # Continue building other libs if one fails
+      matrix: ${{ fromJson(needs.detect-libraries.outputs.libraries) }}
+      fail-fast: false  # Continue even if one fails
 
     steps:
       - run: pnpm library:build ${{ matrix.library.key }}
-      # Size check happens in build script
+      # Each library builds in parallel
+      # Size validation included in build script
 ```
 
-**Selective Deployment**:
-```yaml
-# .github/workflows/webflow-deploy-all.yml
-jobs:
-  deploy-library:
-    # Only deploy libraries with deploy.enabled: true
-    # Run in parallel (max 3 concurrent)
-```
-
-### Size Limit Configuration
-
-Set `WEBFLOW_BUNDLE_SIZE_LIMIT_MB` secret in GitHub:
-- Repository Settings → Secrets and variables → Actions
-- Name: `WEBFLOW_BUNDLE_SIZE_LIMIT_MB`
-- Value: `15` (or custom limit)
-
-Both local builds and CI/CD use this single source of truth.
+This reduces build time from ~6min (sequential) to ~2min (parallel) for 3 libraries.
 
 ## Benefits
 
+✅ **Fully Automated**: CI/CD handles builds, validation, and deployment - zero manual steps
 ✅ **Stay Under Limits**: Each library independently manages its bundle size
-✅ **Parallel Builds**: Build multiple libraries concurrently in CI/CD
-✅ **Selective Deployment**: Deploy only changed libraries
+✅ **Parallel Builds**: Build multiple libraries concurrently for faster CI (coming soon)
+✅ **Selective Deployment**: Deploy only changed libraries automatically
 ✅ **Better Organization**: Group related components by purpose
 ✅ **Type Safety**: Compile-time validation of library configs
 ✅ **Convention Over Configuration**: Minimal boilerplate, auto-inferred patterns
 ✅ **Easy to Scale**: Adding new libraries is self-contained
+✅ **Developer Friendly**: Write components → push → everything else happens automatically
