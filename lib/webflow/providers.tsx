@@ -60,13 +60,14 @@ interface WebflowProvidersWrapperProps {
 /**
  * WebflowProvidersWrapper
  *
- * Wraps Webflow Code Components with necessary providers (QueryClient, auth revalidation, theme, etc.)
+ * Wraps Webflow Code Components with necessary providers and Webflow-specific styling.
  * Use this in all Webflow wrapper files to ensure consistent provider setup.
  *
  * Features:
  * - ThemeProvider with dark mode default (next-themes)
  * - QueryClient provider for React Query
  * - Auth session revalidation on mount (persists login across refreshes)
+ * - Font inheritance wrapper (font-family: inherit) for Webflow site typography
  * - Works correctly in Shadow DOM environments
  *
  * Benefits:
@@ -100,7 +101,9 @@ export function WebflowProvidersWrapper({ children }: WebflowProvidersWrapperPro
       disableTransitionOnChange
     >
       <QueryClientProvider client={webflowQueryClient}>
-        {children}
+        <div className="font-inherit">
+          {children}
+        </div>
       </QueryClientProvider>
     </ThemeProvider>
   );
