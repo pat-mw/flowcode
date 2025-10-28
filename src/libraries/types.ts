@@ -20,9 +20,6 @@ export interface LibraryConfig {
   /** External dependencies (not bundled) */
   externals?: string[];
 
-  /** Main dependencies that affect bundle size */
-  dependencies?: string[];
-
   /** Environment variables exposed to components */
   env?: Record<string, string | undefined>;
 

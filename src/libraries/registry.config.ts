@@ -37,9 +37,6 @@ export const libraries = defineLibraries({
     bundleConfig: "./webpack.webflow.js",
     bundleSizeLimit: 10, // Smaller limit for focused library
 
-    // This library has heavy dependencies
-    dependencies: ["recharts"],
-
     env: {
       NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     },
@@ -57,13 +54,6 @@ export const libraries = defineLibraries({
     components: "./src/libraries/interactive/**/*.webflow.@(ts|tsx)",
     bundleConfig: "./webpack.webflow.js",
     bundleSizeLimit: 25, // Larger limit for Three.js
-
-    dependencies: [
-      "@react-three/fiber",
-      "@react-three/drei",
-      "@react-three/rapier",
-      "three",
-    ],
 
     env: {
       NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
