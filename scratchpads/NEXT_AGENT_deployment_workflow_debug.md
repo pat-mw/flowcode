@@ -59,6 +59,33 @@ Check these working commands:
 
 ## Investigation Steps
 
+### Option A: Use TypeScript Path Alias (RECOMMENDED - Try First!)
+
+The project has `@/*` alias configured in tsconfig.json pointing to project root.
+
+**Current manifest:**
+```json
+"components": ["./src/libraries/core/**/*.webflow.@(ts|tsx)"]
+```
+
+**Try changing to:**
+```json
+"components": ["@/src/libraries/core/**/*.webflow.@(ts|tsx)"]
+```
+
+**Why this might work:**
+- The Webflow CLI likely uses TypeScript/webpack to resolve paths
+- `@/` should resolve to project root regardless of where CLI is run
+- No need to copy manifest to root!
+
+**Test:**
+1. Update manifest in `scripts/generate-manifests.ts` to use `@/` prefix
+2. Regenerate manifests: `pnpm library:manifests`
+3. Try deployment from any directory
+4. Should work without path issues
+
+### Option B: Check path resolution manually
+
 1. **Check path resolution:**
    ```bash
    cd src/libraries/core
@@ -74,12 +101,35 @@ Check these working commands:
    "components": ["./src/libraries/core/**/*.webflow.@(ts|tsx)"]  // Absolute-ish
    ```
 
-3. **Check build-library.ts script:**
-   - Line 47: It copies manifest to root temporarily
-   - Line 48: Then runs bundle command
-   - This suggests manifests ARE designed to run from root!
+### Implementation Details for Option A
 
-4. **Alternative solution:**
+**File to modify:** `src/libraries/index.ts` (generateManifest function)
+
+**Current code (~line 41):**
+```typescript
+const componentsPattern =
+  lib.components || `./src/libraries/${key}/**/*.webflow.@(ts|tsx)`;
+```
+
+**Change to:**
+```typescript
+const componentsPattern =
+  lib.components || `@/src/libraries/${key}/**/*.webflow.@(ts|tsx)`;
+```
+
+**Then:**
+1. Run `pnpm library:manifests` to regenerate all manifests
+2. Commit the updated manifests
+3. Test deployment workflow
+
+### Option C: Copy manifest to root (like build script does)
+
+**Check build-library.ts script:**
+- Line 47: It copies manifest to root temporarily
+- Line 48: Then runs bundle command
+- This suggests manifests ARE designed to run from root!
+
+**Alternative deployment solution:**
    ```yaml
    - name: Copy manifest to root and deploy
      run: |
