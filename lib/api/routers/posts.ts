@@ -19,6 +19,27 @@ function generateSlug(title: string): string {
     .replace(/(^-|-$)/g, '');
 }
 
+// Helper function to ensure unique slug
+async function generateUniqueSlug(baseTitle: string): Promise<string> {
+  let slug = generateSlug(baseTitle);
+  let attempt = 0;
+
+  // Check if slug exists
+  while (true) {
+    const existing = await db.query.posts.findFirst({
+      where: eq(posts.slug, slug),
+    });
+
+    if (!existing) {
+      return slug; // Slug is unique
+    }
+
+    // Slug exists, append number
+    attempt++;
+    slug = `${generateSlug(baseTitle)}-${attempt}`;
+  }
+}
+
 // List posts procedure
 const list = protectedProcedure
   .input(z.object({
@@ -124,7 +145,7 @@ const create = protectedProcedure
         throw new Error('Person profile not found');
       }
 
-      const slug = generateSlug(input.title);
+      const slug = await generateUniqueSlug(input.title);
       const id = nanoid();
 
       console.log('[posts.create] Inserting post:', { id, slug, authorId: person.id });
