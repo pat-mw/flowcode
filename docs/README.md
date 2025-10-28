@@ -12,6 +12,7 @@
 5. **[Advanced Patterns](computer:///mnt/user-data/outputs/advanced-patterns.md)** - Production best practices
 6. **[Webflow Routing Guide](computer:///mnt/user-data/outputs/webflow-routing-guide.md)** - Query parameter patterns
 7. **[oRPC React Query Guide](computer:///mnt/user-data/outputs/orpc-react-query-correct.md)** ⭐ **NEW** - Correct integration patterns
+8. **[Webflow Theme Conventions](webflow-theme-conventions.md)** 🎨 **NEW** - CSS variable transformation & theming system
 
 ---
 
@@ -300,6 +301,7 @@ Includes:
 | Production patterns | Advanced Patterns |
 | Query parameters | Webflow Routing Guide |
 | **oRPC + React Query** | **oRPC React Query Guide** ⭐ |
+| **CSS variables & theming** | **Webflow Theme Conventions** 🎨 |
 
 ---
 
