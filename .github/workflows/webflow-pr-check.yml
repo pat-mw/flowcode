@@ -80,6 +80,64 @@ jobs:
             ls -lh dist/Client/
           fi
 
+      - name: Check bundle size
+        env:
+          # Configurable limit in MB (default: 15MB)
+          # Override by setting WEBFLOW_BUNDLE_SIZE_LIMIT_MB secret in GitHub
+          BUNDLE_SIZE_LIMIT_MB: ${{ secrets.WEBFLOW_BUNDLE_SIZE_LIMIT_MB || '15' }}
+        run: |
+          echo "================================================"
+          echo "📦 Webflow Bundle Size Check"
+          echo "================================================"
+
+          # Get size in MB using awk (no bc dependency)
+          BUNDLE_SIZE_KB=$(du -sk dist/ | cut -f1)
+          BUNDLE_SIZE_MB=$(awk "BEGIN {printf \"%.2f\", $BUNDLE_SIZE_KB / 1024}")
+
+          # Get limit from env (default 15MB)
+          LIMIT_MB="${BUNDLE_SIZE_LIMIT_MB}"
+
+          echo ""
+          echo "Bundle Size: ${BUNDLE_SIZE_MB}MB"
+          echo "Size Limit:  ${LIMIT_MB}MB"
+          echo ""
+
+          # Show top 10 largest files
+          echo "📊 Top 10 Largest Files:"
+          echo "------------------------"
+          ls -lhS dist/Client/*.js 2>/dev/null | head -10 | awk '{printf "%-8s  %s\n", $5, $9}' || echo "No JS files found"
+          echo ""
+
+          # Compare sizes using awk
+          EXCEEDS=$(awk "BEGIN {print ($BUNDLE_SIZE_MB > $LIMIT_MB)}")
+
+          if [ "$EXCEEDS" = "1" ]; then
+            OVER_BY=$(awk "BEGIN {printf \"%.2f\", $BUNDLE_SIZE_MB - $LIMIT_MB}")
+            echo "❌ BUNDLE SIZE EXCEEDED!"
+            echo ""
+            echo "Your bundle is ${BUNDLE_SIZE_MB}MB, which exceeds the ${LIMIT_MB}MB limit by ${OVER_BY}MB."
+            echo ""
+            echo "💡 Suggestions to reduce bundle size:"
+            echo "  1. Remove large components (move to webflow_component_examples/)"
+            echo "  2. Optimize icon imports (use specific icons vs entire library)"
+            echo "  3. Check for duplicate dependencies in webpack bundle"
+            echo "  4. Remove unused heavy dependencies (Three.js, recharts, etc.)"
+            echo ""
+            echo "Current large dependencies:"
+            echo "  • lucide-react: ~4.4MB (all icons)"
+            echo "  • recharts: ~2.2MB (if using Chart component)"
+            echo "  • @webflow/react: ~1.7MB (required)"
+            echo ""
+            exit 1
+          else
+            UNDER_BY=$(awk "BEGIN {printf \"%.2f\", $LIMIT_MB - $BUNDLE_SIZE_MB}")
+            echo "✅ Bundle size check passed!"
+            echo ""
+            echo "Bundle size: ${BUNDLE_SIZE_MB}MB / ${LIMIT_MB}MB"
+            echo "Remaining: ${UNDER_BY}MB"
+            echo ""
+          fi
+
       - name: Bundle check passed
         if: success()
         run: |
@@ -89,6 +147,6 @@ jobs:
       - name: Bundle check failed
         if: failure()
         run: |
-          echo "❌ Webflow bundle build failed."
+          echo "❌ Webflow bundle check failed."
           echo "Check the logs above for error details."
           echo "Fix the errors before merging this PR."
