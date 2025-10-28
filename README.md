@@ -325,6 +325,10 @@ MIT
 
 For questions or issues, please check the documentation in `./docs` or open an issue on GitHub.
 
+## Bundle Size
+
+Current Webflow bundle: **18.56MB** (3.56MB over 15MB limit)
+
 ---
 
 Built with [Webflow Code Components](https://webflow.com/code-components), [Next.js](https://nextjs.org/), and [oRPC](https://orpc.unnoq.com/)
