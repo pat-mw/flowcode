@@ -66,9 +66,6 @@ jobs:
           pnpm run
 
       - name: Build Webflow Bundle
-        env:
-          NEXT_PUBLIC_API_URL: https://blogflow-three.vercel.app
-          NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED: false
         run: |
           echo "Building Webflow components bundle..."
           pnpm webflow:bundle:ci

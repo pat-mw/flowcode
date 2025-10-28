@@ -112,7 +112,7 @@ export function WebflowProvidersWrapper({
   return (
     <QueryClientProvider client={webflowQueryClient}>
       <TooltipProvider delayDuration={200}>
-        <div className="dark font-sans"> {children} <Toaster /> </div>
+        <div className="dark"> {children} <Toaster /> </div>
       </TooltipProvider>
     </QueryClientProvider>
   );
