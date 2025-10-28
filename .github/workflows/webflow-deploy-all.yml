@@ -7,6 +7,7 @@ on:
       - 'src/libraries/**/*.tsx'
       - 'src/libraries/**/*.ts'
       - 'components/**/*.tsx'
+      - 'scripts/**/*.ts'
 
   workflow_dispatch:  # Allow manual triggering
 
@@ -91,7 +92,7 @@ jobs:
         run: |
           echo "Deploying ${{ matrix.library.name }} to Webflow..."
           npx webflow library share \
-            --config src/libraries/${{ matrix.library.key }}/webflow.json \
+            --manifest src/libraries/${{ matrix.library.key }}/webflow.json \
             --no-input
           echo "✅ Deployed successfully!"
 
