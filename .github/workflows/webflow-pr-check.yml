@@ -11,6 +11,8 @@ on:
       - 'components/**/*.tsx'
       - 'webflow.json'
       - 'webpack.webflow.js'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
 
   # Run on every push to PR branches
   push:
@@ -22,6 +24,8 @@ on:
       - 'components/**/*.tsx'
       - 'webflow.json'
       - 'webpack.webflow.js'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
 
 jobs:
   bundle-check:
@@ -81,6 +85,7 @@ jobs:
           fi
 
       - name: Check bundle size
+        if: success()
         env:
           # Configurable limit in MB (default: 15MB)
           # Override by setting WEBFLOW_BUNDLE_SIZE_LIMIT_MB secret in GitHub
@@ -89,6 +94,13 @@ jobs:
           echo "================================================"
           echo "📦 Webflow Bundle Size Check"
           echo "================================================"
+
+          # Check if dist directory exists
+          if [ ! -d "dist/" ]; then
+            echo "❌ Error: dist/ directory not found"
+            echo "Bundle build may have failed. Check previous steps."
+            exit 1
+          fi
 
           # Get size in MB using awk (no bc dependency)
           BUNDLE_SIZE_KB=$(du -sk dist/ | cut -f1)

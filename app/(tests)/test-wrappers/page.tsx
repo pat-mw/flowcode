@@ -9,7 +9,6 @@ import { PopoverTestDefaultWrapper } from "@/src/components/PopoverTestDefault.w
 import { PopoverTestControlledWrapper } from "@/src/components/PopoverTestControlled.webflow";
 import { ToastTestWrapper } from "@/src/components/ToastTest.webflow";
 import { NavigationWrapper } from "@/src/components/Navigation.webflow";
-import { ChartTestWrapper } from "@/src/components/ChartTest.webflow";
 
 export default function TestWrappersPage() {
   return (
@@ -66,15 +65,6 @@ export default function TestWrappersPage() {
             buttonText="Show Toast"
             toastMessage="This is a toast notification"
           />
-          <div className="md:col-span-2">
-            <ChartTestWrapper
-              title="Blog Engagement Analytics"
-              description="Monthly views, likes, and comments for your blog posts"
-              ctaText="View Full Report"
-              ctaUrl="#analytics"
-              showLegend={true}
-            />
-          </div>
         </div>
       </div>
     </div>
