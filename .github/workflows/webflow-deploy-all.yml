@@ -39,7 +39,7 @@ jobs:
         id: set-matrix
         run: |
           # Get only libraries with deploy.enabled: true
-          MATRIX=$(tsx -e "
+          MATRIX=$(npx --silent tsx -e "
             import { getDeployableLibraries, libraries } from './src/libraries/index.js';
             const keys = getDeployableLibraries();
             const matrix = keys.map(key => ({
