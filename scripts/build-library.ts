@@ -33,7 +33,7 @@ function buildLibrary({ library, dev = false, publicPath }: BuildOptions) {
 
   console.log(`📦 Building library: ${lib.name} (${library})`);
 
-  // Backup existing webflow.json if it exists
+  // Backup existing webflow.json if it exists (needed because bundle command doesn't support --manifest)
   const rootManifest = path.join(process.cwd(), "webflow.json");
   const backupManifest = path.join(process.cwd(), "webflow.json.backup");
   let hasBackup = false;
@@ -44,7 +44,7 @@ function buildLibrary({ library, dev = false, publicPath }: BuildOptions) {
   }
 
   try {
-    // Copy library manifest to root
+    // Copy library manifest to root (bundle command requires webflow.json in root)
     fs.copyFileSync(manifestPath, rootManifest);
 
     // Set environment variables for this library
@@ -53,15 +53,17 @@ function buildLibrary({ library, dev = false, publicPath }: BuildOptions) {
       .map(([key, value]) => `${key}="${value}"`)
       .join(" ");
 
-    // Build command
+    // Build command with --output-path to prevent conflicts
     const devFlag = dev ? "--dev" : "";
     const defaultPublicPath = "http://localhost:4000/";
     const publicPathFlag = `--public-path ${publicPath || defaultPublicPath}`;
     const outputDir = path.join("dist", library);
+    const outputPathFlag = `--output-path ${outputDir}`;
 
     const command = [
       envVars,
       "npx webflow library bundle",
+      outputPathFlag,
       devFlag,
       publicPathFlag,
     ]
@@ -74,16 +76,6 @@ function buildLibrary({ library, dev = false, publicPath }: BuildOptions) {
       stdio: "inherit",
       cwd: process.cwd(),
     });
-
-    // Move dist/Client to dist/[library]/Client
-    const defaultDist = path.join(process.cwd(), "dist", "Client");
-    const libraryDist = path.join(process.cwd(), outputDir, "Client");
-
-    if (fs.existsSync(defaultDist)) {
-      fs.mkdirSync(path.dirname(libraryDist), { recursive: true });
-      fs.renameSync(defaultDist, libraryDist);
-      console.log(`\n📁 Moved bundle to ${outputDir}/Client`);
-    }
 
     console.log(`✅ Built: ${lib.name}`);
 
