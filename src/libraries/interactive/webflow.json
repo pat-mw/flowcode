@@ -1,0 +1,16 @@
+{
+  "library": {
+    "name": "blogflow-interactive",
+    "components": [
+      "./src/libraries/interactive/**/*.webflow.@(ts|tsx)"
+    ],
+    "bundleConfig": "./webpack.webflow.js",
+    "description": "3D models and interactive experiences",
+    "id": "blogflow-interactive"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true
+    }
+  }
+}
