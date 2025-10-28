@@ -1,0 +1,16 @@
+{
+  "library": {
+    "name": "blogflow-analytics",
+    "components": [
+      "./src/libraries/analytics/**/*.webflow.@(ts|tsx)"
+    ],
+    "bundleConfig": "./webpack.webflow.js",
+    "description": "Charts, metrics, and data visualization components",
+    "id": "blogflow-analytics"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true
+    }
+  }
+}

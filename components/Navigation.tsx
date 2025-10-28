@@ -72,6 +72,7 @@ export default function Navigation({
           <div className="flex items-center gap-8">
             <a href={homeUrl} className="flex items-center gap-2">
               {brandLogo && (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={brandLogo}
                   alt={brandName}

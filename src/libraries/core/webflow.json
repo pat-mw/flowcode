@@ -1,0 +1,16 @@
+{
+  "library": {
+    "name": "blogflow-core",
+    "components": [
+      "./src/libraries/core/**/*.webflow.@(ts|tsx)"
+    ],
+    "bundleConfig": "./webpack.webflow.js",
+    "description": "Core authentication, posts, and navigation components",
+    "id": "blogflow-core"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true
+    }
+  }
+}

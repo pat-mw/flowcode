@@ -1,0 +1,116 @@
+name: Deploy Webflow Libraries
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/libraries/**/*.tsx'
+      - 'src/libraries/**/*.ts'
+      - 'components/**/*.tsx'
+      - 'scripts/**/*.ts'
+
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  # Job 1: Detect deployable libraries (deploy.enabled: true)
+  detect-libraries:
+    name: Detect Deployable Libraries
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Detect deployable libraries
+        id: set-matrix
+        run: |
+          # Get only libraries with deploy.enabled: true
+          MATRIX=$(npx --silent tsx -e "
+            import { getDeployableLibraries, libraries } from './src/libraries/index.js';
+            const keys = getDeployableLibraries();
+            const matrix = keys.map(key => ({
+              key,
+              name: libraries[key].name,
+              id: libraries[key].id
+            }));
+            console.log(JSON.stringify({ libraries: matrix }));
+          ")
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Deployable libraries:"
+          echo "$MATRIX" | jq '.'
+
+  # Job 2: Deploy each library in parallel
+  deploy-library:
+    name: Deploy ${{ matrix.library.name }}
+    runs-on: ubuntu-latest
+    needs: detect-libraries
+    if: fromJson(needs.detect-libraries.outputs.matrix).libraries[0] != null
+
+    strategy:
+      matrix:
+        library: ${{ fromJson(needs.detect-libraries.outputs.matrix).libraries }}
+      max-parallel: 3  # Limit concurrent deploys to avoid rate limits
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate manifest
+        run: pnpm library:manifests
+
+      - name: Deploy to Webflow
+        env:
+          WEBFLOW_WORKSPACE_API_TOKEN: ${{ secrets.WEBFLOW_WORKSPACE_API_TOKEN }}
+        run: |
+          echo "Deploying ${{ matrix.library.name }} to Webflow..."
+          npx webflow library share \
+            --manifest src/libraries/${{ matrix.library.key }}/webflow.json \
+            --no-input
+          echo "✅ Deployed successfully!"
+
+  # Job 3: Deployment summary
+  deploy-summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: deploy-library
+    if: always()
+
+    steps:
+      - name: Check deployment status
+        run: |
+          if [ "${{ needs.deploy-library.result }}" = "failure" ]; then
+            echo "❌ One or more deployments failed"
+            exit 1
+          elif [ "${{ needs.deploy-library.result }}" = "skipped" ]; then
+            echo "⚠️  No deployable libraries found"
+          else
+            echo "✅ All libraries deployed successfully!"
+          fi

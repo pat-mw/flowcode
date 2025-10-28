@@ -1,14 +1,7 @@
 "use client";
 
-// Direct implementation imports
-import { DialogTestDefaultWrapper } from "@/src/components/DialogTestDefault.webflow";
-import { DialogTestWrappedWrapper } from "@/src/components/DialogTestWrapped.webflow";
-import { TooltipTestSharedWrapper } from "@/src/components/TooltipTestShared.webflow";
-import { TooltipTestSelfContainedWrapper } from "@/src/components/TooltipTestSelfContained.webflow";
-import { PopoverTestDefaultWrapper } from "@/src/components/PopoverTestDefault.webflow";
-import { PopoverTestControlledWrapper } from "@/src/components/PopoverTestControlled.webflow";
-import { ToastTestWrapper } from "@/src/components/ToastTest.webflow";
-import { NavigationWrapper } from "@/src/components/Navigation.webflow";
+import { NavigationWrapper } from "@/src/libraries/core/components/Navigation.webflow";
+import { ChartTestWrapper } from "@/src/libraries/analytics/components/ChartTest.webflow";
 
 export default function TestWrappersPage() {
   return (
@@ -28,43 +21,20 @@ export default function TestWrappersPage() {
             Webflow Component Test Suite
           </h1>
           <p className="text-muted-foreground">
-            Test shadcn components with different provider patterns for Webflow
-            Code Components. All components are wrapped with
-            WebflowProvidersWrapper to simulate Webflow Shadow DOM environment.
+            Testing available components from the multi-library system (core, analytics, interactive).
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DialogTestDefaultWrapper
-            title="Dialog Test - Default"
-            description="This dialog uses the default pattern (self-contained)"
-            buttonText="Open Dialog"
-          />
-          <DialogTestWrappedWrapper
-            title="Dialog Test - Wrapped"
-            description="This dialog uses the wrapped pattern (shared)"
-            buttonText="Open Dialog"
-          />
-          <TooltipTestSharedWrapper
-            buttonText="Hover for Tooltip"
-            tooltipText="This tooltip uses the shared pattern (shared)"
-          />
-          <TooltipTestSelfContainedWrapper
-            buttonText="Hover for Tooltip"
-            tooltipText="This tooltip uses the self-contained pattern (self-contained)"
-          />
-          <PopoverTestDefaultWrapper
-            buttonText="Open Popover"
-            title="Popover Test - Default"
-          />
-          <PopoverTestControlledWrapper
-            buttonText="Open Popover"
-            title="Popover Test - Controlled"
-          />
-          <ToastTestWrapper
-            buttonText="Show Toast"
-            toastMessage="This is a toast notification"
-          />
+        <div className="grid grid-cols-1 gap-6">
+          <div>
+            <ChartTestWrapper
+              title="Blog Engagement Analytics"
+              description="Monthly views, likes, and comments for your blog posts"
+              ctaText="View Full Report"
+              ctaUrl="#analytics"
+              showLegend={true}
+            />
+          </div>
         </div>
       </div>
     </div>
