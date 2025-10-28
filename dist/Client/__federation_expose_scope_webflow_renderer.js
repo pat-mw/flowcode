@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunk_WebflowCodeComponents=self.webpackChunk_WebflowCodeComponents||[]).push([[895],{640:(e,n,o)=>{o.r(n),o.d(n,{default:()=>s});const s={env:"Client",Renderer:o(3789).$x}}}]);

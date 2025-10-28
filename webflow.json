@@ -1,12 +1,12 @@
 {
   "library": {
-    "name": "apps/farrago/core/webflow-code-components",
+    "name": "blogflow",
     "components": [
       "./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)"
     ],
     "bundleConfig": "./webpack.webflow.js",
-    "description": "farrago-core-components",
-    "id": "apps-farrago-core-webflow-code-components"
+    "description": "blogflow-core-components",
+    "id": "blogflow"
   },
   "telemetry": {
     "global": {

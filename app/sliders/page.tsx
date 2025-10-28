@@ -1,5 +1,6 @@
-import BlueSlider from '@/src/components/BlueSlider';
-import RedSlider from '@/src/components/RedSlider';
+import Link from 'next/link';
+import BlueSlider from '@/webflow_component_examples/BlueSlider';
+import RedSlider from '@/webflow_component_examples/RedSlider';
 
 export default function SlidersTestPage() {
   return (
@@ -57,12 +58,12 @@ export default function SlidersTestPage() {
         </div>
 
         <div className="text-center">
-          <a
+          <Link
             href="/"
             className="text-sm text-slate-600 underline hover:text-slate-900"
           >
             ← Back to home
-          </a>
+          </Link>
         </div>
       </div>
     </main>
