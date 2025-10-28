@@ -71,7 +71,7 @@ jobs:
           NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED: false
         run: |
           echo "Building Webflow components bundle..."
-          pnpm webflow:bundle
+          pnpm webflow:bundle:ci
           echo "Bundle build complete!"
 
       - name: Check bundle output
