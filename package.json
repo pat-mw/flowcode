@@ -17,6 +17,7 @@
     "library:manifests": "tsx scripts/generate-manifests.ts",
     "library:build": "tsx scripts/build-library.ts",
     "library:build:all": "tsx scripts/build-all-libraries.ts",
+    "library:list": "tsx scripts/list-libraries.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "NODE_TLS_REJECT_UNAUTHORIZED=0 tsx --env-file=.env lib/db/migrate.ts",
     "db:push": "drizzle-kit push",

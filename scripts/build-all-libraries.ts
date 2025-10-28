@@ -4,19 +4,24 @@ import { spawn } from "child_process";
 import { getLibraryKeys, libraries } from "../src/libraries/index.js";
 
 /**
- * Build all libraries in parallel
+ * Build all libraries sequentially to avoid dist/ folder race conditions
+ * (In CI, matrix jobs run in isolation, so they can run in parallel)
  */
 async function buildAllLibraries() {
   const libraryKeys = getLibraryKeys();
 
-  console.log(`🚀 Building ${libraryKeys.length} libraries in parallel...\n`);
+  console.log(`🚀 Building ${libraryKeys.length} libraries sequentially...\n`);
+  console.log(`ℹ️  Note: Sequential builds prevent dist/ folder conflicts locally.`);
+  console.log(`   In CI, libraries build in parallel (isolated jobs).\n`);
 
-  // Create promises for parallel builds
-  const buildPromises = libraryKeys.map((key) => {
-    return new Promise<{ key: string; success: boolean }>((resolve) => {
-      const lib = libraries[key];
-      console.log(`📦 Starting build: ${lib.name} (${key})`);
+  const results: Array<{ key: string; success: boolean }> = [];
 
+  // Build each library sequentially
+  for (const key of libraryKeys) {
+    const lib = libraries[key];
+    console.log(`📦 Building: ${lib.name} (${key})`);
+
+    const success = await new Promise<boolean>((resolve) => {
       const child = spawn("tsx", ["scripts/build-library.ts", key], {
         stdio: "inherit",
       });
@@ -24,17 +29,16 @@ async function buildAllLibraries() {
       child.on("close", (code) => {
         if (code === 0) {
           console.log(`✅ ${lib.name} build complete\n`);
-          resolve({ key, success: true });
+          resolve(true);
         } else {
           console.error(`❌ ${lib.name} build failed\n`);
-          resolve({ key, success: false });
+          resolve(false);
         }
       });
     });
-  });
 
-  // Wait for all builds
-  const results = await Promise.all(buildPromises);
+    results.push({ key, success });
+  }
 
   // Summary
   const successful = results.filter((r) => r.success);
