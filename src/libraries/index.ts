@@ -32,16 +32,21 @@ export function getDeployableLibraries() {
 
 /**
  * Generate webflow.json manifest for a library
+ * Automatically infers component pattern from library key if not explicitly set
  */
 export function generateManifest(key: LibraryKey) {
   const lib = libraries[key];
 
+  // Infer components pattern from library key if not provided
+  const componentsPattern =
+    lib.components || `./src/libraries/${key}/**/*.webflow.@(ts|tsx)`;
+
   return {
     library: {
       name: lib.id,
-      components: Array.isArray(lib.components)
-        ? lib.components
-        : [lib.components],
+      components: Array.isArray(componentsPattern)
+        ? componentsPattern
+        : [componentsPattern],
       bundleConfig: lib.bundleConfig || "./webpack.webflow.js",
       description: lib.description,
       id: lib.id,

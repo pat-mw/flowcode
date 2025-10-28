@@ -8,8 +8,11 @@ export interface LibraryConfig {
   /** Unique identifier for the library */
   id: string;
 
-  /** Glob pattern(s) for component discovery */
-  components: string | string[];
+  /**
+   * Glob pattern(s) for component discovery
+   * If not provided, defaults to: ./src/libraries/{key}/**\/*.webflow.@(ts|tsx)
+   */
+  components?: string | string[];
 
   /** Path to webpack bundle configuration */
   bundleConfig?: string;
@@ -48,7 +51,6 @@ export function validateLibraryConfig(
 
   if (!config.name) errors.push("Library name is required");
   if (!config.id) errors.push("Library ID is required");
-  if (!config.components) errors.push("Component patterns are required");
 
   return {
     valid: errors.length === 0,
