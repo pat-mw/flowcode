@@ -8,7 +8,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { clearToken } from '@/lib/token-storage';
+import { clearToken, getToken } from '@/lib/token-storage';
 
 interface User {
   id: string;
@@ -108,12 +108,22 @@ export async function revalidateAuthSession() {
       // Check if session is still valid by fetching from Better Auth
       // Use full URL for cross-origin requests (Webflow → Vercel)
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+      // Build headers including bearer token if available
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add bearer token for cross-origin authentication
+      const token = getToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch(`${apiUrl}/api/orpc/auth/getSession`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       });
 
       console.log('[Auth] Session check response:', {
