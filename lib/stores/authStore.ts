@@ -8,6 +8,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { clearToken, getToken } from '@/lib/token-storage';
 
 interface User {
   id: string;
@@ -50,12 +51,16 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: true,
         }),
 
-      clearAuth: () =>
+      clearAuth: () => {
+        // Clear bearer token from localStorage
+        clearToken();
+
         set({
           user: null,
           person: null,
           isAuthenticated: false,
-        }),
+        });
+      },
 
       updatePerson: (person) =>
         set(() => ({
@@ -92,38 +97,77 @@ export async function revalidateAuthSession() {
 
   const store = useAuthStore.getState();
 
+  console.log('[Auth] Starting session revalidation...', {
+    hasStoredAuth: store.isAuthenticated,
+    hasUser: !!store.user,
+  });
+
   // If we have stored auth, verify it's still valid with Better Auth
   if (store.isAuthenticated && store.user) {
     try {
       // Check if session is still valid by fetching from Better Auth
-      const response = await fetch('/api/orpc/auth/getSession', {
+      // Use full URL for cross-origin requests (Webflow → Vercel)
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+
+      // Build headers including bearer token if available
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      // Add bearer token for cross-origin authentication
+      const token = getToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${apiUrl}/api/orpc/auth/getSession`, {
         method: 'POST',
         credentials: 'include',
+        headers,
+      });
+
+      console.log('[Auth] Session check response:', {
+        status: response.status,
+        ok: response.ok,
       });
 
       if (response.ok) {
-        const sessionData = await response.json();
+        const responseData = await response.json();
+        // oRPC wraps the response in a "json" property
+        const sessionData = responseData.json;
+
+        console.log('[Auth] Session data received:', {
+          hasUser: !!sessionData?.user,
+          hasPerson: !!sessionData?.person,
+          isNull: sessionData === null,
+        });
 
         if (sessionData?.user && sessionData?.person) {
           // Session is valid, update store with fresh data
           store.setAuth(sessionData.user, sessionData.person);
-          console.log('[Auth] Session revalidated successfully');
+          console.log('[Auth] ✅ Session revalidated successfully');
         } else if (sessionData === null) {
           // Explicitly null response means session doesn't exist - clear auth
-          console.log('[Auth] No active session, clearing stored auth');
+          console.log('[Auth] ❌ No active session, clearing stored auth');
           store.clearAuth();
+        } else {
+          console.warn('[Auth] ⚠️ Unexpected session data format, keeping stored auth');
         }
         // If sessionData is undefined or missing fields, keep existing auth (might be loading)
       } else if (response.status === 401) {
         // Explicit unauthorized - session definitely expired
-        console.log('[Auth] Session expired (401), clearing auth');
+        console.log('[Auth] ❌ Session expired (401), clearing auth');
         store.clearAuth();
+      } else {
+        console.warn('[Auth] ⚠️ Unexpected response status:', response.status);
       }
       // For other errors (500, etc), keep existing auth - server might be down
     } catch (error) {
-      console.error('[Auth] Failed to revalidate session:', error);
+      console.error('[Auth] ❌ Failed to revalidate session:', error);
       // On network error, keep the stored auth (user might be offline)
     }
+  } else {
+    console.log('[Auth] No stored auth to revalidate');
   }
 }
 

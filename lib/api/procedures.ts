@@ -28,9 +28,18 @@ type AuthenticatedContext = {
 export const protectedProcedure = baseProcedure.use<AuthenticatedContext>(async ({ context, next }) => {
   const ctx = context as Context;
 
+  console.log('[protectedProcedure] Checking auth:', {
+    hasUserId: !!ctx.userId,
+    hasSession: !!ctx.session,
+    userId: ctx.userId,
+  });
+
   if (!ctx.userId || !ctx.session) {
+    console.error('[protectedProcedure] UNAUTHORIZED - missing userId or session');
     throw new Error('UNAUTHORIZED');
   }
+
+  console.log('[protectedProcedure] Auth successful, proceeding...');
 
   return next({
     context: {

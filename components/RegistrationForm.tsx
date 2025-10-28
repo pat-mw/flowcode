@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { signUp, signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
+import { setToken } from '@/lib/token-storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -136,19 +137,45 @@ export default function RegistrationForm({
         throw new Error('Registration failed - no user returned');
       }
 
-      // Auto-login after registration
-      const loginResponse = await signIn.email({
-        email: data.email,
-        password: data.password,
-        fetchOptions: {
-          onError(context) {
-            throw new Error(context.error.message || 'Auto-login failed');
-          },
+      // Auto-login after registration - call API directly to get session token
+      const loginAuthResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-in/email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
       });
+
+      if (!loginAuthResponse.ok) {
+        const errorData = await loginAuthResponse.json().catch(() => ({ message: 'Auto-login failed' }));
+        throw new Error(errorData.message || 'Auto-login failed');
+      }
+
+      const loginAuthData = await loginAuthResponse.json();
+
+      if (!loginAuthData?.user) {
+        throw new Error('Auto-login failed - no user returned');
+      }
+
+      // Extract session token for bearer authentication
+      const sessionToken = loginAuthData.session?.token || loginAuthData.token;
+
+      if (sessionToken) {
+        setToken(sessionToken);
+        console.log('[Registration] ✅ Bearer token stored');
+      } else {
+        console.warn('[Registration] No session token in response');
+      }
+
+      const loginResponse = { data: loginAuthData }; // Normalize response format
 
       // Update Zustand auth store
       if (loginResponse.data?.user) {
+
         // Fetch person profile (created by afterSignUp callback)
         const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
           method: 'POST',
@@ -158,8 +185,8 @@ export default function RegistrationForm({
         if (personResponse.ok) {
           const sessionData = await personResponse.json();
 
-          if (sessionData?.person) {
-            setAuth(loginResponse.data.user, sessionData.person);
+          if (sessionData?.json?.person) {
+            setAuth(loginResponse.data.user, sessionData.json.person);
           } else {
             // Create a minimal person object if not found
             setAuth(loginResponse.data.user, {

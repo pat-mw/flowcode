@@ -10,6 +10,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
+import { setToken } from '@/lib/token-storage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -105,16 +106,60 @@ export default function LoginForm({
         return;
       }
 
-      // Call Better Auth signIn
-      const response = await signIn.email({
-        email: data.email,
-        password: data.password,
-        fetchOptions: {
-          onError(context) {
-            throw new Error(context.error.message || 'Login failed');
-          },
+      // Call Better Auth API directly to get session token
+      const authResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-in/email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
       });
+
+      if (!authResponse.ok) {
+        const errorData = await authResponse.json().catch(() => ({ message: 'Login failed' }));
+        throw new Error(errorData.message || 'Login failed');
+      }
+
+      const authData = await authResponse.json();
+
+      if (!authData?.user) {
+        throw new Error('Login failed - no user returned');
+      }
+
+      // Extract session token for bearer authentication
+      // The token is in the response and is also set as a cookie
+      const sessionToken = authData.session?.token || authData.token;
+
+      if (sessionToken) {
+        setToken(sessionToken);
+        console.log('[Login] ✅ Bearer token stored');
+      } else {
+        console.warn('[Login] No session token in response - trying get-bearer-token endpoint');
+
+        // Fallback: try to get token from endpoint
+        try {
+          const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-bearer-token`, {
+            method: 'GET',
+            credentials: 'include',
+          });
+
+          if (tokenResponse.ok) {
+            const tokenData = await tokenResponse.json();
+            if (tokenData?.token) {
+              setToken(tokenData.token);
+              console.log('[Login] ✅ Bearer token stored (from endpoint)');
+            }
+          }
+        } catch (tokenError) {
+          console.warn('[Login] Failed to get bearer token:', tokenError);
+        }
+      }
+
+      const response = { data: authData }; // Normalize response format
 
       // Update Zustand auth store
       if (response.data?.user) {
@@ -127,8 +172,8 @@ export default function LoginForm({
         if (personResponse.ok) {
           const sessionData = await personResponse.json();
 
-          if (sessionData?.person) {
-            setAuth(response.data.user, sessionData.person);
+          if (sessionData?.json?.person) {
+            setAuth(response.data.user, sessionData.json.person);
           } else {
             // Create a minimal person object if not found
             setAuth(response.data.user, {

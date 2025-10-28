@@ -46,21 +46,57 @@ function setCorsHeaders(response: Response, origin: string | null): Response {
 async function handleRequest(request: Request) {
   const origin = request.headers.get('origin');
 
-  // Handle preflight OPTIONS request
-  if (request.method === 'OPTIONS') {
-    const response = new Response(null, { status: 204 });
-    return setCorsHeaders(response, origin);
+  try {
+    // Handle preflight OPTIONS request
+    if (request.method === 'OPTIONS') {
+      const response = new Response(null, { status: 204 });
+      return setCorsHeaders(response, origin);
+    }
+
+    // Log request details
+    console.log('[oRPC] Handling request:', {
+      method: request.method,
+      url: request.url,
+      origin,
+    });
+
+    // Handle actual request
+    const context = await createContext(request);
+    console.log('[oRPC] Context created:', {
+      hasSession: !!context.session,
+      userId: context.userId,
+    });
+
+    const { response } = await rpcHandler.handle(request, {
+      prefix: '/api/orpc',
+      context,
+    });
+
+    console.log('[oRPC] Handler response:', {
+      status: response?.status,
+      ok: response?.ok,
+    });
+
+    const finalResponse = response ?? new Response('Not Found', { status: 404 });
+    return setCorsHeaders(finalResponse, origin);
+  } catch (error) {
+    console.error('[oRPC] Unhandled error in route handler:', error);
+    console.error('[oRPC] Error details:', {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : undefined,
+    });
+
+    const errorResponse = new Response(
+      JSON.stringify({
+        error: 'Internal Server Error',
+        message: error instanceof Error ? error.message : String(error),
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+
+    return setCorsHeaders(errorResponse, origin);
   }
-
-  // Handle actual request
-  const context = await createContext(request);
-  const { response } = await rpcHandler.handle(request, {
-    prefix: '/api/orpc',
-    context,
-  });
-
-  const finalResponse = response ?? new Response('Not Found', { status: 404 });
-  return setCorsHeaders(finalResponse, origin);
 }
 
 export const GET = handleRequest;

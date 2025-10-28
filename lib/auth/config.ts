@@ -5,6 +5,7 @@
 
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { bearer } from 'better-auth/plugins';
 import { db } from '@/lib/db';
 import { users, sessions, accounts, verifications } from '@/lib/db';
 import { nanoid } from 'nanoid';
@@ -31,6 +32,9 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: false, // Can be enabled later with email service
   },
+  plugins: [
+    bearer(), // Enable bearer token authentication for cross-origin requests
+  ],
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
@@ -40,6 +44,29 @@ export const auth = betterAuth({
   },
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
+
+  // Session configuration
+  session: {
+    // Extend session expiration to 7 days
+    expiresIn: 60 * 60 * 24 * 7, // 7 days in seconds
+    // Update session expiration on each request (rolling sessions)
+    updateAge: 60 * 60 * 24, // Update if older than 1 day
+    // Cookie name
+    cookieName: 'better-auth.session_token',
+  },
+
+  // Advanced cookie settings
+  advanced: {
+    // Ensure cookies work in development (localhost)
+    useSecureCookies: process.env.NODE_ENV === 'production',
+    // Cookie options
+    cookieOptions: {
+      sameSite: 'none', // Allow cross-origin cookies (required for Webflow → Vercel)
+      httpOnly: true, // Security: prevent JavaScript access
+      secure: true, // REQUIRED when sameSite: 'none' - HTTPS only
+      path: '/', // Available across entire site
+    },
+  },
 
   // CORS configuration - allow Webflow domain to make auth requests
   trustedOrigins: [
