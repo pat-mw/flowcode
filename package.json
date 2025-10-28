@@ -11,7 +11,7 @@
     "theme:refresh": "node lib/styles/scripts/transform-css-vars.js default.css variables.webflow.css",
     "webflow:share": "NEXT_PUBLIC_API_URL=https://blogflow-three.vercel.app NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false npx webflow library share --no-input",
     "webflow:bundle": "NEXT_PUBLIC_API_URL=https://blogflow-three.vercel.app NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false npx webflow library bundle --public-path http://localhost:4000/ --dev && npx serve dist -p 4000",
-    "webflow:bundle:ci": "NEXT_PUBLIC_API_URL=https://blogflow-three.vercel.app NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false npx webflow library bundle --public-path http://localhost:4000/ --dev",
+    "webflow:bundle:ci": "npx webflow library bundle",
     "webflow:bundle:debug": "NEXT_PUBLIC_API_URL=https://blogflow-three.vercel.app NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false npx webflow library bundle --public-path http://localhost:4000/ --dev --debug-bundler && npx serve dist -p 4000",
     "webflow:bundle:size": "du -sh dist/ && echo '\nDetailed sizes:' && du -h dist/Client/ | sort -h",
     "db:generate": "drizzle-kit generate",
