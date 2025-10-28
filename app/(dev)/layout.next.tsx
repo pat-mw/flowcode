@@ -6,15 +6,15 @@ import { getQueryClient } from '@/lib/query-client';
 import { useAuthRevalidation } from '@/hooks/useAuthRevalidation';
 import { ThemeProvider } from '@/lib/providers/theme-provider';
 import { Toaster } from 'sonner';
-import "./globals.css";
+import "@/lib/styles/globals.css";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
+  variable: "--_font---sans",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  variable: "--_font---mono",
   subsets: ["latin"],
 });
 

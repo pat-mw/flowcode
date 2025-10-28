@@ -2,14 +2,13 @@ import PopoverTestDefault from '@/components/PopoverTestDefault';
 import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/app/globals.css';
 
-interface PopoverTestDefaultWebflowProps {
+export interface PopoverTestDefaultWebflowProps {
   buttonText: string;
   title: string;
 }
 
-function PopoverTestDefaultWrapper({
+export function PopoverTestDefaultWrapper({
   buttonText,
   title,
 }: PopoverTestDefaultWebflowProps) {

@@ -2,15 +2,14 @@ import DialogTestDefault from '@/components/DialogTestDefault';
 import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/app/globals.css';
 
-interface DialogTestDefaultWebflowProps {
+export interface DialogTestDefaultWebflowProps {
   title: string;
   description: string;
   buttonText: string;
 }
 
-function DialogTestDefaultWrapper({
+export function DialogTestDefaultWrapper({
   title,
   description,
   buttonText,

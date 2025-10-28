@@ -2,14 +2,13 @@ import TooltipTestSelfContained from '@/components/TooltipTestSelfContained';
 import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/app/globals.css';
 
-interface TooltipTestSelfContainedWebflowProps {
+export interface TooltipTestSelfContainedWebflowProps {
   buttonText: string;
   tooltipText: string;
 }
 
-function TooltipTestSelfContainedWrapper({
+export function TooltipTestSelfContainedWrapper({
   buttonText,
   tooltipText,
 }: TooltipTestSelfContainedWebflowProps) {

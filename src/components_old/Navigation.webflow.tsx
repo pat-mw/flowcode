@@ -1,7 +1,19 @@
 import Navigation from '@/components/Navigation';
 import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
-import '@/app/globals.css';
+import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
+import {NavigationProps} from '@/components/Navigation';
+
+
+export function NavigationWrapper(props: NavigationProps) {
+  return (
+    <WebflowProvidersWrapper>
+      <Navigation
+        {...props}
+      />
+    </WebflowProvidersWrapper>
+  );
+}
 
 export default declareComponent(Navigation, {
   name: 'Navigation',

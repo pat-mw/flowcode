@@ -2,7 +2,7 @@ import Lanyard from '@/components/Lanyard';
 import { props } from '@webflow/data-types';
 import { declareComponent } from '@webflow/react';
 
-import '@/app/globals.css';
+import '@/lib/styles/globals.css';
 
 interface WebflowLanyardProps {
   positionX: number;

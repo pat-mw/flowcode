@@ -2,7 +2,7 @@ import { Badge } from './Badge';
 import { props } from '@webflow/data-types';
 import { declareComponent } from '@webflow/react';
 
-import '@/app/globals.css'; // Import Tailwind styles
+import '@/lib/styles/globals.css'; // Import Tailwind styles
 
 export default declareComponent(Badge, {
   name: 'Badge',

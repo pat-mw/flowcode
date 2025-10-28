@@ -2,6 +2,8 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
+  mode: 'development',
+  devtool: false, // Disable eval() for readable output files
   resolve: {
     alias: {
       '@': path.resolve(__dirname),

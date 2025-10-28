@@ -2,14 +2,13 @@ import TooltipTestShared from '@/components/TooltipTestShared';
 import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/app/globals.css';
 
-interface TooltipTestSharedWebflowProps {
+export interface TooltipTestSharedWebflowProps {
   buttonText: string;
   tooltipText: string;
 }
 
-function TooltipTestSharedWrapper({
+export function TooltipTestSharedWrapper({
   buttonText,
   tooltipText,
 }: TooltipTestSharedWebflowProps) {

@@ -17,6 +17,7 @@ import TooltipTestShared from '@/components/TooltipTestShared';
 import TooltipTestSelfContained from '@/components/TooltipTestSelfContained';
 import PopoverTestDefault from '@/components/PopoverTestDefault';
 import PopoverTestControlled from '@/components/PopoverTestControlled';
+import ToastTest from '@/components/ToastTest';
 
 export default function TestComponentsPage() {
   return (
@@ -33,10 +34,11 @@ export default function TestComponentsPage() {
       </div>
 
       <Tabs defaultValue="dialog" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="dialog">Dialogs</TabsTrigger>
           <TabsTrigger value="tooltip">Tooltips</TabsTrigger>
           <TabsTrigger value="popover">Popovers</TabsTrigger>
+          <TabsTrigger value="toast">Toasts</TabsTrigger>
         </TabsList>
 
         {/* Dialog Tests */}
@@ -220,6 +222,66 @@ export default function TestComponentsPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Toast Tests */}
+        <TabsContent value="toast" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Toast Components</CardTitle>
+              <CardDescription>
+                Testing toast notifications using sonner. The Toaster component
+                is included in WebflowProvidersWrapper and works across Shadow
+                DOM boundaries.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Toast Notifications</CardTitle>
+                  <CardDescription>
+                    Test various toast types: default, success, error, info,
+                    warning, promise, and action toasts
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <WebflowProvidersWrapper>
+                    <ToastTest
+                      buttonText="Show Toast"
+                      toastMessage="This is a toast notification from the test page"
+                    />
+                  </WebflowProvidersWrapper>
+                </CardContent>
+              </Card>
+
+              <div className="mt-6 p-4 bg-muted rounded-md">
+                <h4 className="font-semibold mb-2">Toast Features:</h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                  <li>
+                    <strong>Sonner Integration:</strong> Uses the sonner toast
+                    library with Toaster component in WebflowProvidersWrapper
+                  </li>
+                  <li>
+                    <strong>Shadow DOM Compatible:</strong> Toast notifications
+                    work correctly across Webflow Shadow DOM boundaries
+                  </li>
+                  <li>
+                    <strong>Multiple Types:</strong> Supports default, success,
+                    error, info, warning, promise, and action toasts
+                  </li>
+                  <li>
+                    <strong>Action Support:</strong> Toasts can include action
+                    buttons for user interaction
+                  </li>
+                  <li>
+                    <strong>Promise Handling:</strong> Special toast type for
+                    handling async operations with loading, success, and error
+                    states
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
 
       <Card className="mt-8">
@@ -264,7 +326,7 @@ export default function TestComponentsPage() {
                 its own provider
               </li>
               <li>
-                <strong>WebflowProvidersWrapper:</strong> Provides ThemeProvider,
+                <strong>WebflowProvidersWrapper:</strong> Provides Dark Mode (via className),
                 QueryClientProvider, and TooltipProvider
               </li>
             </ul>
@@ -272,11 +334,15 @@ export default function TestComponentsPage() {
           <div>
             <h4 className="font-semibold mb-2">WebflowProvidersWrapper Setup:</h4>
             <div className="p-3 bg-muted rounded-md font-mono text-xs">
-              <div>ThemeProvider (dark mode default)</div>
-              <div>└─ QueryClientProvider</div>
-              <div>&nbsp;&nbsp;&nbsp;└─ TooltipProvider (delayDuration: 200ms)</div>
+              <div>QueryClientProvider (singleton shared cache)</div>
+              <div>└─ TooltipProvider (delayDuration: 200ms)</div>
+              <div>&nbsp;&nbsp;&nbsp;└─ div.dark.font-inherit (dark mode + font)</div>
               <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ Your Component</div>
             </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Note: ThemeProvider removed - it doesn&apos;t work in Shadow DOM.
+              Dark mode applied directly via className.
+            </p>
           </div>
           <div>
             <h4 className="font-semibold mb-2">Next Steps:</h4>
