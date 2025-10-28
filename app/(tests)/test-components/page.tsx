@@ -18,6 +18,7 @@ import TooltipTestSelfContained from '@/components/TooltipTestSelfContained';
 import PopoverTestDefault from '@/components/PopoverTestDefault';
 import PopoverTestControlled from '@/components/PopoverTestControlled';
 import ToastTest from '@/components/ToastTest';
+import ChartTest from '@/components/ChartTest';
 
 export default function TestComponentsPage() {
   return (
@@ -34,11 +35,12 @@ export default function TestComponentsPage() {
       </div>
 
       <Tabs defaultValue="dialog" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dialog">Dialogs</TabsTrigger>
           <TabsTrigger value="tooltip">Tooltips</TabsTrigger>
           <TabsTrigger value="popover">Popovers</TabsTrigger>
           <TabsTrigger value="toast">Toasts</TabsTrigger>
+          <TabsTrigger value="charts">Charts</TabsTrigger>
         </TabsList>
 
         {/* Dialog Tests */}
@@ -276,6 +278,73 @@ export default function TestComponentsPage() {
                     <strong>Promise Handling:</strong> Special toast type for
                     handling async operations with loading, success, and error
                     states
+                  </li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Chart Tests */}
+        <TabsContent value="charts" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Chart Components</CardTitle>
+              <CardDescription>
+                Testing shadcn chart components with recharts integration.
+                Charts display blog engagement analytics with configurable
+                properties.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">
+                    Analytics Bar Chart
+                  </CardTitle>
+                  <CardDescription>
+                    Multi-series bar chart with views, likes, and comments
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <WebflowProvidersWrapper>
+                    <ChartTest
+                      title="Blog Engagement Analytics"
+                      description="Monthly views, likes, and comments for your blog posts"
+                      ctaText="View Full Report"
+                      ctaUrl="#"
+                      showLegend={true}
+                    />
+                  </WebflowProvidersWrapper>
+                </CardContent>
+              </Card>
+
+              <div className="mt-6 p-4 bg-muted rounded-md">
+                <h4 className="font-semibold mb-2">Chart Features:</h4>
+                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                  <li>
+                    <strong>Recharts Integration:</strong> Uses recharts for
+                    powerful data visualization
+                  </li>
+                  <li>
+                    <strong>shadcn/ui Charts:</strong> Built on top of shadcn
+                    chart components with consistent styling
+                  </li>
+                  <li>
+                    <strong>Configurable Props:</strong> Title, description,
+                    CTA button text and URL, legend visibility
+                  </li>
+                  <li>
+                    <strong>Responsive:</strong> Chart automatically adjusts to
+                    container width
+                  </li>
+                  <li>
+                    <strong>Tooltips:</strong> Interactive tooltips show
+                    detailed data on hover
+                  </li>
+                  <li>
+                    <strong>Theme Aware:</strong> Uses CSS variables for colors
+                    that adapt to light/dark mode
                   </li>
                 </ul>
               </div>

@@ -52,4 +52,8 @@
     --shadow-lg: var(--_shadow---lg);
     --shadow-xl: var(--_shadow---xl);
     --shadow-2xl: var(--_shadow---2xl);
+
+    --tracking-normal: var(--_tracking---tracking-normal);
+
+    --spacing-value: var(--_spacing---value);
 }
