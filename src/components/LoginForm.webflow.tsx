@@ -16,9 +16,9 @@ interface LoginFormWebflowProps {
   showGoogleAuth: boolean;
 }
 
-function LoginFormWrapper({ redirectTo, showGoogleAuth }: LoginFormWebflowProps) {
-  // Note: showGoogleAuth prop is available for future use
-  // Currently, Google OAuth visibility is controlled by NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED env var
+function LoginFormWrapper({ redirectTo }: LoginFormWebflowProps) {
+  // Note: showGoogleAuth prop is available in the component definition
+  // but currently Google OAuth visibility is controlled by NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED env var
   return (
     <WebflowProvidersWrapper>
       <LoginForm redirectTo={redirectTo} />

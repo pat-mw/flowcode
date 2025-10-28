@@ -29,6 +29,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
 import { useAuthRevalidation } from '@/hooks/useAuthRevalidation';
 import { ThemeProvider } from '@/lib/providers/theme-provider';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { createQueryClient } from '@/lib/query-client';
 
 /**
@@ -101,9 +102,11 @@ export function WebflowProvidersWrapper({ children }: WebflowProvidersWrapperPro
       disableTransitionOnChange
     >
       <QueryClientProvider client={webflowQueryClient}>
-        <div className="font-inherit">
-          {children}
-        </div>
+        <TooltipProvider delayDuration={200}>
+          <div className="font-inherit">
+            {children}
+          </div>
+        </TooltipProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
