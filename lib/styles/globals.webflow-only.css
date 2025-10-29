@@ -1,0 +1,33 @@
+/**
+ * Webflow Code Components Global Styles
+ *
+ * This file is specifically for Webflow Code Components running in Shadow DOM.
+ *
+ * Key Difference from globals.css:
+ * - Does NOT import variables/default.css
+ * - This allows Webflow Designer variables to be inherited from the host page
+ * - Fallback values in theme.webflow.css are used when Designer variables aren't set
+ *
+ * How it works:
+ * 1. Webflow Designer sets --_color---background on the page
+ * 2. Shadow DOM inherits this variable
+ * 3. theme.webflow.css uses: var(--_color---background, fallback)
+ * 4. If Designer variable exists → uses it
+ * 5. If not → uses fallback
+ *
+ * For Next.js: Use globals.css instead (which includes variables/default.css)
+ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./theme/theme.webflow.css";
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+    }
+}

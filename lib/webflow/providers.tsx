@@ -30,7 +30,7 @@
 
 "use client";
 
-import "@/lib/styles/globals.css";
+import "@/lib/styles/globals.webflow-only.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { useAuthRevalidation } from "@/hooks/useAuthRevalidation";
