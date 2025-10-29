@@ -2,8 +2,6 @@ import RedSlider from './RedSlider';
 import { props } from '@webflow/data-types';
 import { declareComponent } from '@webflow/react';
 
-import '@/lib/styles/globals.css';
-
 interface WebflowRedSliderProps {
   label: string;
   min: number;
