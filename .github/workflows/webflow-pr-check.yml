@@ -13,18 +13,6 @@ on:
       - 'scripts/**/*.ts'
       - '.github/workflows/webflow-pr-check.yml'
 
-  push:
-    branches-ignore: [main]
-    paths:
-      - 'src/libraries/**/*.tsx'
-      - 'src/libraries/**/*.ts'
-      - 'components/**/*.tsx'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'webpack.webflow.js'
-      - 'scripts/**/*.ts'
-      - '.github/workflows/webflow-pr-check.yml'
-
 jobs:
   # Job 1: Detect which libraries exist
   detect-libraries:
@@ -83,13 +71,18 @@ jobs:
         with:
           version: latest
 
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
