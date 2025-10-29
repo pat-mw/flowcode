@@ -13,18 +13,6 @@ on:
       - 'scripts/**/*.ts'
       - '.github/workflows/webflow-pr-check.yml'
 
-  push:
-    branches-ignore: [main]
-    paths:
-      - 'src/libraries/**/*.tsx'
-      - 'src/libraries/**/*.ts'
-      - 'components/**/*.tsx'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'webpack.webflow.js'
-      - 'scripts/**/*.ts'
-      - '.github/workflows/webflow-pr-check.yml'
-
 jobs:
   # Job 1: Detect which libraries exist
   detect-libraries:
