@@ -1,0 +1,16 @@
+{
+  "library": {
+    "name": "webcn-landing",
+    "components": [
+      "./src/libraries/webcn/**/*.webflow.@(ts|tsx)"
+    ],
+    "bundleConfig": "./webpack.webflow.js",
+    "description": "Landing page components for webcn - Webflow full-stack React component framework",
+    "id": "webcn-landing"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true
+    }
+  }
+}

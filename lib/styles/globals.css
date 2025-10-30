@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "./variables/default.css";
 @import "./theme/theme.webflow.css";
+@import "./variables/default.css";
 
 
 @layer base {

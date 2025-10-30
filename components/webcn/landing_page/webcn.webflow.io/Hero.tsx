@@ -1,0 +1,90 @@
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight, Code2, Sparkles } from "lucide-react";
+
+const Hero = () => {
+  return (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-16">
+      {/* Animated background grid */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMwLTkuOTQtOC4wNi0xOC0xOC0xOCIgc3Ryb2tlPSJoc2xhKDE5OSwgODklLCA0OCUsIDAuMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
+      
+      <div className="container mx-auto px-4 py-20 relative z-10">
+        <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-up">
+          {/* Hackathon Badge */}
+          <Badge 
+            variant="outline" 
+            className="border-primary/50 text-primary bg-primary/10 px-4 py-2 text-sm font-medium backdrop-blur-sm animate-glow-pulse"
+          >
+            <Sparkles className="w-4 h-4 mr-2 inline" />
+            Webflow × Contra Hackathon Entry
+          </Badge>
+
+          {/* Main Heading */}
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight">
+            <span className="bg-gradient-primary bg-clip-text text-transparent">
+              webcn
+            </span>
+          </h1>
+
+          {/* Subheading */}
+          <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground max-w-3xl mx-auto font-light">
+            Full-stack React components for{" "}
+            <span className="text-primary font-medium">Webflow</span>
+            <br />
+            From simple UI to complete applications
+          </p>
+
+          {/* Description */}
+          <p className="text-base md:text-lg text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
+            Leverage Webflow's new code components feature to build production-ready applications. 
+            Drop in authentication, databases, and complex UI — all running natively in Webflow.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+            <Button 
+              size="lg" 
+              className="bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300 hover:scale-105 text-base px-8"
+            >
+              <Code2 className="mr-2 h-5 w-5" />
+              Browse Components
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="border-primary/30 text-foreground hover:bg-primary/10 hover:border-primary transition-all duration-300 text-base px-8"
+            >
+              View Demo
+            </Button>
+          </div>
+
+          {/* Tech Stack */}
+          <div className="pt-12 flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              React 18
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              TypeScript
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              Tailwind CSS
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              Webflow Code Components
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom gradient fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent"></div>
+    </section>
+  );
+};
+
+export default Hero;
