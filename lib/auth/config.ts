@@ -9,6 +9,7 @@ import { bearer } from 'better-auth/plugins';
 import { db } from '@/lib/db';
 import { users, sessions, accounts, verifications } from '@/lib/db';
 import { nanoid } from 'nanoid';
+import { ALLOWED_ORIGINS } from '@/app/api/config';
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error('BETTER_AUTH_SECRET is required');
@@ -69,11 +70,7 @@ export const auth = betterAuth({
   },
 
   // CORS configuration - allow Webflow domain to make auth requests
-  trustedOrigins: [
-    'https://blogflow-three.webflow.io',  // Production Webflow site
-    'http://localhost:3000',               // Local development
-    'https://blogflow-three.vercel.app',   // Production backend (for testing)
-  ],
+  trustedOrigins: ALLOWED_ORIGINS,
 
   // Callbacks
   callbacks: {
