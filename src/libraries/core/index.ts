@@ -14,7 +14,7 @@ export const coreLibrary: LibraryConfig = {
 
   // Deployment configuration
   deploy: {
-    enabled: false,
+    enabled: true,
     workspaceToken: process.env.WEBFLOW_WORKSPACE_API_TOKEN,
   },
 };
