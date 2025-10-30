@@ -17,7 +17,9 @@ export function HeroWrapper({
   subtitle,
   description,
   primaryCtaText,
+  primaryCtaUrl,
   secondaryCtaText,
+  secondaryCtaUrl,
   showBadge,
   showTechStack,
 }: HeroProps) {
@@ -29,7 +31,9 @@ export function HeroWrapper({
         subtitle={subtitle}
         description={description}
         primaryCtaText={primaryCtaText}
+        primaryCtaUrl={primaryCtaUrl}
         secondaryCtaText={secondaryCtaText}
+        secondaryCtaUrl={secondaryCtaUrl}
         showBadge={showBadge}
         showTechStack={showTechStack}
       />
@@ -67,10 +71,20 @@ export default declareComponent(HeroWrapper, {
       defaultValue: 'Browse Components',
       tooltip: 'Text for the primary call-to-action button',
     }),
+    primaryCtaUrl: props.Text({
+      name: 'Primary CTA URL',
+      defaultValue: '#components',
+      tooltip: 'URL or anchor link for primary button (e.g., #components, /page, https://...)',
+    }),
     secondaryCtaText: props.Text({
       name: 'Secondary CTA Text',
       defaultValue: 'View Demo',
       tooltip: 'Text for the secondary call-to-action button',
+    }),
+    secondaryCtaUrl: props.Text({
+      name: 'Secondary CTA URL',
+      defaultValue: '#demo',
+      tooltip: 'URL or anchor link for secondary button (e.g., #demo, /page, https://...)',
     }),
     showBadge: props.Boolean({
       name: 'Show Badge',

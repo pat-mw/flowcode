@@ -8,7 +8,9 @@ export interface HeroProps {
   subtitle?: string;
   description?: string;
   primaryCtaText?: string;
+  primaryCtaUrl?: string;
   secondaryCtaText?: string;
+  secondaryCtaUrl?: string;
   showBadge?: boolean;
   showTechStack?: boolean;
 }
@@ -19,7 +21,9 @@ const Hero = ({
   subtitle = "Full-stack React components for Webflow",
   description = "Leverage Webflow's new code components feature to build production-ready applications. Drop in authentication, databases, and complex UI — all running natively in Webflow.",
   primaryCtaText = "Browse Components",
+  primaryCtaUrl = "#components",
   secondaryCtaText = "View Demo",
+  secondaryCtaUrl = "#demo",
   showBadge = true,
   showTechStack = true,
 }: HeroProps) => {
@@ -59,19 +63,25 @@ const Hero = ({
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button
+              asChild
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-glow transition-all duration-300 hover:scale-105 text-base px-8"
             >
-              <Code2 className="mr-2 h-5 w-5" />
-              {primaryCtaText}
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <a href={primaryCtaUrl}>
+                <Code2 className="mr-2 h-5 w-5" />
+                {primaryCtaText}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </a>
             </Button>
             <Button
+              asChild
               size="lg"
               variant="outline"
               className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 text-base px-8"
             >
-              {secondaryCtaText}
+              <a href={secondaryCtaUrl}>
+                {secondaryCtaText}
+              </a>
             </Button>
           </div>
 
