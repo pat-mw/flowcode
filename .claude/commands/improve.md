@@ -1,0 +1,1 @@
+Based on the user input, make the changes to CLAUDE.md or the definition of the relevant agent, command, hook in .claude/ to make sure this is addressed in the future.

@@ -275,3 +275,455 @@ The `docs/` folder contains extended architecture documentation including:
 - **Local development and debugging** - `docs/webflow-local-development.md` - Bundling, debugging, and testing Webflow components locally
 
 Refer to `docs/README.md` for a complete overview of available documentation.
+
+## Development Workflow
+
+### Test-Driven Development (TDD)
+This project follows TDD principles:
+1. Write tests BEFORE implementing features
+2. Run tests and watch them fail (Red)
+3. Implement minimal code to make tests pass (Green)
+4. Refactor while keeping tests green (Refactor)
+5. Commit only when all tests pass
+
+### Database Changes
+1. Modify schema in `src/db/schema.ts`
+2. Generate migration: `pnpm db:generate`
+3. Review generated SQL in `drizzle/` directory
+4. Run migration: `pnpm db:migrate`
+5. Commit both schema and migration files
+
+### Task Types: Features vs. Fixes
+
+This project distinguishes between two types of development tasks:
+
+1. **FEATURES** (`specs/FEATURES.md`): New functionality, enhancements, or significant additions
+2. **FIXES** (`specs/FIXES.md`): Bug fixes, corrections, small improvements, or minor refinements
+
+Each type has different protocol requirements based on scope and complexity.
+
+### Adding Features
+
+**IMPORTANT: `specs/FEATURES.md` is the single source of truth for project feature state.**
+
+When a user requests a feature implementation:
+
+1. **Check `specs/FEATURES.md`**
+   - If the feature is not present, add it to the file with the structure below
+   - If the feature exists, update its checklist as you progress
+
+2. **Feature Entry Structure**
+   Each feature in `specs/FEATURES.md` must have the following sub-tasks:
+   ```markdown
+   ## [Feature Number]. [Feature Name]
+   - [ ] Unit tests have been written
+   - [ ] E2E tests for user workflows have been written (including all button clicks and component interactions)
+   - [ ] Feature has been implemented
+   - [ ] ALL E2E tests and unit tests pass
+   - [ ] Every new component has been successfully interacted with using Playwright MCP:
+     - [ ] [ComponentName1]
+     - [ ] [ComponentName2]
+     - [ ] [ComponentName3]
+   ```
+
+3. **MANDATORY Agent Usage**
+   **CRITICAL: The following agents MUST be used for EVERY feature implementation:**
+
+   **IMPORTANT DEFINITIONS:**
+   - **MANDATORY** = NO EXCEPTIONS, NO JUDGMENT CALLS, NO SKIPPING, MUST HAPPEN 100% OF THE TIME
+   - **COMPULSORY** = REQUIRED, NOT OPTIONAL, NOT NEGOTIABLE, NO INTERPRETATION ALLOWED
+   - These are ABSOLUTE REQUIREMENTS, not suggestions or guidelines
+   - Claude Code has ZERO DISCRETION to skip these steps for any reason
+   - "Simple" features, "trivial" changes, or perceived time pressure are NOT valid reasons to skip
+   - User saying "DO NOT STOP" means complete all mandatory steps without pausing, NOT skip steps
+
+   - **test-architect agent** (COMPULSORY - NO EXCEPTIONS)
+     - Use BEFORE implementing any feature
+     - Designs comprehensive test coverage
+     - Creates unit and E2E test suites
+     - Ensures TDD workflow is followed
+     - **MUST be called even if feature seems simple**
+     - **MUST be called even for single-line changes**
+
+   - **code-evaluator agent** (COMPULSORY - NO EXCEPTIONS)
+     - Use DURING implementation after each significant module completion
+     - Use BEFORE marking feature complete
+     - Runs all tests and validates they pass
+     - Performs code quality checks
+     - Identifies issues early
+     - **MUST be called even if feature seems simple**
+     - **MUST be called even if manual testing seems sufficient**
+
+   - **project-structure-documenter agent** (COMPULSORY - NO EXCEPTIONS)
+     - Use AFTER feature completion
+     - Updates project documentation
+     - Reflects architectural changes
+     - Maintains CLAUDE.md and README files
+     - **MUST be called for all features that affect project structure**
+
+   **PROTOCOL ENFORCEMENT:**
+   - There is NO TIME PRESSURE - take as long as needed to complete all mandatory steps
+   - Efficiency comes from proper execution, NOT from skipping steps
+   - Every feature follows the IDENTICAL process regardless of perceived complexity
+   - If a mandatory agent is not called, the feature is NOT complete
+   - Feature cannot be marked `[X]` in FEATURES.md until ALL mandatory agents have been executed
+   - Commit messages must honestly list which agents were used (no false claims)
+
+4. **Implementation Workflow**
+   - **Step 1**: Use **test-architect agent** to design and write tests
+   - **Step 2**: Write unit tests first (TDD approach)
+   - **Step 3**: Write E2E tests covering complete user workflows
+   - **Step 4**: Implement the feature
+   - **Step 5**: Use **code-evaluator agent** after each significant module
+   - **Step 6**: Run all tests until they pass
+   - **Step 7**: Use **code-evaluator agent** for final validation
+   - **Step 8**: Use Playwright MCP to interact with each new component
+   - **Step 9**: Use **project-structure-documenter agent** to update docs
+   - **Step 10**: Check off each sub-task as completed
+   - **Step 11**: Mark main feature as `[X]` only when ALL sub-tasks are complete
+
+5. **Testing Requirements**
+   - **Unit Tests**: Test individual functions, components, and server actions
+   - **E2E Tests**: Test complete user workflows including:
+     * Navigating to pages
+     * Clicking all buttons
+     * Filling all forms
+     * Interacting with all interactive components
+     * Verifying visual feedback and state changes
+   - **Playwright MCP Verification** (MANDATORY):
+     * Manually interact with each new component using Playwright MCP
+     * Verify visual elements are visible and accessible
+     * Test responsive design across different viewport sizes
+     * Confirm all interactive elements function correctly
+     * Screenshot or snapshot evidence REQUIRED before claiming verification complete
+     * Cannot claim "Verified with Playwright MCP" without actual tool usage evidence
+
+6. **Commit and Mark Complete**
+   - Commit the completed feature with descriptive message
+   - Update `specs/FEATURES.md` with all checked sub-tasks
+   - Mark feature as `[X]` in the main feature list
+   - Commit the `specs/FEATURES.md` update
+
+### External API Integration Workflow
+1. Evaluate API Provider
+   - Check usage limits and pricing
+   - Review API documentation
+   - Assess security and authentication methods
+
+2. API Key Management
+   - Create a new environment variable in `.env.local`
+   - Add key to `src/lib/config/api-keys.ts`
+   - Never commit secrets to version control
+
+3. Service Implementation
+   - Create service in `src/lib/services/`
+   - Implement typed request and response handling
+   - Add comprehensive error management
+   - Write integration tests
+
+4. Server Action Creation
+   - Develop authenticated server action
+   - Implement input validation with Zod
+   - Add logging and error tracking
+   - Ensure rate limit compliance
+
+### Feature Completion Checklist
+When completing a feature from `specs/FEATURES.md`:
+- [ ] **test-architect agent** used to design test coverage (COMPULSORY - NO EXCEPTIONS)
+- [ ] Unit tests written and passing
+- [ ] E2E tests written and passing (covering all user workflows)
+- [ ] Feature is fully implemented
+- [ ] **code-evaluator agent** used during implementation (COMPULSORY - NO EXCEPTIONS)
+- [ ] ALL tests (unit + E2E) pass
+- [ ] **code-evaluator agent** used for final validation (COMPULSORY - NO EXCEPTIONS)
+- [ ] Every new component has been interacted with using Playwright MCP (with evidence)
+- [ ] **project-structure-documenter agent** used to update docs (COMPULSORY - NO EXCEPTIONS)
+- [ ] All sub-tasks in `specs/FEATURES.md` are checked off
+- [ ] Changes are committed to git
+- [ ] Feature is marked as complete in `specs/FEATURES.md` (change `[]` to `[X]`)
+- [ ] `specs/FEATURES.md` update is committed
+
+**CRITICAL REMINDER**: If ANY checklist item with "COMPULSORY - NO EXCEPTIONS" is not completed, the feature is NOT done. There are no shortcuts, no exceptions, and no valid reasons to skip these steps.
+
+### Fixing Bugs and Issues
+
+**IMPORTANT: `specs/FIXES.md` is the single source of truth for bug fixes and minor improvements.**
+
+When a user requests a bug fix or minor improvement:
+
+1. **Check `specs/FIXES.md`**
+   - If the fix is not present, add it to the file with a clear description
+   - If the fix exists, update its status as you progress
+
+2. **Fix Entry Structure**
+   Each fix in `specs/FIXES.md` should have:
+   ```markdown
+   ## Fix #[Number]: [Brief Description]
+   - **Status**: [ ] Pending / [X] Complete
+   - **Type**: Bug / Improvement / Refactor
+   - **Description**: Clear explanation of the issue and solution
+   ```
+
+3. **MANDATORY Runtime Verification for ALL Fixes (NO EXCEPTIONS)**
+
+   **ABSOLUTE RULE**: Code inspection is NOT verification. Every fix MUST be tested in a running application.
+
+   **Before marking ANY fix as complete, you MUST:**
+
+   1. **Start Development Server**: Run `pnpm dev`
+   2. **Use Playwright MCP**: Actually interact with the affected component/feature in the browser
+   3. **Test Exact Behavior**: Verify the EXACT fix described in FIXES.md works as stated
+   4. **Capture Evidence**: Take screenshots or record console output as proof
+   5. **User Confirmation**: If ANY requirement is ambiguous, ask user for clarification BEFORE implementing
+
+   **What "VERIFIED" Actually Means:**
+   - ✅ Ran the application in development mode (`pnpm dev`)
+   - ✅ Used Playwright MCP to interact with affected UI
+   - ✅ Manually performed the exact action described in the fix
+   - ✅ Captured evidence (screenshots, console logs, Playwright session logs)
+   - ✅ Confirmed expected behavior actually occurs in the browser
+   - ✅ User confirmed fix addresses their exact need
+
+   **What "VERIFIED" Does NOT Mean:**
+   - ❌ Read the code and it looks correct
+   - ❌ Saw `router.refresh()` and assumed it works
+   - ❌ Saw correct dependencies in useEffect and assumed it triggers
+   - ❌ Tests pass (unless tests specifically verify the fix behavior)
+   - ❌ Build succeeds without TypeScript errors
+   - ❌ "It should work based on the code"
+
+   **Zero Tolerance for False Claims:**
+   - NEVER claim "verified" without actual browser testing evidence
+   - NEVER claim Playwright MCP was used without tool usage logs
+   - NEVER claim "tested" without execution proof
+   - NEVER mark fix as `[X]` based solely on code inspection
+   - False verification claims are SERIOUS PROTOCOL VIOLATIONS
+
+4. **Batched Agent Usage for Fixes**
+   **For efficiency, agents can be batched around UP TO 5 fixes at once:**
+
+   - **test-architect agent** (COMPULSORY for all fix batches)
+     - MUST be used when implementing 2-5 related fixes together
+     - Designs test coverage for all fixes in the batch
+     - Required even for seemingly simple fixes
+
+   - **code-evaluator agent** (COMPULSORY for ALL fixes - NO EXCEPTIONS)
+     - MUST be used for ALL fixes (batched or individual)
+     - Runs tests and validates runtime behavior
+     - Required even for single-line fixes
+     - The "optional" designation has been REMOVED - this is now MANDATORY
+
+   - **Playwright MCP** (COMPULSORY for ALL fixes affecting UI - NO EXCEPTIONS)
+     - MUST be used for EVERY fix that touches UI components
+     - Required even if fix seems trivial
+     - Evidence (screenshots/logs) REQUIRED
+     - Cannot be skipped under any circumstances
+
+   - **project-structure-documenter agent** (Optional)
+     - Use only if fixes affect project structure or architecture
+     - Not required for localized bug fixes
+
+4. **Fix Implementation Workflow**
+
+   **For Single Fixes:**
+   - **Step 1**: Identify the bug or issue
+   - **Step 2**: Write or update tests if needed (optional for trivial fixes)
+   - **Step 3**: Implement the fix
+   - **Step 4**: Run relevant tests to verify
+   - **Step 5**: Mark fix as complete in `specs/FIXES.md`
+   - **Step 6**: Commit the fix
+
+   **For Batched Fixes (2-5 fixes):**
+   - **Step 1**: Group related fixes (max 5)
+   - **Step 2**: Use **test-architect agent** to design test coverage for all fixes
+   - **Step 3**: Implement all fixes in the batch
+   - **Step 4**: Use **code-evaluator agent** to validate all fixes
+   - **Step 5**: Ensure all tests pass
+   - **Step 6**: Mark all fixes as complete in `specs/FIXES.md`
+   - **Step 7**: Commit the batch with descriptive message
+
+5. **Fix Completion Checklist**
+
+   **For Single Fixes:**
+   - [ ] Issue identified and understood
+   - [ ] Fix implemented
+   - [ ] Relevant tests pass
+   - [ ] Fix marked complete in `specs/FIXES.md`
+   - [ ] Changes committed
+
+   **For Batched Fixes (2-5):**
+   - [ ] **test-architect agent** used to design test coverage (COMPULSORY)
+   - [ ] All fixes in batch implemented
+   - [ ] **code-evaluator agent** used for validation (COMPULSORY)
+   - [ ] All relevant tests pass
+   - [ ] All fixes marked complete in `specs/FIXES.md`
+   - [ ] Changes committed with clear batch description
+
+**IMPORTANT DISTINCTION:**
+- Features (in `specs/FEATURES.md`) require full protocol with ALL mandatory agents
+- Fixes (in `specs/FIXES.md`) allow batching and optional agent usage for efficiency
+- When in doubt about classification, treat it as a FEATURE with full protocol
+
+**CRITICAL: NO TIME-WASTING QUESTIONS**
+- NEVER ask the user about time optimization, priorities, or which tasks to focus on
+- NEVER ask "would you like me to..." or "should I..." when the task is already clear
+- When given a list of fixes or features, JUST DO THEM ALL
+- The user has already decided what needs to be done by putting it in FIXES.md or FEATURES.md
+- Your job is to EXECUTE, not to seek permission or clarification on priorities
+- If something is unclear about the TECHNICAL IMPLEMENTATION, ask about that
+- If something is unclear about WHAT tasks to do, they're already listed - just do them
+
+### API Integration Checklist
+- [ ] Centralized key management
+- [ ] Secure server-side request handling
+- [ ] Comprehensive error management
+- [ ] Rate limit handling
+- [ ] Full test coverage
+- [ ] No client-side key exposure
+- [ ] Validated input parameters
+
+### Authentication and Server Actions Workflow
+1. **Authentication Server Actions**
+   - Write tests in `src/__tests__/actions/auth.test.ts`
+   - Test scenarios:
+     * Successful registration
+     * Registration with existing email
+     * Invalid input validation
+     * Session creation
+     * User authentication flows
+
+2. **Server Action Best Practices**
+   - Always use Zod schema validation
+   - Implement comprehensive error handling
+   - Test both happy paths and edge cases
+   - Verify session access through DAL
+   - Handle security and permission checks server-side
+
+3. **Authentication Testing Guidelines**
+   - Use mocking for external dependencies
+   - Test middleware route protection
+   - Verify authentication abstraction
+   - Ensure provider-agnostic behavior
+   - Test session management functions
+
+## Database Schema
+
+### Tables
+- **users**: User accounts with email/password authentication
+- **categories**: Investment categories (Stocks, ETFs, Commodities, Crypto)
+- **positions**: Individual investment positions (linked to user and category)
+- **purchases**: Purchase history for each position
+
+### Relationships
+- Users have many Categories
+- Users have many Positions
+- Categories have many Positions
+- Positions have many Purchases
+
+All foreign keys use CASCADE delete for data integrity.
+
+## Key Configuration Files
+
+- `drizzle.config.ts` - Drizzle ORM configuration
+- `vitest.config.mts` - Vitest test configuration
+- `next.config.ts` - Next.js configuration
+- `postcss.config.js` - PostCSS with Tailwind CSS v4
+- `.env.local` - Environment variables (gitignored)
+- `tsconfig.json` - TypeScript configuration
+
+## Environment Variables
+
+Required in `.env.local`:
+```env
+DATABASE_URL=./data/local.db
+NEXTAUTH_SECRET=<generated-secret>
+NEXTAUTH_URL=http://localhost:3000
+TWELVE_DATA_API_KEY=<optional-free-tier-key>
+```
+
+### External API Keys
+
+#### Twelve Data API
+- **Obtain Key**: https://twelvedata.com/apikey
+- **Free Tier**: 800 requests/day
+- **Configuration**: Centralized in `src/lib/config/api-keys.ts`
+- **Security Notes**:
+  - Never commit API keys to version control
+  - Use `.env.local` for local development
+  - Replace with production secrets in deployment environments
+
+## Demo Credentials
+
+After running `pnpm db:seed`:
+- Email: demo@example.com
+- Password: demo123
+
+## Important Notes
+
+- **Always use pnpm** for package management (not npm or bun)
+- Database files in `data/` are gitignored
+- Migrations in `drizzle/` should be committed
+- Follow TDD: write tests before implementation
+- Server actions should validate input and handle errors
+- Use the Data Access Layer (DAL) for authentication checks
+
+### Protocol Compliance and Honesty
+
+**ABSOLUTE REQUIREMENTS:**
+
+1. **Never Lie About Verification**
+   - NEVER claim "Verified with Playwright MCP" without actual tool usage
+   - NEVER claim "All tests passing" without running the tests
+   - NEVER claim an agent was used if it wasn't called
+   - Commit messages must accurately reflect what was actually done
+   - If a step was skipped, explicitly state it was skipped (and why this violates protocol)
+
+2. **No Unauthorized Shortcuts**
+   - Claude Code has ZERO authority to skip mandatory steps
+   - "Feature seems simple" is NOT a valid reason to skip protocol
+   - "This is just a small change" is NOT a valid reason to skip protocol
+   - User urgency does NOT authorize skipping mandatory agents
+   - The protocol applies to ALL features without exception
+
+3. **Time Pressure Does Not Exist**
+   - There is NO time constraint on completing features properly
+   - Take as long as needed to execute all mandatory steps
+   - "DO NOT STOP" means work through all steps without pausing, NOT skip steps
+   - Speed comes from efficient execution, NOT from cutting corners
+
+4. **Perceived Simplicity is Irrelevant**
+   - Even single-line CSS changes require full protocol
+   - Even "obvious" features require test-architect agent
+   - Even "trivial" components require code-evaluator agent
+   - The simpler a feature seems, the more important verification becomes
+
+5. **Self-Evaluation is NOT Sufficient**
+   - Cannot skip agents and evaluate work yourself
+   - Cannot skip Playwright MCP and claim "it looks fine"
+   - Cannot skip tests and assume everything works
+   - Mandatory agents exist specifically to catch errors Claude Code misses
+
+**IF PROTOCOL IS VIOLATED:**
+- Immediately inform the user of the violation
+- Explain what was skipped and why this is unacceptable
+- Propose remediation steps to properly complete the feature
+- NEVER try to hide or minimize protocol violations
+
+### Authentication Policies
+- All server actions require authentication
+- Never access Auth.js directly in client components
+- Always use `src/lib/auth-client.ts` for authentication
+- Session access must go through Data Access Layer (DAL)
+- Input validation is required on ALL server actions
+- Follow provider-agnostic design principles
+
+### Security Guidelines
+- Protect routes with middleware
+- Validate and sanitize all user inputs
+- Use Zod for comprehensive input validation
+- Implement proper error handling
+- Never trust client-side state for authentication
+- Centralize external API key management
+- Never expose API keys to client components
+- Use `"server-only"` directive for external service integrations
+- Validate and sanitize external API request parameters
