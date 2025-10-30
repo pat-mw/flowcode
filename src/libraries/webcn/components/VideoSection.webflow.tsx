@@ -15,14 +15,14 @@ import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 export function VideoSectionWrapper({
   sectionTitle,
   sectionSubtitle,
-  placeholderText,
+  videoUrl,
 }: VideoSectionProps) {
   return (
     <WebflowProvidersWrapper>
       <VideoSection
         sectionTitle={sectionTitle}
         sectionSubtitle={sectionSubtitle}
-        placeholderText={placeholderText}
+        videoUrl={videoUrl}
       />
     </WebflowProvidersWrapper>
   );
@@ -30,7 +30,7 @@ export function VideoSectionWrapper({
 
 export default declareComponent(VideoSectionWrapper, {
   name: 'webcn Video Section',
-  description: 'Video section with placeholder for demo video',
+  description: 'Video section with YouTube embed - click thumbnail to play',
   group: 'webcn Landing',
   props: {
     sectionTitle: props.Text({
@@ -43,10 +43,10 @@ export default declareComponent(VideoSectionWrapper, {
       defaultValue: "Watch how we're reimagining what's possible in Webflow",
       tooltip: 'Subtitle text below the section heading',
     }),
-    placeholderText: props.Text({
-      name: 'Placeholder Text',
-      defaultValue: 'Full demo video coming soon',
-      tooltip: 'Text displayed below the video placeholder',
+    videoUrl: props.Text({
+      name: 'YouTube Video URL',
+      defaultValue: '',
+      tooltip: 'YouTube video URL (supports youtube.com/watch?v=, youtu.be/, or video ID)',
     }),
   },
 });
