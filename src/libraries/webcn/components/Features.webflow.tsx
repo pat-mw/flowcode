@@ -9,7 +9,6 @@ import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import Features, { type FeaturesProps } from '@/components/webcn/landing_page/webcn.webflow.io/Features';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/lib/styles/globals.css';
 import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 
 export function FeaturesWrapper({ sectionTitle, sectionSubtitle }: FeaturesProps) {

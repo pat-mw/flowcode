@@ -9,7 +9,6 @@ import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
 import StorySection, { type StorySectionProps } from '@/components/webcn/landing_page/webcn.webflow.io/StorySection';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/lib/styles/globals.css';
 import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 
 export function StorySectionWrapper({ sectionTitle, sectionSubtitle }: StorySectionProps) {
