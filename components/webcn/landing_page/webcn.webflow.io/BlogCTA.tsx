@@ -17,7 +17,7 @@ const BlogCTA = () => {
                 Deep Dive: Building Full-Stack Webflow Apps
               </h2>
               <p className="text-muted-foreground mb-6">
-                Read our technical breakdown of how webcn brings React's full ecosystem to Webflow, complete with authentication, databases, and more.
+                Read our technical breakdown of how webcn brings React&apos;s full ecosystem to Webflow, complete with authentication, databases, and more.
               </p>
               <Button size="lg" className="shadow-glow">
                 Read the Blog Post

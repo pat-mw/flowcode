@@ -1,5 +1,4 @@
 import { Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const VideoSection = () => {
   return (
@@ -10,7 +9,7 @@ const VideoSection = () => {
             See webcn in Action
           </h2>
           <p className="text-muted-foreground">
-            Watch how we're reimagining what's possible in Webflow
+            Watch how we&apos;re reimagining what&apos;s possible in Webflow
           </p>
         </div>
 

@@ -36,7 +36,7 @@ const Hero = () => {
 
           {/* Description */}
           <p className="text-base md:text-lg text-muted-foreground/80 max-w-2xl mx-auto leading-relaxed">
-            Leverage Webflow's new code components feature to build production-ready applications. 
+            Leverage Webflow&apos;s new code components feature to build production-ready applications.
             Drop in authentication, databases, and complex UI — all running natively in Webflow.
           </p>
 
