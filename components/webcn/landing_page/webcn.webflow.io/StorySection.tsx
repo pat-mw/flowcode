@@ -1,15 +1,23 @@
 import { Sparkles, Zap, Target } from "lucide-react";
 
-const StorySection = () => {
+export interface StorySectionProps {
+  sectionTitle?: string;
+  sectionSubtitle?: string;
+}
+
+const StorySection = ({
+  sectionTitle = "The Hackathon Story",
+  sectionSubtitle = 'Why we\'re building a framework instead of "just another website"',
+}: StorySectionProps) => {
   return (
     <section id="story" className="py-24 px-4 border-t border-border/50">
       <div className="container mx-auto max-w-6xl">
         <div className="text-center mb-16 animate-fade-up">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">
-            The Hackathon Story
+            {sectionTitle}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Why we&apos;re building a framework instead of &quot;just another website&quot;
+            {sectionSubtitle}
           </p>
         </div>
 

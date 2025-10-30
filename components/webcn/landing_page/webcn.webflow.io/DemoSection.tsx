@@ -3,24 +3,44 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Users, FileText, Lock, Database } from "lucide-react";
 
-const DemoSection = () => {
+export interface DemoSectionProps {
+  badgeText?: string;
+  sectionTitle?: string;
+  sectionSubtitle?: string;
+  demoTitle?: string;
+  demoDescription?: string;
+  ctaButtonText?: string;
+  showBadge?: boolean;
+}
+
+const DemoSection = ({
+  badgeText = "Live Demo",
+  sectionTitle = "See It In Action",
+  sectionSubtitle = "blogflow: A full-stack collaborative blog built entirely with webcn components",
+  demoTitle = "blogflow",
+  demoDescription = "A fully functional blogging platform showcasing the power of webcn. Users can register, authenticate, create posts, and collaborate — all running natively within Webflow using code components.",
+  ctaButtonText = "Try blogflow Demo",
+  showBadge = true,
+}: DemoSectionProps) => {
   return (
     <section id="demo" className="py-24 px-4 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent"></div>
-      
+
       <div className="container mx-auto relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16 space-y-4">
-            <Badge className="bg-gradient-primary">
-              Live Demo
-            </Badge>
+            {showBadge && (
+              <Badge className="bg-gradient-primary">
+                {badgeText}
+              </Badge>
+            )}
             <h2 className="text-4xl md:text-5xl font-bold">
-              See It In Action
+              {sectionTitle}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              blogflow: A full-stack collaborative blog built entirely with webcn components
+              {sectionSubtitle}
             </p>
           </div>
 
@@ -30,11 +50,9 @@ const DemoSection = () => {
               {/* Left: Description */}
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-3xl font-bold mb-4">blogflow</h3>
+                  <h3 className="text-3xl font-bold mb-4">{demoTitle}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    A fully functional blogging platform showcasing the power of webcn. 
-                    Users can register, authenticate, create posts, and collaborate — all 
-                    running natively within Webflow using code components.
+                    {demoDescription}
                   </p>
                 </div>
 
@@ -91,11 +109,11 @@ const DemoSection = () => {
 
                 {/* CTA */}
                 <div className="pt-4">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300 hover:scale-105"
                   >
-                    Try blogflow Demo
+                    {ctaButtonText}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </div>

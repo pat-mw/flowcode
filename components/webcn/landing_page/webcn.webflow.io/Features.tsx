@@ -1,6 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Code2, Database, Lock, Zap, Layers, Workflow } from "lucide-react";
 
+export interface FeaturesProps {
+  sectionTitle?: string;
+  sectionSubtitle?: string;
+}
+
 const features = [
   {
     icon: Code2,
@@ -34,16 +39,19 @@ const features = [
   }
 ];
 
-const Features = () => {
+const Features = ({
+  sectionTitle = "More Than Just Components",
+  sectionSubtitle = "A complete framework for building production applications in Webflow",
+}: FeaturesProps) => {
   return (
     <section id="features" className="py-24 px-4 relative overflow-hidden">
       <div className="container mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
           <h2 className="text-4xl md:text-5xl font-bold">
-            More Than Just Components
+            {sectionTitle}
           </h2>
           <p className="text-lg text-muted-foreground">
-            A complete framework for building production applications in Webflow
+            {sectionSubtitle}
           </p>
         </div>
 

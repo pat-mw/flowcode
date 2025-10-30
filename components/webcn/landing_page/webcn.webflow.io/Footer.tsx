@@ -1,7 +1,23 @@
+'use client';
+
 import { Code2, Github, Twitter } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-const Footer = () => {
+export interface FooterProps {
+  brandText?: string;
+  brandSubtext?: string;
+  copyrightText?: string;
+  githubUrl?: string;
+  twitterUrl?: string;
+}
+
+const Footer = ({
+  brandText = "webcn",
+  brandSubtext = "Full-stack React components for Webflow",
+  copyrightText = "© 2025 webcn. Built for Webflow × Contra Hackathon.",
+  githubUrl = "https://github.com",
+  twitterUrl = "https://twitter.com",
+}: FooterProps) => {
   const footerRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -38,11 +54,11 @@ const Footer = () => {
                 <Code2 className="w-6 h-6 text-primary-foreground" />
               </div>
               <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                webcn
+                {brandText}
               </span>
             </div>
             <p className="text-sm text-muted-foreground text-center md:text-left max-w-xs">
-              Full-stack React components for Webflow
+              {brandSubtext}
             </p>
           </div>
 
@@ -59,7 +75,7 @@ const Footer = () => {
             <a href="#story" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Story
             </a>
-            <a href="https://github.com" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a href={githubUrl} className="text-sm text-muted-foreground hover:text-primary transition-colors">
               GitHub
             </a>
           </div>
@@ -68,15 +84,15 @@ const Footer = () => {
           <div className={`flex items-center gap-4 transition-all duration-700 delay-300 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}>
-            <a 
-              href="https://github.com" 
+            <a
+              href={githubUrl}
               className="text-muted-foreground hover:text-primary transition-colors hover:scale-110 transition-transform"
               aria-label="GitHub"
             >
               <Github className="w-5 h-5" />
             </a>
-            <a 
-              href="https://twitter.com" 
+            <a
+              href={twitterUrl}
               className="text-muted-foreground hover:text-primary transition-colors hover:scale-110 transition-transform"
               aria-label="Twitter"
             >
@@ -90,7 +106,7 @@ const Footer = () => {
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           <p className="text-sm text-muted-foreground">
-            © 2025 webcn. Built for Webflow × Contra Hackathon.
+            {copyrightText}
           </p>
         </div>
       </div>

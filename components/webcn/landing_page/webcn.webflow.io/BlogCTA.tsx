@@ -2,7 +2,17 @@ import { ArrowRight, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-const BlogCTA = () => {
+export interface BlogCTAProps {
+  title?: string;
+  description?: string;
+  buttonText?: string;
+}
+
+const BlogCTA = ({
+  title = "Deep Dive: Building Full-Stack Webflow Apps",
+  description = "Read our technical breakdown of how webcn brings React's full ecosystem to Webflow, complete with authentication, databases, and more.",
+  buttonText = "Read the Blog Post",
+}: BlogCTAProps) => {
   return (
     <section className="py-24 px-4">
       <div className="container mx-auto max-w-4xl">
@@ -11,16 +21,16 @@ const BlogCTA = () => {
             <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <FileText className="w-8 h-8 text-primary" />
             </div>
-            
+
             <div className="flex-1 text-center md:text-left">
               <h2 className="text-2xl md:text-3xl font-bold mb-3">
-                Deep Dive: Building Full-Stack Webflow Apps
+                {title}
               </h2>
               <p className="text-muted-foreground mb-6">
-                Read our technical breakdown of how webcn brings React&apos;s full ecosystem to Webflow, complete with authentication, databases, and more.
+                {description}
               </p>
               <Button size="lg" className="shadow-glow">
-                Read the Blog Post
+                {buttonText}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </div>

@@ -1,7 +1,19 @@
 import { Code2, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const Navbar = () => {
+export interface NavbarProps {
+  logoText?: string;
+  githubUrl?: string;
+  ctaButtonText?: string;
+  showGithubLink?: boolean;
+}
+
+const Navbar = ({
+  logoText = "webcn",
+  githubUrl = "https://github.com",
+  ctaButtonText = "Get Started",
+  showGithubLink = true,
+}: NavbarProps) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto px-4">
@@ -12,7 +24,7 @@ const Navbar = () => {
               <Code2 className="w-5 h-5 text-primary-foreground" />
             </div>
             <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-              webcn
+              {logoText}
             </span>
           </div>
 
@@ -34,16 +46,18 @@ const Navbar = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <a 
-              href="https://github.com" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Github className="w-5 h-5" />
-            </a>
+            {showGithubLink && (
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                <Github className="w-5 h-5" />
+              </a>
+            )}
             <Button size="sm" className="shadow-glow">
-              Get Started
+              {ctaButtonText}
             </Button>
           </div>
         </div>

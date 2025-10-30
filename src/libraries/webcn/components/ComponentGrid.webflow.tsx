@@ -6,16 +6,46 @@
 'use client';
 
 import { declareComponent } from '@webflow/react';
-import ComponentGrid from '@/components/webcn/landing_page/webcn.webflow.io/ComponentGrid';
+import { props } from '@webflow/data-types';
+import ComponentGrid, { type ComponentGridProps } from '@/components/webcn/landing_page/webcn.webflow.io/ComponentGrid';
+import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import '@/lib/styles/globals.css';
 
-export function ComponentGridWrapper() {
-  return <ComponentGrid />;
+export function ComponentGridWrapper({
+  sectionTitle,
+  sectionSubtitle,
+  viewAllButtonText,
+}: ComponentGridProps) {
+  return (
+    <WebflowProvidersWrapper>
+      <ComponentGrid
+        sectionTitle={sectionTitle}
+        sectionSubtitle={sectionSubtitle}
+        viewAllButtonText={viewAllButtonText}
+      />
+    </WebflowProvidersWrapper>
+  );
 }
 
 export default declareComponent(ComponentGridWrapper, {
   name: 'webcn Component Grid',
   description: 'Grid showcasing available components with categories and previews',
   group: 'webcn Landing',
-  props: {},
+  props: {
+    sectionTitle: props.Text({
+      name: 'Section Title',
+      defaultValue: 'Component Library',
+      tooltip: 'Main heading for the component grid section',
+    }),
+    sectionSubtitle: props.Text({
+      name: 'Section Subtitle',
+      defaultValue: 'Explore our growing collection of production-ready components',
+      tooltip: 'Subtitle text below the section heading',
+    }),
+    viewAllButtonText: props.Text({
+      name: 'View All Button Text',
+      defaultValue: 'View All Components',
+      tooltip: 'Text for the view all components button',
+    }),
+  },
 });

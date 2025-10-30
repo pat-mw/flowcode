@@ -3,6 +3,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
+export interface ComponentGridProps {
+  sectionTitle?: string;
+  sectionSubtitle?: string;
+  viewAllButtonText?: string;
+}
+
 const components = [
   {
     name: "Button",
@@ -60,16 +66,20 @@ const components = [
   }
 ];
 
-const ComponentGrid = () => {
+const ComponentGrid = ({
+  sectionTitle = "Component Library",
+  sectionSubtitle = "Explore our growing collection of production-ready components",
+  viewAllButtonText = "View All Components",
+}: ComponentGridProps) => {
   return (
     <section id="components" className="py-24 px-4 bg-secondary/20">
       <div className="container mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
           <h2 className="text-4xl md:text-5xl font-bold">
-            Component Library
+            {sectionTitle}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Explore our growing collection of production-ready components
+            {sectionSubtitle}
           </p>
         </div>
 
@@ -117,7 +127,7 @@ const ComponentGrid = () => {
 
         <div className="text-center mt-12">
           <Button size="lg" variant="outline" className="border-primary/30 hover:bg-primary/10">
-            View All Components
+            {viewAllButtonText}
           </Button>
         </div>
       </div>

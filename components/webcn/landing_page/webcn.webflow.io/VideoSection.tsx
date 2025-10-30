@@ -1,15 +1,25 @@
 import { Play } from "lucide-react";
 
-const VideoSection = () => {
+export interface VideoSectionProps {
+  sectionTitle?: string;
+  sectionSubtitle?: string;
+  placeholderText?: string;
+}
+
+const VideoSection = ({
+  sectionTitle = "See webcn in Action",
+  sectionSubtitle = "Watch how we're reimagining what's possible in Webflow",
+  placeholderText = "Full demo video coming soon",
+}: VideoSectionProps) => {
   return (
     <section className="py-24 px-4 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto max-w-5xl">
         <div className="text-center mb-12 animate-fade-up">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            See webcn in Action
+            {sectionTitle}
           </h2>
           <p className="text-muted-foreground">
-            Watch how we&apos;re reimagining what&apos;s possible in Webflow
+            {sectionSubtitle}
           </p>
         </div>
 
@@ -27,7 +37,7 @@ const VideoSection = () => {
 
         <div className="text-center mt-8">
           <p className="text-sm text-muted-foreground">
-            Full demo video coming soon
+            {placeholderText}
           </p>
         </div>
       </div>
