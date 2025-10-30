@@ -7,6 +7,7 @@ import { ComponentGridWrapper } from "@/src/libraries/webcn/components/Component
 import { StylingControlSectionWrapper } from "@/src/libraries/webcn/components/StylingControlSection.webflow";
 import { ArchitectureSectionWrapper } from "@/src/libraries/webcn/components/ArchitectureSection.webflow";
 import { HubDashboardSectionWrapper } from "@/src/libraries/webcn/components/HubDashboardSection.webflow";
+import { WaitlistSectionWrapper } from "@/src/libraries/webcn/components/WaitlistSection.webflow";
 import { DemoSectionWrapper } from "@/src/libraries/webcn/components/DemoSection.webflow";
 import { VideoSectionWrapper } from "@/src/libraries/webcn/components/VideoSection.webflow";
 import { StorySectionWrapper } from "@/src/libraries/webcn/components/StorySection.webflow";
@@ -36,6 +37,9 @@ export default function WebcnLandingDemo() {
 
       {/* Hub Dashboard Section */}
       <HubDashboardSectionWrapper />
+
+      {/* Waitlist Section (Tests cross-library imports) */}
+      <WaitlistSectionWrapper />
 
       {/* Demo Section */}
       <DemoSectionWrapper />

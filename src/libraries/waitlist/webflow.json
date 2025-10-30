@@ -1,0 +1,12 @@
+{
+  "name": "waitlist",
+  "displayName": "Waitlist Components",
+  "description": "Email capture and admin management for waitlists",
+  "version": "1.0.0",
+  "components": "./src/libraries/waitlist/**/*.webflow.@(js|jsx|mjs|ts|tsx)",
+  "telemetry": false,
+  "bundle": {
+    "type": "webpack",
+    "webpack": "./webpack.webflow.js"
+  }
+}
