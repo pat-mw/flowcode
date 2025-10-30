@@ -87,7 +87,7 @@ const ComponentGrid = ({
           {components.map((component, index) => (
             <Card
               key={index}
-              className="group relative overflow-hidden bg-gradient-card border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-glow animate-fade-in"
+              className="group relative overflow-hidden bg-card border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-glow animate-fade-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               {/* Preview Area */}
