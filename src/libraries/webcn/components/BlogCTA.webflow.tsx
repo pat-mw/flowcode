@@ -10,6 +10,7 @@ import { props } from '@webflow/data-types';
 import BlogCTA, { type BlogCTAProps } from '@/components/webcn/landing_page/webcn.webflow.io/BlogCTA';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import '@/lib/styles/globals.css';
+import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 
 export function BlogCTAWrapper({ title, description, buttonText }: BlogCTAProps) {
   return (

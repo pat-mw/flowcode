@@ -10,6 +10,7 @@ import { props } from '@webflow/data-types';
 import ComponentGrid, { type ComponentGridProps } from '@/components/webcn/landing_page/webcn.webflow.io/ComponentGrid';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import '@/lib/styles/globals.css';
+import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 
 export function ComponentGridWrapper({
   sectionTitle,

@@ -10,6 +10,7 @@ import { props } from '@webflow/data-types';
 import Hero, { type HeroProps } from '@/components/webcn/landing_page/webcn.webflow.io/Hero';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import '@/lib/styles/globals.css';
+import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 
 export function HeroWrapper({
   badgeText,

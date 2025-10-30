@@ -126,7 +126,7 @@ const DemoSection = ({
                   <div className="h-8 bg-secondary border-b border-border/50 flex items-center gap-2 px-4">
                     <div className="flex gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-destructive/50"></div>
-                      <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                      <div className="w-3 h-3 rounded-full bg-accent/50"></div>
                       <div className="w-3 h-3 rounded-full bg-primary/50"></div>
                     </div>
                     <div className="flex-1 text-center text-xs text-muted-foreground">

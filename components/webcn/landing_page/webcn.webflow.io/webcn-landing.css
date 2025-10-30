@@ -1,0 +1,107 @@
+/**
+ * Custom styles for webcn landing page components
+ * Uses theme color variables for proper light/dark mode support
+ */
+
+@layer utilities {
+  /* Gradient backgrounds using theme colors */
+  .bg-gradient-hero {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-background)) 0%,
+      hsl(var(--color-primary) / 0.05) 50%,
+      hsl(var(--color-accent) / 0.05) 100%
+    );
+  }
+
+  .bg-gradient-primary {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-primary)) 0%,
+      hsl(var(--color-accent)) 100%
+    );
+  }
+
+  .bg-gradient-card {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--color-card)) 0%,
+      hsl(var(--color-card) / 0.95) 100%
+    );
+  }
+
+  /* Shadow effects using theme colors */
+  .shadow-glow {
+    box-shadow: 0 0 20px hsl(var(--color-primary) / 0.3),
+      0 0 40px hsl(var(--color-primary) / 0.1);
+  }
+
+  .shadow-card {
+    box-shadow: 0 4px 6px -1px hsl(var(--color-foreground) / 0.1),
+      0 2px 4px -1px hsl(var(--color-foreground) / 0.06);
+  }
+
+  /* Hover effects */
+  .hover\:shadow-glow:hover {
+    box-shadow: 0 0 25px hsl(var(--color-primary) / 0.4),
+      0 0 50px hsl(var(--color-primary) / 0.15);
+  }
+
+  /* Animations */
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 15px hsl(var(--color-primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 25px hsl(var(--color-primary) / 0.5);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.5s ease-out;
+  }
+}
