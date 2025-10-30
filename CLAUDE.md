@@ -286,6 +286,38 @@ This project follows TDD principles:
 4. Refactor while keeping tests green (Refactor)
 5. Commit only when all tests pass
 
+**Testing Framework:**
+- **Vitest 3.2.4**: Unit and integration tests (✅ fully working)
+- **Playwright 1.56.1**: E2E tests (✅ fully working)
+- **@testing-library/react 16.3.0**: Component tests (⚠️ React 19 incompatibility)
+
+**IMPORTANT - React 19 Testing Workaround:**
+
+Due to React 19's `act` API changes, @testing-library/react is currently incompatible. Component tests using Testing Library will fail with "React.act is not a function" errors.
+
+**Workaround Options:**
+1. **Use Playwright for Component Testing** (Recommended)
+   - Test components in real browser environment
+   - More accurate representation of actual user experience
+   - Example: `e2e/example.spec.ts`
+
+2. **Use Vitest for Non-Component Logic**
+   - Test utilities, hooks, stores, and server actions
+   - Example: `__tests__/lib/utils.test.ts`
+
+3. **Wait for Testing Library Update**
+   - Track progress: https://github.com/testing-library/react-testing-library
+
+**What You Can Test NOW:**
+- ✅ Utilities and pure functions (Vitest)
+- ✅ Zustand stores (Vitest)
+- ✅ Server actions with mocked DB (Vitest)
+- ✅ Complete user workflows (Playwright E2E)
+- ✅ Component interactions in real browser (Playwright)
+- ❌ Component rendering with Testing Library (broken until library update)
+
+See `TESTING.md` for complete testing documentation and examples.
+
 ### Database Changes
 1. Modify schema in `src/db/schema.ts`
 2. Generate migration: `pnpm db:generate`
