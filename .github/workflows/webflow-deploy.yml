@@ -34,20 +34,29 @@ jobs:
         with:
           version: latest
 
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Restore pnpm cache
+        id: pnpm_cache
+        uses: actions/cache/restore@v4
         with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          path: |
+            node_modules
+          key: ${{ runner.os }}-dependencies-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install dependencies
+        if: steps.pnpm_cache.outputs.cache-hit != 'true'
         run: |
           echo "Installing all dependencies from package.json..."
           pnpm install
           echo "Installation complete. Verifying..."
           pnpm list --depth=0
+
+      - name: Save pnpm cache
+        if: steps.pnpm_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ steps.pnpm_cache.outputs.cache-primary-key }}
 
       - name: Verify Webflow CLI installation
         run: |
