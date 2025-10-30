@@ -39,7 +39,7 @@ jobs:
       - name: Detect deployable libraries
         id: set-matrix
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
+          NEXT_PUBLIC_API_URL: https://blogflow-three.vercel.app
         run: |
           # Get only libraries with deploy.enabled: true
           MATRIX=$(npx --silent tsx -e "
@@ -104,10 +104,38 @@ jobs:
       - name: Build library
         env:
           WEBFLOW_BUNDLE_SIZE_LIMIT_MB: ${{ secrets.WEBFLOW_BUNDLE_SIZE_LIMIT_MB || '15' }}
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
+          NEXT_PUBLIC_API_URL: https://blogflow-three.vercel.app
+          NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED: false
         run: |
           echo "Building ${{ matrix.library.name }} before deployment..."
+          echo "📍 NEXT_PUBLIC_API_URL is set to: $NEXT_PUBLIC_API_URL"
+          echo "🔍 Verifying environment variable is available to build script..."
+          env | grep NEXT_PUBLIC || echo "⚠️  No NEXT_PUBLIC_* variables found!"
           pnpm library:build ${{ matrix.library.key }}
+
+      - name: Verify bundle contents
+        run: |
+          echo "🔍 Verifying bundle was built with correct API URL..."
+          LOCALHOST_COUNT=$(grep -r "localhost:3000" dist/${{ matrix.library.key }}/ 2>/dev/null | wc -l || echo "0")
+          PROD_URL_COUNT=$(grep -r "blogflow-three.vercel.app" dist/${{ matrix.library.key }}/ 2>/dev/null | wc -l || echo "0")
+
+          echo "📊 Bundle Analysis for ${{ matrix.library.name }}:"
+          echo "   - localhost:3000 references: $LOCALHOST_COUNT"
+          echo "   - blogflow-three.vercel.app references: $PROD_URL_COUNT"
+
+          if [ "$LOCALHOST_COUNT" -gt 0 ]; then
+            echo "❌ ERROR: Bundle contains localhost references!"
+            echo "Sample occurrences:"
+            grep -r "localhost:3000" dist/${{ matrix.library.key }}/ 2>/dev/null | head -3
+            exit 1
+          fi
+
+          if [ "$PROD_URL_COUNT" -eq 0 ]; then
+            echo "⚠️  WARNING: Bundle does not contain production URL!"
+            echo "This might be okay if the library doesn't use API calls."
+          else
+            echo "✅ Bundle verification passed!"
+          fi
 
       - name: Deploy to Webflow
         env:
