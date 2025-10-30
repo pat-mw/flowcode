@@ -6,7 +6,9 @@ import { useEffect, useRef, useState } from "react";
 export interface FooterProps {
   brandText?: string;
   brandSubtext?: string;
-  copyrightText?: string;
+  builderName?: string;
+  builderUrl?: string;
+  hackathonText?: string;
   githubUrl?: string;
   twitterUrl?: string;
 }
@@ -14,7 +16,9 @@ export interface FooterProps {
 const Footer = ({
   brandText = "webcn",
   brandSubtext = "Full-stack React components for Webflow",
-  copyrightText = "© 2025 webcn. Built for Webflow × Contra Hackathon.",
+  builderName = "UZO LAB",
+  builderUrl = "https://uzolab-template.webflow.io",
+  hackathonText = "for Webflow x Contra Hackathon",
   githubUrl = "https://github.com",
   twitterUrl = "https://twitter.com",
 }: FooterProps) => {
@@ -50,10 +54,10 @@ const Footer = ({
           {/* Brand */}
           <div className="flex flex-col items-center md:items-start gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center shadow-glow">
                 <Code2 className="w-6 h-6 text-primary-foreground" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-primary">
                 {brandText}
               </span>
             </div>
@@ -106,7 +110,18 @@ const Footer = ({
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
         }`}>
           <p className="text-sm text-muted-foreground">
-            {copyrightText}
+            Built Proudly by{' '}
+            <a
+              href={builderUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 transition-colors font-semibold"
+            >
+              {builderName}
+            </a>
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {hackathonText}
           </p>
         </div>
       </div>
