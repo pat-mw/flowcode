@@ -33,8 +33,25 @@ jobs:
         with:
           version: latest
 
+      - name: Restore pnpm cache
+        id: pnpm_cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ runner.os }}-dependencies-${{ hashFiles('**/pnpm-lock.yaml') }}
+
       - name: Install dependencies
+        if: steps.pnpm_cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
+
+      - name: Save pnpm cache
+        if: steps.pnpm_cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+          key: ${{ steps.pnpm_cache.outputs.cache-primary-key }}
 
       - name: Detect deployable libraries
         id: set-matrix
@@ -80,20 +97,16 @@ jobs:
         with:
           version: latest
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
+      - name: Restore pnpm cache
+        id: pnpm_cache
+        uses: actions/cache/restore@v4
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          path: |
+            node_modules
+          key: ${{ runner.os }}-dependencies-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install dependencies
+        if: steps.pnpm_cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Generate manifest
