@@ -17,6 +17,8 @@
 
 import { auth } from '@/lib/auth/config';
 import { NextRequest, NextResponse } from 'next/server';
+import { isOriginAllowed } from '@/app/api/config';
+
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,7 +38,14 @@ export async function GET(request: NextRequest) {
     // Better Auth's bearer plugin validates bearer tokens as session tokens
     const token = session.session.token;
 
-    return NextResponse.json({ token });
+    const origin = request.headers.get('origin');
+    const response = NextResponse.json({ token });
+    if (origin && isOriginAllowed(origin)) {
+      response.headers.set('Access-Control-Allow-Origin', origin);
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+      response.headers.append('Vary', 'Origin');
+    }
+    return response;
   } catch (error) {
     console.error('[Bearer Token] Error generating token:', error);
     return NextResponse.json(
@@ -47,14 +56,16 @@ export async function GET(request: NextRequest) {
 }
 
 // Allow CORS for Webflow domain
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': 'https://blogflow-three.webflow.io',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Allow-Credentials': 'true',
-    },
-  });
+export async function OPTIONS(request: Request) {
+  const origin = request.headers.get('origin');
+  const response = new NextResponse(null, { status: 204 });
+  if (origin && isOriginAllowed(origin)) {
+    response.headers.set('Access-Control-Allow-Origin', origin);
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+  }
+  response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Max-Age', '86400');
+  response.headers.append('Vary', 'Origin');
+  return response;
 }

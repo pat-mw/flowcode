@@ -6,23 +6,9 @@
 import { RPCHandler } from '@orpc/server/fetch';
 import { appRouter } from '@/lib/api';
 import { createContext } from '@/lib/api/context';
+import { isOriginAllowed } from '@/app/api/config';
 
 const rpcHandler = new RPCHandler(appRouter);
-
-// CORS configuration - allow Webflow domain to make API requests
-const ALLOWED_ORIGINS = [
-  'https://blogflow-three.webflow.io',  // Production Webflow site
-  'http://localhost:3000',               // Local development
-  'https://blogflow-three.vercel.app',   // Production backend (for testing)
-];
-
-/**
- * Check if the request origin is in the allowed list
- */
-function isOriginAllowed(origin: string | null): boolean {
-  if (!origin) return false;
-  return ALLOWED_ORIGINS.includes(origin);
-}
 
 /**
  * Add CORS headers to response
