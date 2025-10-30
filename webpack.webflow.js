@@ -23,7 +23,7 @@ module.exports = {
       // API Configuration (CRITICAL - required by auth client and oRPC client)
       // lib/auth/client.ts:15 and lib/orpc-client.ts:11 both require this
       'process.env.NEXT_PUBLIC_API_URL': JSON.stringify(
-        process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+        process.env.NEXT_PUBLIC_API_URL || ''
       ),
 
       // Authentication - Google OAuth
