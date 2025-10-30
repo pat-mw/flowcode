@@ -153,16 +153,30 @@ jobs:
       - name: Deploy to Webflow
         env:
           WEBFLOW_WORKSPACE_API_TOKEN: ${{ secrets.WEBFLOW_WORKSPACE_API_TOKEN }}
+          # Make env vars available during metadata collection
+          NEXT_PUBLIC_API_URL: https://blogflow-three.vercel.app
+          NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED: false
         run: |
           echo "Deploying ${{ matrix.library.name }} to Webflow..."
+          echo "🌍 Environment variables for CLI:"
+          echo "   NEXT_PUBLIC_API_URL: $NEXT_PUBLIC_API_URL"
+
           # Copy manifest to root (CLI requires webflow.json at root to resolve paths correctly)
           cp src/libraries/${{ matrix.library.key }}/webflow.json ./webflow.json
-          npx webflow library share \
-            --manifest ./webflow.json \
-            --no-input
+
+          # Deploy and capture exit code
+          if npx webflow library share --manifest ./webflow.json --no-input; then
+            echo "✅ Deployed successfully!"
+          else
+            EXIT_CODE=$?
+            echo "❌ Deployment failed with exit code: $EXIT_CODE"
+            echo "Check logs above for details"
+            rm -f ./webflow.json
+            exit $EXIT_CODE
+          fi
+
           # Clean up temporary manifest
           rm -f ./webflow.json
-          echo "✅ Deployed successfully!"
 
   # Job 3: Deployment summary
   deploy-summary:
