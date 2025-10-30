@@ -1,15 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "./variables/default.css";
 @import "./theme/theme.webflow.css";
-
-
-@layer base {
-    * {
-        @apply border-border outline-ring/50;
-    }
-
-    body {
-        @apply bg-background text-foreground;
-    }
-}
+@import "./variables/default.css";
+@import "./base/base.css";

@@ -13,5 +13,6 @@ export const interactiveLibrary: LibraryConfig = {
   // Deployment configuration
   deploy: {
     enabled: false, // Optional library, not auto-deployed
+    workspaceToken: process.env.WEBFLOW_WORKSPACE_API_TOKEN,
   },
 };

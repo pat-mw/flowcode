@@ -5,18 +5,7 @@
 
 import { auth } from '@/lib/auth/config';
 import { toNextJsHandler } from 'better-auth/next-js';
-
-// CORS configuration - same origins as oRPC
-const ALLOWED_ORIGINS = [
-  'https://blogflow-three.webflow.io',
-  'http://localhost:3000',
-  'https://blogflow-three.vercel.app',
-];
-
-function isOriginAllowed(origin: string | null): boolean {
-  if (!origin) return false;
-  return ALLOWED_ORIGINS.includes(origin);
-}
+import { isOriginAllowed } from '@/app/api/config';
 
 function setCorsHeaders(response: Response, origin: string | null): Response {
   if (origin && isOriginAllowed(origin)) {
