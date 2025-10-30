@@ -38,6 +38,8 @@ jobs:
 
       - name: Detect deployable libraries
         id: set-matrix
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
         run: |
           # Get only libraries with deploy.enabled: true
           MATRIX=$(npx --silent tsx -e "
@@ -102,6 +104,7 @@ jobs:
       - name: Build library
         env:
           WEBFLOW_BUNDLE_SIZE_LIMIT_MB: ${{ secrets.WEBFLOW_BUNDLE_SIZE_LIMIT_MB || '15' }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
         run: |
           echo "Building ${{ matrix.library.name }} before deployment..."
           pnpm library:build ${{ matrix.library.key }}

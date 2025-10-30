@@ -3,7 +3,7 @@ import { coreLibrary } from "./core";
 import { analyticsLibrary } from "./analytics";
 import { interactiveLibrary } from "./interactive";
 import { webcnLibrary } from "./webcn";
-import { waitlistLibrary } from "./waitlist";
+import { waitlistLibrary } from "./waitlist/config";
 
 export const libraries = defineLibraries({
   core: coreLibrary,

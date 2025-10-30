@@ -8,7 +8,7 @@ export const webcnLibrary: LibraryConfig = {
   // Environment variables exposed to this library
   env: {
     // Add any environment variables needed for the landing page
-    // NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
 
   // Deployment configuration
