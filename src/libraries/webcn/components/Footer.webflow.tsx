@@ -14,7 +14,9 @@ import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 export function FooterWrapper({
   brandText,
   brandSubtext,
-  copyrightText,
+  builderName,
+  builderUrl,
+  hackathonText,
   githubUrl,
   twitterUrl,
 }: FooterProps) {
@@ -23,7 +25,9 @@ export function FooterWrapper({
       <Footer
         brandText={brandText}
         brandSubtext={brandSubtext}
-        copyrightText={copyrightText}
+        builderName={builderName}
+        builderUrl={builderUrl}
+        hackathonText={hackathonText}
         githubUrl={githubUrl}
         twitterUrl={twitterUrl}
       />
@@ -46,10 +50,20 @@ export default declareComponent(FooterWrapper, {
       defaultValue: 'Full-stack React components for Webflow',
       tooltip: 'Description text below the brand name',
     }),
-    copyrightText: props.Text({
-      name: 'Copyright Text',
-      defaultValue: '© 2025 webcn. Built for Webflow × Contra Hackathon.',
-      tooltip: 'Copyright notice displayed at the bottom',
+    builderName: props.Text({
+      name: 'Builder Name',
+      defaultValue: 'UZO LAB',
+      tooltip: 'Name of the builder/creator to display in footer',
+    }),
+    builderUrl: props.Text({
+      name: 'Builder URL',
+      defaultValue: 'https://uzolab-template.webflow.io',
+      tooltip: 'URL to link to the builder/creator website',
+    }),
+    hackathonText: props.Text({
+      name: 'Hackathon Text',
+      defaultValue: 'for Webflow x Contra Hackathon',
+      tooltip: 'Text displayed on second line of footer credits',
     }),
     githubUrl: props.Text({
       name: 'GitHub URL',
