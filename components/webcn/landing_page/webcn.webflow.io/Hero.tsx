@@ -42,10 +42,8 @@ const Hero = ({
           )}
 
           {/* Main Heading */}
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight">
-            <span className="bg-gradient-primary bg-clip-text text-transparent">
-              {title}
-            </span>
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-primary">
+            {title}
           </h1>
 
           {/* Subheading */}
@@ -62,7 +60,7 @@ const Hero = ({
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button
               size="lg"
-              className="bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300 hover:scale-105 text-base px-8"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-glow transition-all duration-300 hover:scale-105 text-base px-8"
             >
               <Code2 className="mr-2 h-5 w-5" />
               {primaryCtaText}
@@ -71,7 +69,7 @@ const Hero = ({
             <Button
               size="lg"
               variant="outline"
-              className="border-primary/30 text-foreground hover:bg-primary/10 hover:border-primary transition-all duration-300 text-base px-8"
+              className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 text-base px-8"
             >
               {secondaryCtaText}
             </Button>

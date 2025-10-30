@@ -111,7 +111,7 @@ const DemoSection = ({
                 <div className="pt-4">
                   <Button
                     size="lg"
-                    className="bg-gradient-primary text-primary-foreground hover:shadow-glow transition-all duration-300 hover:scale-105"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-glow transition-all duration-300 hover:scale-105"
                   >
                     {ctaButtonText}
                     <ArrowRight className="ml-2 h-5 w-5" />
