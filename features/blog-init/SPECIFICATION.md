@@ -843,6 +843,137 @@ This specification provides a complete blueprint for implementing the BlogFlow p
 
 ---
 
+---
+
+## Current Implementation Status & Missing Components
+
+**Last Updated:** 2025-10-31
+
+### ✅ Implemented Components
+
+The following Webflow components have been **completed and deployed**:
+
+| Component | Location | Status | Notes |
+|-----------|----------|--------|-------|
+| LoginForm | `src/libraries/core/components/LoginForm.webflow.tsx` | ✅ Complete | User authentication with oRPC |
+| RegistrationForm | `src/libraries/core/components/RegistrationForm.webflow.tsx` | ✅ Complete | New user signup |
+| PostEditor | `src/libraries/core/components/PostEditor.webflow.tsx` | ✅ Complete | Full Tiptap editor (wraps PostEditorNew) |
+| Dashboard | `src/libraries/core/components/Dashboard.webflow.tsx` | ✅ Complete | Dashboard overview |
+| Navigation | `src/libraries/core/components/Navigation.webflow.tsx` | ✅ Complete | Main navigation component |
+| HelloUser | `src/libraries/core/components/HelloUser.webflow.tsx` | ✅ Complete | User greeting component |
+
+### ❌ Missing Components
+
+The following components are **required by the specification but not yet implemented**:
+
+| Component | Location | Priority | Backend Dependencies | Estimated Effort |
+|-----------|----------|----------|---------------------|------------------|
+| **PostsList** | `src/libraries/core/components/PostsList.webflow.tsx` | 🔴 High | `posts.list` (exists) | 2-3 hours |
+| **ProfileEditor** | `src/libraries/core/components/ProfileEditor.webflow.tsx` | 🔴 High | `people.getByUserId`, `people.update` (verify) | 2-3 hours |
+| **PublicPostsList** | `src/libraries/core/components/PublicPostsList.webflow.tsx` | 🟡 Medium | `posts.list({ status: 'published' })` (verify) | 1-2 hours |
+
+### Library Assignment Plan
+
+**All missing components → `core` library** ✅
+
+**Rationale:**
+- Core library already contains: LoginForm, RegistrationForm, PostEditor, Dashboard, Navigation
+- All 3 components are core blog functionality (posts & profile management)
+- Share same backend dependencies (`posts.*` and `people.*` endpoints)
+- Similar component complexity to existing core components
+- Core library current size: **12MB / 15MB** (3MB headroom)
+- All components are lightweight (forms, lists, basic UI - no heavy dependencies)
+- Estimated final size: **14-15MB** (within limit)
+
+**No new library creation needed.**
+
+### Backend Status
+
+**Verified Endpoints (from warm.md):**
+- ✅ `auth.getSession` - Get current session
+- ✅ `auth.isAuthenticated` - Check authentication status
+- ✅ `posts.list` - List posts (supports filtering)
+- ✅ `posts.create` - Create new post
+- ✅ `posts.update` - Update existing post
+- ✅ `posts.delete` - Delete post
+- ✅ `posts.publish` - Publish to Webflow CMS
+
+**Need to Verify:**
+- ❓ `posts.publicList` - Public posts endpoint (may use `posts.list` with filter)
+- ❓ `people.getByUserId` - Get user profile
+- ❓ `people.update` - Update user profile
+
+**Action Required:** Verify missing endpoints exist in `app/api/[[...route]]/route.ts` before component implementation.
+
+### Test Pages Status
+
+**All test pages exist with placeholders ready:**
+
+| Page | Path | Status | Notes |
+|------|------|--------|-------|
+| Dashboard Home | `app/(dev)/dashboard/page.tsx` | ✅ Placeholder | Shows "Coming soon" cards |
+| Posts List | `app/(dev)/dashboard/posts/page.tsx` | ⚠️ Placeholder | Ready for PostsList component |
+| Post Editor | `app/(dev)/dashboard/edit/page.tsx` | ✅ Working | Uses PostEditorNew component |
+| Profile Editor | `app/(dev)/profile/page.tsx` | ⚠️ Placeholder | Ready for ProfileEditor component |
+| Public Blog | `app/(dev)/blog/page.tsx` | ⚠️ Placeholder | Ready for PublicPostsList component |
+| Login | `app/(dev)/auth/login/page.tsx` | ✅ Working | Uses LoginForm |
+| Register | `app/(dev)/auth/register/page.tsx` | ✅ Working | Uses RegistrationForm |
+
+### Implementation Priorities
+
+**Phase 1 - Core Functionality (Highest Priority):**
+1. **PostsList** - Critical for managing posts
+2. **ProfileEditor** - Critical for user profiles
+
+**Phase 2 - Public Access (Medium Priority):**
+3. **PublicPostsList** - Important but not blocking core workflow
+
+### Dependencies & Constraints
+
+**Bundle Size Tracking:**
+- Current core library: 12MB
+- Estimated component sizes:
+  - PostsList: ~1MB (list UI, filters, actions)
+  - ProfileEditor: ~1MB (form, validation)
+  - PublicPostsList: ~800KB (simple list, pagination)
+- **Projected total:** ~14-15MB (within 15MB limit) ✅
+
+**Technical Constraints:**
+- Must use browser-native APIs (no Next.js routing)
+- Must wrap in `WebflowProvidersWrapper` for auth + query client
+- Must use oRPC + TanStack Query pattern
+- Must support Shadow DOM isolation
+- Must handle cross-origin requests (Webflow → Vercel)
+
+### Next Steps
+
+1. **Backend Verification (Required First):**
+   - Check `app/api/[[...route]]/route.ts` for missing endpoints
+   - Implement any missing `people.*` endpoints
+   - Test endpoints work correctly
+
+2. **Component Implementation:**
+   - Implement PostsList component
+   - Implement ProfileEditor component
+   - Implement PublicPostsList component
+
+3. **Testing:**
+   - Test all components in `app/(dev)/` pages
+   - Verify Shadow DOM compatibility
+   - Test cross-component state sync
+   - Verify all oRPC queries/mutations work
+
+4. **Documentation:**
+   - Update warm.md if new patterns discovered
+   - Create progress updates in scratchpads
+   - Mark components as complete in this document
+
+### Reference
+
+**Detailed implementation plan:** See `scratchpads/blogflow-demo-completion/spec.md`
+
+---
+
 ## Quick Reference: Key Documentation Links
 
 - **Architecture**: [docs/webflow-nextjs-architecture.md](../docs/webflow-nextjs-architecture.md)
@@ -853,3 +984,4 @@ This specification provides a complete blueprint for implementing the BlogFlow p
 - **Configuration**: [docs/configuration-reference.md](../docs/configuration-reference.md)
 - **Quick Start**: [docs/quick-start-guide.md](../docs/quick-start-guide.md)
 - **Conventions**: [CLAUDE.md](../CLAUDE.md)
+- **Implementation Plan**: [scratchpads/blogflow-demo-completion/spec.md](../../scratchpads/blogflow-demo-completion/spec.md)
