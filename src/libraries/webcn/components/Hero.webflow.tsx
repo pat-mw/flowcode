@@ -22,6 +22,14 @@ export function HeroWrapper({
   secondaryCtaUrl,
   showBadge,
   showTechStack,
+  showBackground,
+  hueShift,
+  noiseIntensity,
+  scanlineIntensity,
+  speed,
+  scanlineFrequency,
+  warpAmount,
+  resolutionScale,
 }: HeroProps) {
   return (
     <WebflowProvidersWrapper>
@@ -36,6 +44,14 @@ export function HeroWrapper({
         secondaryCtaUrl={secondaryCtaUrl}
         showBadge={showBadge}
         showTechStack={showTechStack}
+        showBackground={showBackground}
+        hueShift={hueShift}
+        noiseIntensity={noiseIntensity}
+        scanlineIntensity={scanlineIntensity}
+        speed={speed}
+        scanlineFrequency={scanlineFrequency}
+        warpAmount={warpAmount}
+        resolutionScale={resolutionScale}
       />
     </WebflowProvidersWrapper>
   );
@@ -95,6 +111,46 @@ export default declareComponent(HeroWrapper, {
       name: 'Show Tech Stack',
       defaultValue: true,
       tooltip: 'Toggle visibility of the technology stack section',
+    }),
+    showBackground: props.Boolean({
+      name: 'Show Animated Background',
+      defaultValue: true,
+      tooltip: 'Toggle the DarkVeil animated background effect',
+    }),
+    hueShift: props.Number({
+      name: 'Hue Shift',
+      defaultValue: 100,
+      tooltip: 'Adjust the color hue of the background (0-360 degrees)',
+    }),
+    noiseIntensity: props.Number({
+      name: 'Noise Intensity',
+      defaultValue: 0.2,
+      tooltip: 'Amount of visual noise/grain effect (0-1)',
+    }),
+    scanlineIntensity: props.Number({
+      name: 'Scanline Intensity',
+      defaultValue: 0.4,
+      tooltip: 'Strength of scanline effect (0-1)',
+    }),
+    speed: props.Number({
+      name: 'Animation Speed',
+      defaultValue: 1.2,
+      tooltip: 'Speed of the background animation (0-5)',
+    }),
+    scanlineFrequency: props.Number({
+      name: 'Scanline Frequency',
+      defaultValue: 0.6,
+      tooltip: 'Frequency/density of scanlines (0-2)',
+    }),
+    warpAmount: props.Number({
+      name: 'Warp Amount',
+      defaultValue: 0.4,
+      tooltip: 'Amount of warping/distortion effect (0-1)',
+    }),
+    resolutionScale: props.Number({
+      name: 'Resolution Scale',
+      defaultValue: 1,
+      tooltip: 'Rendering resolution (0.5-2, lower = better performance)',
     }),
   },
 });

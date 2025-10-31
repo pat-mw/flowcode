@@ -2,6 +2,7 @@
 
 import { NavigationWrapper } from "@/src/libraries/core/components/Navigation.webflow";
 import { ChartTestWrapper } from "@/src/libraries/analytics/components/ChartTest.webflow";
+import { HeroWrapper } from "@/src/libraries/webcn/components/Hero.webflow";
 
 export default function TestWrappersPage() {
   return (
@@ -35,6 +36,15 @@ export default function TestWrappersPage() {
               showLegend={true}
             />
           </div>
+        </div>
+
+
+        {/* WebCN Hero */}
+        <div>
+          <HeroWrapper
+            title="WebCN Hero"
+            description="This is a test of the WebCN Hero component"
+          />
         </div>
       </div>
     </div>
