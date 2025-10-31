@@ -15,6 +15,14 @@ export interface HeroProps {
   showBadge?: boolean;
   showTechStack?: boolean;
   showBackground?: boolean;
+  // DarkVeil background props
+  hueShift?: number;
+  noiseIntensity?: number;
+  scanlineIntensity?: number;
+  speed?: number;
+  scanlineFrequency?: number;
+  warpAmount?: number;
+  resolutionScale?: number;
 }
 
 const Hero = ({
@@ -29,6 +37,14 @@ const Hero = ({
   showBadge = true,
   showTechStack = true,
   showBackground = true,
+  // DarkVeil background defaults
+  hueShift = 100,
+  noiseIntensity = 0.2,
+  scanlineIntensity = 0.4,
+  speed = 1.2,
+  scanlineFrequency = 0.6,
+  warpAmount = 0.4,
+  resolutionScale = 1,
 }: HeroProps) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-16">
@@ -36,19 +52,16 @@ const Hero = ({
       {showBackground && (
         <div className="absolute inset-0">
           <DarkVeil
-            hueShift={199}
-            noiseIntensity={0.4}
-            scanlineIntensity={0.4}
-            speed={1.2}
-            scanlineFrequency={0.4}
-            warpAmount={0.4}
-            resolutionScale={1}
+            hueShift={hueShift}
+            noiseIntensity={noiseIntensity}
+            scanlineIntensity={scanlineIntensity}
+            speed={speed}
+            scanlineFrequency={scanlineFrequency}
+            warpAmount={warpAmount}
+            resolutionScale={resolutionScale}
           />
         </div>
       )}
-
-      {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMwLTkuOTQtOC4wNi0xOC0xOC0xOCIgc3Ryb2tlPSJoc2xhKDE5OSwgODklLCA0OCUsIDAuMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
 
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-up">
