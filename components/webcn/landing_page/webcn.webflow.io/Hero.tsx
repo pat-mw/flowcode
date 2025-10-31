@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import DarkVeil from "@/components/react-bits/backgrounds/dark-veil";
 import { ArrowRight, Code2, Sparkles } from "lucide-react";
 
 export interface HeroProps {
@@ -13,6 +14,7 @@ export interface HeroProps {
   secondaryCtaUrl?: string;
   showBadge?: boolean;
   showTechStack?: boolean;
+  showBackground?: boolean;
 }
 
 const Hero = ({
@@ -26,9 +28,25 @@ const Hero = ({
   secondaryCtaUrl = "#demo",
   showBadge = true,
   showTechStack = true,
+  showBackground = true,
 }: HeroProps) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-16">
+      {/* DarkVeil animated background */}
+      {showBackground && (
+        <div className="absolute inset-0">
+          <DarkVeil
+            hueShift={199}
+            noiseIntensity={0.4}
+            scanlineIntensity={0.4}
+            speed={1.2}
+            scanlineFrequency={0.4}
+            warpAmount={0.4}
+            resolutionScale={1}
+          />
+        </div>
+      )}
+
       {/* Animated background grid */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMwLTkuOTQtOC4wNi0xOC0xOC0xOCIgc3Ryb2tlPSJoc2xhKDE5OSwgODklLCA0OCUsIDAuMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvZz48L3N2Zz4=')] opacity-20"></div>
 
@@ -79,9 +97,7 @@ const Hero = ({
               variant="outline"
               className="border-primary/50 text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 text-base px-8"
             >
-              <a href={secondaryCtaUrl}>
-                {secondaryCtaText}
-              </a>
+              <a href={secondaryCtaUrl}>{secondaryCtaText}</a>
             </Button>
           </div>
 

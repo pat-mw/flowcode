@@ -21,7 +21,7 @@ export default function WebcnLandingDemo() {
       <NavbarWrapper />
 
       {/* Hero Section */}
-      <HeroWrapper />
+      <HeroWrapper showBackground={true} />
 
       {/* Features Section */}
       <FeaturesWrapper />

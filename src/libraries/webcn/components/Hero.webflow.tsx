@@ -22,6 +22,7 @@ export function HeroWrapper({
   secondaryCtaUrl,
   showBadge,
   showTechStack,
+  showBackground,
 }: HeroProps) {
   return (
     <WebflowProvidersWrapper>
@@ -36,6 +37,7 @@ export function HeroWrapper({
         secondaryCtaUrl={secondaryCtaUrl}
         showBadge={showBadge}
         showTechStack={showTechStack}
+        showBackground={showBackground}
       />
     </WebflowProvidersWrapper>
   );
@@ -95,6 +97,11 @@ export default declareComponent(HeroWrapper, {
       name: 'Show Tech Stack',
       defaultValue: true,
       tooltip: 'Toggle visibility of the technology stack section',
+    }),
+    showBackground: props.Boolean({
+      name: 'Show Animated Background',
+      defaultValue: true,
+      tooltip: 'Toggle the DarkVeil animated background effect',
     }),
   },
 });
