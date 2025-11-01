@@ -12,9 +12,21 @@ export const VERCEL_API_BASE = 'https://api.vercel.com';
 
 /**
  * Vercel OAuth endpoints
+ * Note: For integrations with a slug, use getVercelOAuthAuthorizeUrl() instead
  */
-export const VERCEL_OAUTH_AUTHORIZE_URL = 'https://vercel.com/oauth/authorize';
 export const VERCEL_OAUTH_TOKEN_URL = 'https://api.vercel.com/v2/oauth/access_token';
+
+/**
+ * Get Vercel OAuth authorize URL
+ * For integrations with a slug, use the integration-specific URL
+ * For integrations without a slug (deprecated), use the generic URL
+ */
+export function getVercelOAuthAuthorizeUrl(slug?: string): string {
+  if (slug) {
+    return `https://vercel.com/integrations/${slug}/oauth/authorize`;
+  }
+  return 'https://vercel.com/oauth/authorize';
+}
 
 /**
  * Vercel database types

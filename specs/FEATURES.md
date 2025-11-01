@@ -118,6 +118,13 @@ All code has been implemented and verified with Playwright MCP! Ready for your m
    ENCRYPTION_SECRET=<generated-value>
    VERCEL_OAUTH_CLIENT_ID=<your-client-id>
    VERCEL_OAUTH_CLIENT_SECRET=<your-client-secret>
+
+   # OAuth URL Configuration (choose ONE option):
+   # Option 1: Full URL (recommended for integrations with slugs)
+   VERCEL_OAUTH_AUTHORIZE_URL=https://vercel.com/integrations/webcn/oauth/authorize
+
+   # Option 2: Just the slug (URL will be constructed)
+   # VERCEL_INTEGRATION_SLUG=webcn
    ```
 3. Run: `NODE_ENV=development pnpm dev`
 4. Visit: `http://localhost:3001/integrations/test`

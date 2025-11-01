@@ -32,8 +32,8 @@ import type {
 } from './types';
 import {
   VERCEL_API_BASE,
-  VERCEL_OAUTH_AUTHORIZE_URL,
   VERCEL_OAUTH_TOKEN_URL,
+  getVercelOAuthAuthorizeUrl,
 } from './types';
 
 /**
@@ -45,7 +45,9 @@ export class VercelProvider implements CloudProvider {
     name: 'Vercel',
     supportedDatabases: ['postgres'],
     requiresTeam: false,
-    oauthAuthUrl: VERCEL_OAUTH_AUTHORIZE_URL,
+    oauthAuthUrl:
+      process.env.VERCEL_OAUTH_AUTHORIZE_URL ||
+      getVercelOAuthAuthorizeUrl(process.env.VERCEL_INTEGRATION_SLUG),
     oauthTokenUrl: VERCEL_OAUTH_TOKEN_URL,
   };
 
@@ -139,14 +141,20 @@ export class VercelProvider implements CloudProvider {
    * Generate OAuth authorization URL
    */
   generateAuthUrl(config: OAuthConfig, state: string): string {
+    // Support either full URL or slug-based construction
+    const baseUrl =
+      process.env.VERCEL_OAUTH_AUTHORIZE_URL ||
+      getVercelOAuthAuthorizeUrl(process.env.VERCEL_INTEGRATION_SLUG);
+
     const params = new URLSearchParams({
+      response_type: 'code',
       client_id: config.clientId,
       redirect_uri: config.redirectUri,
       state,
       scope: config.scopes.join(' '),
     });
 
-    return `${VERCEL_OAUTH_AUTHORIZE_URL}?${params.toString()}`;
+    return `${baseUrl}?${params.toString()}`;
   }
 
   /**
