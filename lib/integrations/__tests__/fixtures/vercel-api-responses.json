@@ -1,0 +1,193 @@
+{
+  "createDatabase": {
+    "success": {
+      "id": "postgres_abc123def456",
+      "name": "my_database",
+      "region": "us-east-1",
+      "type": "postgres",
+      "connectionString": "postgres://user:password@host.vercel-storage.com:5432/my_database",
+      "createdAt": "2024-10-30T12:00:00Z",
+      "status": "creating"
+    },
+    "quotaExceeded": {
+      "error": {
+        "code": "QUOTA_EXCEEDED",
+        "message": "Maximum number of databases for your plan exceeded"
+      }
+    },
+    "invalidRegion": {
+      "error": {
+        "code": "INVALID_REGION",
+        "message": "Region 'us-west-99' is not available"
+      }
+    },
+    "invalidName": {
+      "error": {
+        "code": "INVALID_NAME",
+        "message": "Database name must contain only lowercase letters, numbers, underscores, and hyphens"
+      }
+    }
+  },
+  "getDatabases": {
+    "success": {
+      "databases": [
+        {
+          "id": "postgres_abc123def456",
+          "name": "production_db",
+          "region": "us-east-1",
+          "type": "postgres",
+          "connectionString": "postgres://user:pass@host1.vercel-storage.com:5432/production_db",
+          "createdAt": "2024-10-20T10:00:00Z",
+          "status": "ready"
+        },
+        {
+          "id": "postgres_xyz789uvw123",
+          "name": "staging_db",
+          "region": "us-west-2",
+          "type": "postgres",
+          "connectionString": "postgres://user:pass@host2.vercel-storage.com:5432/staging_db",
+          "createdAt": "2024-10-25T14:30:00Z",
+          "status": "ready"
+        }
+      ]
+    },
+    "empty": {
+      "databases": []
+    }
+  },
+  "deleteDatabase": {
+    "success": {
+      "message": "Database deleted successfully"
+    },
+    "notFound": {
+      "error": {
+        "code": "NOT_FOUND",
+        "message": "Database not found"
+      }
+    },
+    "forbidden": {
+      "error": {
+        "code": "FORBIDDEN",
+        "message": "You do not have permission to delete this database"
+      }
+    }
+  },
+  "oauth": {
+    "tokenExchange": {
+      "success": {
+        "access_token": "vercel_access_token_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+        "refresh_token": "vercel_refresh_token_xyz123",
+        "expires_in": 3600,
+        "token_type": "Bearer",
+        "scope": "read write"
+      },
+      "invalidCode": {
+        "error": "invalid_code",
+        "error_description": "The authorization code is invalid or has expired"
+      },
+      "expiredCode": {
+        "error": "expired_code",
+        "error_description": "The authorization code has expired"
+      }
+    },
+    "tokenRefresh": {
+      "success": {
+        "access_token": "vercel_access_token_new_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+        "refresh_token": "vercel_refresh_token_new_xyz123",
+        "expires_in": 3600,
+        "token_type": "Bearer"
+      },
+      "invalidRefreshToken": {
+        "error": "invalid_grant",
+        "error_description": "The refresh token is invalid or has expired"
+      }
+    }
+  },
+  "projects": {
+    "list": {
+      "success": {
+        "projects": [
+          {
+            "id": "prj_abc123",
+            "name": "my-website",
+            "framework": "nextjs",
+            "createdAt": "2024-10-15T09:00:00Z"
+          },
+          {
+            "id": "prj_xyz789",
+            "name": "another-project",
+            "framework": "remix",
+            "createdAt": "2024-10-20T14:30:00Z"
+          }
+        ]
+      },
+      "empty": {
+        "projects": []
+      }
+    },
+    "get": {
+      "success": {
+        "id": "prj_abc123",
+        "name": "my-website",
+        "framework": "nextjs",
+        "createdAt": "2024-10-15T09:00:00Z",
+        "latestDeployment": {
+          "id": "dpl_abc123",
+          "state": "READY"
+        }
+      },
+      "notFound": {
+        "error": {
+          "code": "NOT_FOUND",
+          "message": "Project not found"
+        }
+      }
+    }
+  },
+  "envVars": {
+    "update": {
+      "success": {
+        "message": "Environment variables updated successfully",
+        "updated": 3
+      },
+      "invalidNames": {
+        "error": {
+          "code": "INVALID_ENV_VAR_NAME",
+          "message": "Invalid environment variable names: database-url, api.key"
+        }
+      },
+      "invalidValues": {
+        "error": {
+          "code": "INVALID_ENV_VAR_VALUE",
+          "message": "Environment variable value too large"
+        }
+      }
+    }
+  },
+  "errors": {
+    "unauthorized": {
+      "error": {
+        "code": "UNAUTHORIZED",
+        "message": "Invalid token"
+      }
+    },
+    "rateLimited": {
+      "error": {
+        "code": "TOO_MANY_REQUESTS",
+        "message": "Rate limit exceeded"
+      }
+    },
+    "badRequest": {
+      "error": {
+        "code": "BAD_REQUEST",
+        "message": "Invalid request parameters"
+      }
+    },
+    "internalError": {
+      "error": {
+        "code": "INTERNAL_SERVER_ERROR",
+        "message": "Internal server error"
+      }
+    }
+  }
+}
