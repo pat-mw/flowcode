@@ -151,7 +151,7 @@ I needed that same DX for Webflow Code Components.
 
 Enter **oRPC**.
 
-oRPC is tRPC's lesser-known cousin (both made by the same author, actually). But it has one killer advantage: it works in environments where you don't control the bundler - exactly the situation with Webflow Code Components, which get bundled by Webflow's infrastructure.
+oRPC is a newer alternative to tRPC, inspired by its approach to type safety. But it has one killer advantage: it works in environments where you don't control the bundler - exactly the situation with Webflow Code Components, which get bundled by Webflow's infrastructure.
 
 Here's the magic. You define your API procedures on your server:
 
