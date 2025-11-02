@@ -9,7 +9,7 @@ import { bearer } from 'better-auth/plugins';
 import { db } from '@/lib/db';
 import { users, sessions, accounts, verifications } from '@/lib/db';
 import { nanoid } from 'nanoid';
-import { getAllowedOrigins } from '@/lib/cors-config';
+import { getAllowedOrigins } from '@/app/api/config';
 import { getBaseUrl } from '@/lib/env';
 
 if (!process.env.BETTER_AUTH_SECRET) {
