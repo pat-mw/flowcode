@@ -102,7 +102,23 @@ const getAll = protectedProcedure
   });
 
 /**
- * Protected procedure: Get waitlist statistics
+ * Public procedure: Get public waitlist statistics
+ * Returns only the total count for public display
+ */
+const getPublicStats = publicProcedure.handler(async () => {
+  const [stats] = await db
+    .select({
+      total: sql<number>`count(*)`,
+    })
+    .from(waitlist);
+
+  return {
+    total: Number(stats.total),
+  };
+});
+
+/**
+ * Protected procedure: Get detailed waitlist statistics
  * Requires authentication (admin only)
  */
 const getStats = protectedProcedure.handler(async () => {
@@ -242,6 +258,7 @@ export const waitlistRouter = os.router({
   join,
   getAll,
   getStats,
+  getPublicStats,
   update,
   remove,
   bulkUpdate,

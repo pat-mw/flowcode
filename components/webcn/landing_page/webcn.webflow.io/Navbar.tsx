@@ -6,6 +6,19 @@ export interface NavbarProps {
   githubUrl?: string;
   ctaButtonText?: string;
   showGithubLink?: boolean;
+  // Navigation Links
+  link1Label?: string;
+  link1Url?: string;
+  showLink1?: boolean;
+  link2Label?: string;
+  link2Url?: string;
+  showLink2?: boolean;
+  link3Label?: string;
+  link3Url?: string;
+  showLink3?: boolean;
+  link4Label?: string;
+  link4Url?: string;
+  showLink4?: boolean;
 }
 
 const Navbar = ({
@@ -13,7 +26,28 @@ const Navbar = ({
   githubUrl = "https://github.com",
   ctaButtonText = "Get Started",
   showGithubLink = true,
+  // Navigation Links - defaults match current behavior
+  link1Label = "Features",
+  link1Url = "#features",
+  showLink1 = true,
+  link2Label = "Components",
+  link2Url = "#components",
+  showLink2 = true,
+  link3Label = "Demo",
+  link3Url = "#demo",
+  showLink3 = true,
+  link4Label = "Story",
+  link4Url = "#story",
+  showLink4 = true,
 }: NavbarProps) => {
+  // Build navigation links array from props
+  const navLinks = [
+    { label: link1Label, url: link1Url, show: showLink1 },
+    { label: link2Label, url: link2Url, show: showLink2 },
+    { label: link3Label, url: link3Url, show: showLink3 },
+    { label: link4Label, url: link4Url, show: showLink4 },
+  ].filter(link => link.show && link.label && link.url);
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
       <div className="container mx-auto px-4">
@@ -30,18 +64,15 @@ const Navbar = ({
 
           {/* Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Features
-            </a>
-            <a href="#components" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Components
-            </a>
-            <a href="#demo" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Demo
-            </a>
-            <a href="#story" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Story
-            </a>
+            {navLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
           </div>
 
           {/* Actions */}
