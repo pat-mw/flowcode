@@ -1,12 +1,16 @@
 {
-  "name": "waitlist",
-  "displayName": "Waitlist Components",
-  "description": "Email capture and admin management for waitlists",
-  "version": "1.0.0",
-  "components": "./src/libraries/waitlist/**/*.webflow.@(js|jsx|mjs|ts|tsx)",
-  "telemetry": false,
-  "bundle": {
-    "type": "webpack",
-    "webpack": "./webpack.webflow.js"
+  "library": {
+    "name": "blogflow-waitlist",
+    "components": [
+      "./src/libraries/waitlist/**/*.webflow.@(ts|tsx)"
+    ],
+    "bundleConfig": "./webpack.webflow.js",
+    "description": "Email waitlist capture and admin management components",
+    "id": "blogflow-waitlist"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true
+    }
   }
 }

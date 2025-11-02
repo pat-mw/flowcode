@@ -28,8 +28,8 @@ const WaitlistSection = ({
   showNameField = true,
   showBadge = true,
 }: WaitlistSectionProps) => {
-  // Fetch waitlist statistics
-  const { data: stats } = useQuery(orpc.waitlist.getStats.queryOptions());
+  // Fetch public waitlist statistics (no auth required)
+  const { data: stats } = useQuery(orpc.waitlist.getPublicStats.queryOptions());
 
   // Format the count with commas
   const formatCount = (count: number) => {
