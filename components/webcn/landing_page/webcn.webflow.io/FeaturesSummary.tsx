@@ -34,10 +34,10 @@ const FeaturesSummary = ({
   ctaLink = "/lander/webcn/features",
 }: FeaturesSummaryProps) => {
   return (
-    <section className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-background to-muted/20">
+    <section className="py-24 px-4 relative overflow-hidden bg-muted/20">
       <div className="container mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold text-primary">
             {sectionTitle}
           </h2>
           <p className="text-lg text-muted-foreground">
@@ -51,7 +51,7 @@ const FeaturesSummary = ({
             return (
               <Card
                 key={index}
-                className="group relative p-8 bg-gradient-card border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-glow hover:-translate-y-1 animate-fade-in"
+                className="group relative p-8 bg-card border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-glow hover:-translate-y-1 animate-fade-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="space-y-4 text-center">
@@ -72,7 +72,7 @@ const FeaturesSummary = ({
           <Button
             asChild
             size="lg"
-            className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 hover:opacity-90 transition-opacity shadow-glow"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-glow"
           >
             <a href={ctaLink}>{ctaText}</a>
           </Button>

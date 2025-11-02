@@ -72,10 +72,10 @@ const ComponentGrid = ({
   viewAllButtonText = "View All Components",
 }: ComponentGridProps) => {
   return (
-    <section id="components" className="py-24 px-4 bg-secondary/20">
+    <section id="components" className="py-24 px-4 bg-background">
       <div className="container mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-16 space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground">
             {sectionTitle}
           </h2>
           <p className="text-lg text-muted-foreground">
@@ -87,24 +87,29 @@ const ComponentGrid = ({
           {components.map((component, index) => (
             <Card
               key={index}
-              className="group relative overflow-hidden bg-card border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-glow animate-fade-in"
+              className="group relative overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 animate-fade-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               {/* Preview Area */}
-              <div className="aspect-video bg-secondary/50 border-b border-border/50 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <span className="text-muted-foreground text-sm relative z-10">
+              <div className="aspect-video bg-muted/30 border-b border-border flex items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="text-muted-foreground text-sm font-mono relative z-10">
                   {component.preview}
                 </span>
               </div>
 
               {/* Content */}
-              <div className="p-6 space-y-4">
+              <div className="p-6 space-y-3">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-xl font-semibold">{component.name}</h3>
-                  <Badge 
+                  <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
+                    {component.name}
+                  </h3>
+                  <Badge
                     variant={component.category === "Full-Stack" ? "default" : "secondary"}
-                    className={component.category === "Full-Stack" ? "bg-gradient-primary" : ""}
+                    className={component.category === "Full-Stack"
+                      ? "bg-primary text-primary-foreground border-0"
+                      : "bg-secondary text-secondary-foreground"
+                    }
                   >
                     {component.category}
                   </Badge>
@@ -112,10 +117,10 @@ const ComponentGrid = ({
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   {component.description}
                 </p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-between group-hover:text-primary transition-colors"
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-full justify-between hover:bg-primary hover:text-primary-foreground transition-all"
                 >
                   View Component
                   <ExternalLink className="w-4 h-4" />
@@ -126,7 +131,11 @@ const ComponentGrid = ({
         </div>
 
         <div className="text-center mt-12">
-          <Button size="lg" variant="outline" className="border-primary/30 hover:bg-primary/10">
+          <Button
+            size="lg"
+            variant="outline"
+            className="border-border hover:border-primary hover:bg-primary/5 hover:text-primary transition-all"
+          >
             {viewAllButtonText}
           </Button>
         </div>

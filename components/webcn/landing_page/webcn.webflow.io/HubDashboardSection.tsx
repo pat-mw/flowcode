@@ -365,7 +365,7 @@ const HubDashboardSection = ({
 
           {/* Bottom Features */}
           <div className="grid md:grid-cols-3 gap-6 mt-12">
-            <div className="text-center p-6">
+            {/* <div className="text-center p-6">
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-6 h-6 text-primary" />
               </div>
@@ -373,9 +373,9 @@ const HubDashboardSection = ({
               <p className="text-sm text-muted-foreground">
                 Connect your accounts and deploy in minutes
               </p>
-            </div>
+            </div> */}
 
-            <div className="text-center p-6">
+            {/* <div className="text-center p-6">
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Package className="w-6 h-6 text-primary" />
               </div>
@@ -383,9 +383,9 @@ const HubDashboardSection = ({
               <p className="text-sm text-muted-foreground">
                 Install only what you need, when you need it
               </p>
-            </div>
+            </div> */}
 
-            <div className="text-center p-6">
+            {/* <div className="text-center p-6">
               <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Settings className="w-6 h-6 text-primary" />
               </div>
@@ -393,7 +393,7 @@ const HubDashboardSection = ({
               <p className="text-sm text-muted-foreground">
                 Configure every aspect of your deployment
               </p>
-            </div>
+            </div> */}
           </div>
 
           {/* Bottom Note */}

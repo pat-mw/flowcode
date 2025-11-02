@@ -5,6 +5,7 @@ export interface NavbarProps {
   logoText?: string;
   githubUrl?: string;
   ctaButtonText?: string;
+  ctaButtonUrl?: string;
   showGithubLink?: boolean;
   // Navigation Links
   link1Label?: string;
@@ -25,6 +26,7 @@ const Navbar = ({
   logoText = "webcn",
   githubUrl = "https://github.com",
   ctaButtonText = "Get Started",
+  ctaButtonUrl = "#get-started",
   showGithubLink = true,
   // Navigation Links - defaults match current behavior
   link1Label = "Features",
@@ -87,9 +89,11 @@ const Navbar = ({
                 <Github className="w-5 h-5" />
               </a>
             )}
-            <Button size="sm" className="shadow-glow">
-              {ctaButtonText}
-            </Button>
+            <a href={ctaButtonUrl}>
+              <Button size="sm" className="shadow-glow">
+                {ctaButtonText}
+              </Button>
+            </a>
           </div>
         </div>
       </div>

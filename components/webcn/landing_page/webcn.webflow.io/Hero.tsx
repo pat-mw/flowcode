@@ -36,20 +36,20 @@ const Hero = ({
   secondaryCtaUrl = "#demo",
   showBadge = true,
   showTechStack = true,
-  showBackground = true,
+  // showBackground = true,
   // DarkVeil background defaults
-  hueShift = 100,
-  noiseIntensity = 0.2,
-  scanlineIntensity = 0.4,
-  speed = 1.2,
-  scanlineFrequency = 0.6,
-  warpAmount = 0.4,
-  resolutionScale = 1,
+  // hueShift = 100,
+  // noiseIntensity = 0.2,
+  // scanlineIntensity = 0.4,
+  // speed = 1.2,
+  // scanlineFrequency = 0.6,
+  // warpAmount = 0.4,
+  // resolutionScale = 1,
 }: HeroProps) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-16">
       {/* DarkVeil animated background */}
-      {showBackground && (
+      {/* {showBackground && (
         <div className="absolute inset-0">
           <DarkVeil
             hueShift={hueShift}
@@ -61,7 +61,7 @@ const Hero = ({
             resolutionScale={resolutionScale}
           />
         </div>
-      )}
+      )} */}
 
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-up">

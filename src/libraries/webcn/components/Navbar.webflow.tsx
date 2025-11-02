@@ -15,6 +15,7 @@ export function NavbarWrapper({
   logoText,
   githubUrl,
   ctaButtonText,
+  ctaButtonUrl,
   showGithubLink,
   link1Label,
   link1Url,
@@ -35,6 +36,7 @@ export function NavbarWrapper({
         logoText={logoText}
         githubUrl={githubUrl}
         ctaButtonText={ctaButtonText}
+        ctaButtonUrl={ctaButtonUrl}
         showGithubLink={showGithubLink}
         link1Label={link1Label}
         link1Url={link1Url}
@@ -72,6 +74,11 @@ export default declareComponent(NavbarWrapper, {
       name: 'CTA Button Text',
       defaultValue: 'Get Started',
       tooltip: 'Text for the call-to-action button',
+    }),
+    ctaButtonUrl: props.Text({
+      name: 'CTA Button URL',
+      defaultValue: '#get-started',
+      tooltip: 'URL for the call-to-action button',
     }),
     showGithubLink: props.Boolean({
       name: 'Show GitHub Link',
