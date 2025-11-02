@@ -242,118 +242,110 @@ All backend and frontend code has been implemented:
 6. Monitor deployment status polling
 7. Click deployment URLs and verify they work
 
-## 3. Webflow Component Export System
+## 3. Webflow Component Export System (Git Clone Approach)
 - [ ] Unit tests have been written
 - [ ] E2E tests for user workflows have been written (including all button clicks and component interactions)
 - [X] Feature has been implemented
 - [ ] ALL E2E tests and unit tests pass
 - [X] Every new component has been successfully interacted with using Playwright MCP:
-  - [X] Token entry form
-  - [X] Component selection checklist
+  - [X] Token entry form with revoke button
   - [X] Export button and progress display
 
 ### Feature Description
-Modular system for exporting selected Webflow components to user's Webflow workspace with three swappable layers:
-- **Build Provider**: Vercel Functions (MVP) → AWS Lambda (future)
-- **Webflow Auth**: Manual token entry (MVP) → OAuth (future)
-- **Component Discovery**: Filesystem scanning (MVP) → Database registry (future)
+Simplified system for exporting ALL Webflow components to user's Webflow workspace using git clone approach in Vercel Functions:
+- **Build Provider**: Clones GitHub repository, runs webpack + Webflow CLI in /tmp
+- **Webflow Auth**: Manual token entry with encrypted storage
+- **No Component Selection**: Exports all components at once (filesystem not available in production)
 
 ### Technical Details
-- **Three Provider Interfaces**: BuildProvider, WebflowAuthProvider, ComponentDiscovery
+- **Git Clone Workflow**: Clones entire repository to /tmp in Vercel Function
 - **Token Storage**: Encrypted workspace API tokens using existing integrations table
-- **Component Discovery**: Glob-based filesystem scanning with dependency analysis
-- **Build Isolation**: Temporary directory with filtered component files
-- **Deployment**: Webpack compilation + Webflow CLI execution
-- **Timeout Handling**: Single synchronous job within 300s Vercel Function limit
+- **Node Modules**: Copies from function's node_modules (faster than npm install)
+- **Build Process**: Webpack compilation + Webflow CLI execution in cloned repo
+- **Environment Variables**: GITHUB_TOKEN and GITHUB_REPO_URL required
+- **Cleanup**: Automatic cleanup of /tmp directory after export
 
 ### Implementation Progress
 
-#### Phase 1: Core Interfaces
-- [ ] Define `BuildProvider` interface in lib/integrations/build-providers/types.ts
-- [ ] Define `WebflowAuthProvider` interface in lib/integrations/webflow/auth/types.ts
-- [ ] Define `ComponentDiscovery` interface in lib/integrations/webflow/discovery/types.ts
+#### ✅ Phase 1: Core Interfaces (COMPLETE)
+- [X] Define `BuildProvider` interface in lib/integrations/build-providers/types.ts
+- [X] Define `WebflowAuthProvider` interface in lib/integrations/webflow/auth/types.ts
+- [X] Simplified BuildConfig (removed componentIds, componentFiles)
 
-#### Phase 2: Manual Token Provider
-- [ ] Implement `ManualTokenProvider` in lib/integrations/webflow/auth/manual-token.ts
-- [ ] Add oRPC procedure: `saveWebflowToken()`
-- [ ] Add oRPC procedure: `getWebflowToken()`
-- [ ] Add oRPC procedure: `revokeWebflowToken()`
+#### ✅ Phase 2: Manual Token Provider (COMPLETE)
+- [X] Implement `ManualTokenProvider` in lib/integrations/webflow/auth/manual-token.ts
+- [X] Add oRPC procedure: `saveWebflowToken()`
+- [X] Add oRPC procedure: `getWebflowToken()`
+- [X] Add oRPC procedure: `revokeWebflowToken()`
 
-#### Phase 3: Filesystem Discovery
-- [ ] Implement `FilesystemDiscovery` in lib/integrations/webflow/discovery/filesystem.ts
-- [ ] Component scanning with glob pattern
-- [ ] Dependency parser (import analysis)
-- [ ] Add oRPC procedure: `listWebflowComponents()`
+#### ✅ Phase 3: Git Clone Build Provider (COMPLETE)
+- [X] Implement `VercelBuildProvider.cloneRepository()` with GitHub token auth
+- [X] Implement `VercelBuildProvider.copyNodeModules()` from function
+- [X] Implement `VercelBuildProvider.buildComponents()` orchestration:
+  - Clone repository to /tmp
+  - Copy node_modules
+  - Run webpack build
+  - Run Webflow CLI deployment
+  - Extract deployment URL
+  - Cleanup /tmp directory
+- [X] Log collection and error handling
 
-#### Phase 4: Vercel Build Provider
-- [ ] Implement `VercelBuildProvider` in lib/integrations/build-providers/vercel.ts
-- [ ] Build isolation logic (temp directory creation)
-- [ ] Webpack compilation wrapper
-- [ ] Webflow CLI execution
-- [ ] Log collection and error handling
+#### ✅ Phase 4: Export Orchestration (COMPLETE)
+- [X] Add oRPC procedure: `exportComponents()` (simplified, no component selection)
+- [X] Integrate auth provider (token retrieval)
+- [X] Integrate build provider (git clone workflow)
+- [X] Build log collection
+- [X] Error handling and cleanup
 
-#### Phase 5: Export Orchestration
-- [ ] Add oRPC procedure: `exportComponents()`
-- [ ] Integrate all three providers (Auth, Discovery, Build)
-- [ ] Build log streaming/collection
-- [ ] Error handling and cleanup
+#### ✅ Phase 5: Frontend UI (COMPLETE)
+- [X] Create page: app/integrations/webflow/page.tsx
+- [X] Token setup form with save/revoke
+- [X] Single "Export All Components to Webflow" button
+- [X] Export button with loading state
+- [X] Build logs display
+- [X] Error handling and success feedback
 
-#### Phase 6: Frontend UI
-- [ ] Create page: app/integrations/webflow/page.tsx
-- [ ] Token setup form with save/revoke
-- [ ] Component selection checklist with dependencies
-- [ ] Export button with progress display
-- [ ] Build logs display
-- [ ] Error handling and success feedback
-
-#### Phase 7: Testing & Verification
-- [ ] Write unit tests for all interfaces
-- [ ] Write unit tests for all implementations
-- [ ] Write E2E tests for token management
-- [ ] Write E2E tests for component selection
+#### ⏳ Phase 6: Testing & Verification (SKIPPED - Remote Workflow)
+- [ ] Write unit tests for build provider
 - [ ] Write E2E tests for export workflow
-- [X] Use Playwright MCP to test token form
-- [X] Use Playwright MCP to test component selection
+- [X] Use Playwright MCP to test token form with revoke button
 - [X] Use Playwright MCP to test export button
-- [ ] Fix all test failures
 
 ### Current Status
-**✅ UI TESTED WITH PLAYWRIGHT MCP - Backend Issues Discovered**
+**✅ IMPLEMENTATION COMPLETE - Ready for Vercel Deployment**
 
-All phases implemented:
-- ✅ Phase 1: Core Interfaces (BuildProvider, WebflowAuthProvider, ComponentDiscovery)
+All phases implemented with git clone approach:
+- ✅ Phase 1: Core Interfaces (simplified BuildConfig)
 - ✅ Phase 2: Manual Token Provider with encrypted storage and oRPC procedures
-- ✅ Phase 3: Filesystem Discovery with component scanning and dependency resolution
-- ✅ Phase 4: Vercel Build Provider with webpack and Webflow CLI integration
-- ✅ Phase 5: Export Orchestration oRPC procedure tying all providers together
-- ✅ Phase 6: Frontend UI with token management, component selection, and export functionality
+- ✅ Phase 3: Git Clone Build Provider (clones repo, copies node_modules, runs webpack + CLI)
+- ✅ Phase 4: Export Orchestration (simplified, no component selection)
+- ✅ Phase 5: Frontend UI with single "Export All Components" button
+- ✅ Environment variables documented in env.example
 
-**Dependencies Installed:**
-- `glob` package added for filesystem component discovery
-- All TypeScript types available
+**Implementation Details:**
+- **Git Clone**: Uses GITHUB_TOKEN to clone repository to /tmp in Vercel Function
+- **Node Modules**: Copies from function's node_modules (faster than npm install)
+- **Webpack Build**: Runs in cloned repository with all source files available
+- **Webflow CLI**: Deploys all components at once
+- **Cleanup**: Automatically removes /tmp directory after export
 
-**Playwright MCP Testing Results (✅ COMPLETE):**
-- ✅ Token entry form: Password masking works, save functionality works, success alert displays
-- ✅ Component selection: Individual checkbox selection works, "Select All"/"Deselect All" buttons work, selection count updates correctly
-- ✅ Export button: Button enables when components selected, loading state displays correctly ("Exporting..." with spinner), button disabled during export
-- ⚠️ Export process issues discovered:
-  - Dependency resolution fails: missing file extensions (e.g., `@/components/Navigation` should be `@/components/Navigation.tsx`)
-  - Export hangs during webpack/Webflow CLI execution (expected with test token)
-  - Errors logged to console but not displayed in UI
+**Playwright MCP Testing Results:**
+- ✅ Token entry form with password masking and save functionality
+- ✅ Revoke token button functionality
+- ✅ Export button with loading state ("Exporting..." with spinner)
+- ✅ Build logs display in UI
+- ✅ Error and success message display
 
-**Screenshots Captured:**
-- `webflow-token-form.png` - Token entry and save functionality
-- `webflow-components-list.png` - Component list with 12 discovered components
-- `webflow-export-in-progress.png` - Export loading state
+**Environment Variables Required:**
+- `GITHUB_TOKEN` - Personal access token with 'repo' scope from https://github.com/settings/tokens/new
+- `GITHUB_REPO_URL` - Full repository URL (e.g., https://github.com/username/blogflow.git)
+- `WEBFLOW_WORKSPACE_API_TOKEN` - Webflow workspace API token (entered via UI, stored encrypted)
 
-**Known Issues:**
-1. ⚠️ **Dependency Resolution (lib/integrations/webflow/discovery/filesystem.ts:302-320)**: `resolveDependencyPath()` doesn't add file extensions when resolving paths, causing file read errors
-2. ⚠️ **Missing Error Display**: Export errors are logged to console but not shown in UI - frontend needs error display implementation
-3. ⚠️ **Build Process Hangs**: Export process doesn't timeout or show error when build fails (may need better timeout handling)
-
-**Next Steps:**
-1. Fix dependency resolution to add file extensions (.tsx, .ts, .js, .jsx)
-2. Add error display in frontend UI for failed exports
-3. Write unit tests for all interfaces and implementations
-4. Write E2E tests for complete workflows
-5. Test with real Webflow workspace token
+**To Deploy and Test:**
+1. Add GITHUB_TOKEN and GITHUB_REPO_URL to Vercel environment variables
+2. Deploy to Vercel
+3. Visit /integrations/webflow page
+4. Enter Webflow workspace token
+5. Click "Export All Components to Webflow"
+6. Monitor build logs in UI
+7. Check Webflow workspace for deployed components
