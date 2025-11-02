@@ -4,23 +4,10 @@
  */
 
 export interface BuildConfig {
-  /** IDs of components to build */
-  componentIds: string[];
   /** Webflow workspace API token */
   webflowToken: string;
   /** Temporary directory for build isolation */
   outputDir: string;
-  /** Component files and dependencies */
-  componentFiles: ComponentFile[];
-}
-
-export interface ComponentFile {
-  /** Relative path from project root */
-  path: string;
-  /** File content */
-  content: string;
-  /** Whether this is a dependency (not a main component) */
-  isDependency?: boolean;
 }
 
 export interface BuildResult {

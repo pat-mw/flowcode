@@ -85,32 +85,21 @@ const listWebflowComponents = protectedProcedure.handler(async () => {
 });
 
 /**
- * Export selected components to Webflow
+ * Export all components to Webflow
+ * Uses git clone approach - no component selection needed
  */
 const exportComponents = protectedProcedure
-  .input(
-    z.object({
-      componentIds: z.array(z.string()).min(1, 'At least one component must be selected'),
-    })
-  )
-  .handler(async ({ input, context }) => {
+  .input(z.object({})) // No input needed
+  .handler(async ({ context }) => {
     const ctx = context as Context & { userId: string };
 
     // Get Webflow token
     const webflowToken = await authProvider.getToken(ctx.userId);
 
-    // Get component files
-    const componentFiles = await discovery.getComponentFiles(input.componentIds);
-
-    // Build and deploy
+    // Build and deploy (git clone handles component discovery)
     const result = await buildProvider.buildComponents({
-      componentIds: input.componentIds,
       webflowToken,
       outputDir: '/tmp',
-      componentFiles: [
-        ...componentFiles.components,
-        ...componentFiles.dependencies,
-      ],
     });
 
     return result;

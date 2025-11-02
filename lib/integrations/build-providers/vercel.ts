@@ -1,92 +1,66 @@
 /**
  * Vercel Build Provider
- * Executes Webflow component builds using Vercel Functions
+ * Clones GitHub repository and executes Webflow component builds using Vercel Functions
  */
 
 import { spawn } from 'child_process';
-import { mkdir, writeFile, copyFile, rm } from 'fs/promises';
+import { rm } from 'fs/promises';
 import path from 'path';
 import { nanoid } from 'nanoid';
-import type { BuildProvider, BuildConfig, BuildResult, ComponentFile } from './types';
+import type { BuildProvider, BuildConfig, BuildResult } from './types';
 import { BuildProviderError } from './types';
 
 /**
  * Vercel Build Provider Implementation
- * Runs webpack and Webflow CLI in temporary isolated directory
+ * Clones repo from GitHub, copies node_modules, runs webpack and Webflow CLI
  */
 export class VercelBuildProvider implements BuildProvider {
   readonly name = 'vercel' as const;
   readonly supportsStreaming = true;
 
   /**
-   * Build and deploy components to Webflow
+   * Build and deploy all components to Webflow
    */
   async buildComponents(config: BuildConfig): Promise<BuildResult> {
     const jobId = nanoid();
-    const tempDir = path.join('/tmp', `webflow-export-${jobId}`);
+    const repoDir = path.join('/tmp', `webflow-export-${jobId}`);
     const logs: string[] = [];
 
     try {
-      logs.push(`[${new Date().toISOString()}] Starting build job: ${jobId}`);
-      logs.push(`[${new Date().toISOString()}] Creating temporary directory: ${tempDir}`);
+      logs.push(`[${new Date().toISOString()}] Starting export job: ${jobId}`);
 
-      // Create temp directory structure
-      await mkdir(path.join(tempDir, 'src', 'components'), { recursive: true });
+      // Step 1: Clone repository
+      logs.push(`[${new Date().toISOString()}] Cloning repository...`);
+      const cloneLogs = await this.cloneRepository(repoDir);
+      logs.push(...cloneLogs);
 
-      // Copy component files
-      logs.push(`[${new Date().toISOString()}] Copying ${config.componentFiles.length} files...`);
-      for (const file of config.componentFiles) {
-        const targetPath = path.join(tempDir, file.path);
-        const targetDir = path.dirname(targetPath);
+      // Step 2: Copy node_modules from function
+      logs.push(`[${new Date().toISOString()}] Copying node_modules...`);
+      const copyLogs = await this.copyNodeModules(repoDir);
+      logs.push(...copyLogs);
 
-        await mkdir(targetDir, { recursive: true });
-        await writeFile(targetPath, file.content, 'utf-8');
-      }
-
-      // Generate filtered webflow.json
-      logs.push(`[${new Date().toISOString()}] Generating webflow.json...`);
-      const webflowConfig = {
-        version: '1.0.0',
-        componentPaths: ['./src/**/*.webflow.@(js|jsx|mjs|ts|tsx)'],
-        buildCommand: 'webpack --config webpack.webflow.js',
-      };
-
-      await writeFile(
-        path.join(tempDir, 'webflow.json'),
-        JSON.stringify(webflowConfig, null, 2),
-        'utf-8'
-      );
-
-      // Copy webpack config and package.json
-      logs.push(`[${new Date().toISOString()}] Copying build configuration...`);
-      await copyFile(
-        path.join(process.cwd(), 'webpack.webflow.js'),
-        path.join(tempDir, 'webpack.webflow.js')
-      );
-
-      await copyFile(
-        path.join(process.cwd(), 'package.json'),
-        path.join(tempDir, 'package.json')
-      );
-
-      // Run webpack build
+      // Step 3: Run webpack build
       logs.push(`[${new Date().toISOString()}] Running webpack compilation...`);
-      const webpackLogs = await this.runCommand('npx', ['webpack', '--config', 'webpack.webflow.js'], tempDir);
+      const webpackLogs = await this.runCommand(
+        'npx',
+        ['webpack', '--config', 'webpack.webflow.js'],
+        repoDir
+      );
       logs.push(...webpackLogs);
 
-      // Run Webflow CLI deployment
+      // Step 4: Run Webflow CLI deployment
       logs.push(`[${new Date().toISOString()}] Deploying to Webflow...`);
       const cliLogs = await this.runCommand(
         'npx',
         ['webflow', 'library', 'share', '--api-token', config.webflowToken, '--no-input'],
-        tempDir
+        repoDir
       );
       logs.push(...cliLogs);
 
-      // Extract deployment URL from logs
+      // Step 5: Extract deployment URL
       const deploymentUrl = this.extractDeploymentUrl(cliLogs);
 
-      logs.push(`[${new Date().toISOString()}] ✅ Build completed successfully`);
+      logs.push(`[${new Date().toISOString()}] ✅ Export completed successfully`);
 
       return {
         success: true,
@@ -95,22 +69,102 @@ export class VercelBuildProvider implements BuildProvider {
         artifacts: ['Client.js', 'manifest.json'],
       };
     } catch (error) {
-      logs.push(`[${new Date().toISOString()}] ❌ Build failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      logs.push(`[${new Date().toISOString()}] ❌ Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
 
       return {
         success: false,
         logs,
-        error: error instanceof Error ? error.message : 'Build failed',
+        error: error instanceof Error ? error.message : 'Export failed',
       };
     } finally {
-      // Cleanup temp directory
+      // Cleanup: delete cloned repo
       try {
         logs.push(`[${new Date().toISOString()}] Cleaning up temporary directory...`);
-        await rm(tempDir, { recursive: true, force: true });
+        await rm(repoDir, { recursive: true, force: true });
       } catch (cleanupError) {
         logs.push(`[${new Date().toISOString()}] ⚠️ Cleanup warning: ${cleanupError instanceof Error ? cleanupError.message : 'Unknown error'}`);
       }
     }
+  }
+
+  /**
+   * Clone GitHub repository to temporary directory
+   */
+  private async cloneRepository(targetDir: string): Promise<string[]> {
+    const logs: string[] = [];
+    const token = process.env.GITHUB_TOKEN;
+    const repoUrl = process.env.GITHUB_REPO_URL;
+
+    if (!token) {
+      throw new BuildProviderError(
+        'GITHUB_TOKEN environment variable is not set',
+        'vercel',
+        'MISSING_GITHUB_TOKEN'
+      );
+    }
+
+    if (!repoUrl) {
+      throw new BuildProviderError(
+        'GITHUB_REPO_URL environment variable is not set',
+        'vercel',
+        'MISSING_REPO_URL'
+      );
+    }
+
+    // Insert token into URL for authentication
+    // Format: https://token@github.com/user/repo.git
+    const authenticatedUrl = repoUrl.replace('https://', `https://${token}@`);
+
+    logs.push(`Cloning from ${repoUrl.replace(/https:\/\/.*@/, 'https://')}`); // Hide token in logs
+
+    try {
+      const cloneLogs = await this.runCommand(
+        'git',
+        ['clone', '--depth=1', '--single-branch', authenticatedUrl, targetDir],
+        '/tmp'
+      );
+      logs.push(...cloneLogs);
+      logs.push('✅ Repository cloned successfully');
+    } catch (error) {
+      throw new BuildProviderError(
+        `Failed to clone repository: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'vercel',
+        'CLONE_FAILED',
+        error
+      );
+    }
+
+    return logs;
+  }
+
+  /**
+   * Copy node_modules from Vercel Function to cloned repository
+   */
+  private async copyNodeModules(targetDir: string): Promise<string[]> {
+    const logs: string[] = [];
+    const functionNodeModules = path.join(process.cwd(), 'node_modules');
+    const targetNodeModules = path.join(targetDir, 'node_modules');
+
+    logs.push(`Copying node_modules from ${functionNodeModules} to ${targetNodeModules}`);
+
+    try {
+      const cpLogs = await this.runCommand(
+        'cp',
+        ['-r', functionNodeModules, targetNodeModules],
+        '/tmp'
+      );
+      logs.push(...cpLogs);
+      logs.push('✅ node_modules copied successfully');
+    } catch (error) {
+      throw new BuildProviderError(
+        `Failed to copy node_modules: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'vercel',
+        'COPY_FAILED',
+        error
+      );
+    }
+
+    return logs;
   }
 
   /**
@@ -161,16 +215,6 @@ export class VercelBuildProvider implements BuildProvider {
           error
         ));
       });
-
-      // Timeout after 300 seconds (Vercel Function limit)
-      setTimeout(() => {
-        proc.kill();
-        reject(new BuildProviderError(
-          'Build timeout (300s limit exceeded)',
-          'vercel',
-          'BUILD_TIMEOUT'
-        ));
-      }, 300000);
     });
   }
 
