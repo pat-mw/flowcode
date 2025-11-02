@@ -69,7 +69,20 @@ export const auth = betterAuth({
 
   // CORS configuration - automatically includes BETTER_AUTH_URL and NEXT_PUBLIC_API_URL
   // Additional origins can be configured via ALLOWED_CORS_ORIGINS env var
-  trustedOrigins: getAllowedOrigins(),
+  // Function allows dynamic validation for Vercel preview deployments
+  trustedOrigins: async (request) => {
+    const staticOrigins = getAllowedOrigins();
+
+    // Get the origin from the request
+    const origin = request.headers.get('origin');
+
+    // Allow all Vercel deployment URLs (*.vercel.app)
+    if (origin && origin.endsWith('.vercel.app') && origin.startsWith('https://')) {
+      return [...staticOrigins, origin];
+    }
+
+    return staticOrigins;
+  },
 
   // Callbacks
   callbacks: {
