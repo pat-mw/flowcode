@@ -50,6 +50,19 @@ export function getAllowedOrigins(): string[] {
  */
 export function isOriginAllowed(origin: string | null): boolean {
   if (!origin) return false;
+
   const allowedOrigins = getAllowedOrigins();
-  return allowedOrigins.includes(origin);
+
+  // Exact match
+  if (allowedOrigins.includes(origin)) {
+    return true;
+  }
+
+  // Allow all Vercel deployment URLs (*.vercel.app)
+  // This covers production, preview, and git branch deployments
+  if (origin.endsWith('.vercel.app') && origin.startsWith('https://')) {
+    return true;
+  }
+
+  return false;
 }
