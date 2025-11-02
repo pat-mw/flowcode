@@ -202,7 +202,10 @@ describe('Vercel Client', () => {
 
       // Assert
       const call = vi.mocked(global.fetch).mock.calls[0];
-      expect(call[1].headers.Authorization).toBe('Bearer test-token-abc123');
+      expect(call).toBeDefined();
+      expect(call[1]).toBeDefined();
+      const headers = call[1]?.headers as Record<string, string>;
+      expect(headers?.Authorization).toBe('Bearer test-token-abc123');
     });
 
     it('should throw error on API error response', async () => {

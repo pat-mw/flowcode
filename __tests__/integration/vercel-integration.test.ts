@@ -27,7 +27,7 @@ interface MockServiceContext {
     exchange: (code: string) => Promise<{ accessToken: string; refreshToken: string }>;
   };
   database: {
-    create: (name: string, region: string) => Promise<{ id: string; status: string }>;
+    create: (name: string, region: string) => Promise<{ id: string; name: string; status: string }>;
     list: () => Promise<{ id: string; name: string }[]>;
   };
   envVars: {

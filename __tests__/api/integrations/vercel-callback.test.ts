@@ -63,7 +63,25 @@ describe('Vercel OAuth Callback Route', () => {
     };
 
     const mockSession = {
-      user: { id: 'user_123', email: 'test@example.com' },
+      session: {
+        id: 'session_123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: 'user_123',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        token: 'session_token',
+        ipAddress: null,
+        userAgent: null,
+      },
+      user: {
+        id: 'user_123',
+        email: 'test@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerified: true,
+        name: 'Test User',
+        image: null,
+      },
     };
 
     vi.mocked(validateOAuthState).mockReturnValue(true);
@@ -187,7 +205,25 @@ describe('Vercel OAuth Callback Route', () => {
   it('should handle token exchange failures', async () => {
     vi.mocked(validateOAuthState).mockReturnValue(true);
     vi.mocked(auth.api.getSession).mockResolvedValue({
-      user: { id: 'user_123', email: 'test@example.com' },
+      session: {
+        id: 'session_123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: 'user_123',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        token: 'session_token',
+        ipAddress: null,
+        userAgent: null,
+      },
+      user: {
+        id: 'user_123',
+        email: 'test@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerified: true,
+        name: 'Test User',
+        image: null,
+      },
     });
     vi.mocked(exchangeVercelCode).mockRejectedValue(new Error('Token exchange failed'));
 
@@ -209,7 +245,25 @@ describe('Vercel OAuth Callback Route', () => {
   it('should not leak sensitive data in error responses', async () => {
     vi.mocked(validateOAuthState).mockReturnValue(true);
     vi.mocked(auth.api.getSession).mockResolvedValue({
-      user: { id: 'user_123', email: 'test@example.com' },
+      session: {
+        id: 'session_123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        userId: 'user_123',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        token: 'session_token',
+        ipAddress: null,
+        userAgent: null,
+      },
+      user: {
+        id: 'user_123',
+        email: 'test@example.com',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerified: true,
+        name: 'Test User',
+        image: null,
+      },
     });
     vi.mocked(exchangeVercelCode).mockRejectedValue(
       new Error('Internal API key validation failed')

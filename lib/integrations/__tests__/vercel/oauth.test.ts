@@ -366,7 +366,9 @@ describe('Vercel OAuth', () => {
 
       // Verify request body contains required parameters
       const callArgs = vi.mocked(global.fetch).mock.calls[0];
-      const bodyParams = new URLSearchParams(callArgs[1].body);
+      expect(callArgs).toBeDefined();
+      expect(callArgs[1]).toBeDefined();
+      const bodyParams = new URLSearchParams(callArgs[1]?.body as string);
       expect(bodyParams.get('client_id')).toBe(mockConfig.clientId);
       expect(bodyParams.get('client_secret')).toBe(mockConfig.clientSecret);
       expect(bodyParams.get('code')).toBe('code-123');
@@ -507,7 +509,9 @@ describe('Vercel OAuth', () => {
 
       // Assert
       const callArgs = vi.mocked(global.fetch).mock.calls[0];
-      const bodyParams = new URLSearchParams(callArgs[1].body);
+      expect(callArgs).toBeDefined();
+      expect(callArgs[1]).toBeDefined();
+      const bodyParams = new URLSearchParams(callArgs[1]?.body as string);
       expect(bodyParams.get('grant_type')).toBe('refresh_token');
       expect(bodyParams.get('refresh_token')).toBe(refreshToken);
     });
@@ -528,7 +532,9 @@ describe('Vercel OAuth', () => {
 
       // Assert
       const callArgs = vi.mocked(global.fetch).mock.calls[0];
-      const bodyParams = new URLSearchParams(callArgs[1].body);
+      expect(callArgs).toBeDefined();
+      expect(callArgs[1]).toBeDefined();
+      const bodyParams = new URLSearchParams(callArgs[1]?.body as string);
       expect(bodyParams.get('client_id')).toBe(mockConfig.clientId);
       expect(bodyParams.get('client_secret')).toBe(mockConfig.clientSecret);
     });
@@ -686,7 +692,9 @@ describe('Vercel OAuth', () => {
 
       // Assert
       const callArgs = vi.mocked(global.fetch).mock.calls[0];
-      const bodyParams = new URLSearchParams(callArgs[1].body);
+      expect(callArgs).toBeDefined();
+      expect(callArgs[1]).toBeDefined();
+      const bodyParams = new URLSearchParams(callArgs[1]?.body as string);
       expect(bodyParams.get('client_secret')).toBe(mockConfig.clientSecret);
     });
 

@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+
+app/api and anything that this depends on
+drizzle
+lib/api
+lib/db
+
+screenrecord the final integration
+
 ## Testing Account
 
 Email: papa@john.com
