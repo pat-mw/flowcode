@@ -5,12 +5,12 @@ import { act } from 'react';
 
 // Polyfill React.act for React 19 compatibility with Testing Library
 // Testing Library expects React.act but React 19 moved it
-if (typeof globalThis.IS_REACT_ACT_ENVIRONMENT === 'undefined') {
-  globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+if (typeof (globalThis as any).IS_REACT_ACT_ENVIRONMENT === 'undefined') {
+  (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 }
 
 // Export act from React for Testing Library to use
-globalThis.React = { ...globalThis.React, act };
+(globalThis as any).React = { ...(globalThis as any).React, act };
 
 // Cleanup after each test
 afterEach(() => {

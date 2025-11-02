@@ -163,7 +163,7 @@ export class VercelProvider implements CloudProvider {
    * All configuration (redirect_uri, scopes, etc.) is set in the Vercel dashboard.
    * The client_id and client_secret are only used during token exchange, not in the URL.
    */
-  generateAuthUrl(config: OAuthConfig, state: string): string {
+  generateAuthUrl(_config: OAuthConfig, _state: string): string {
     // Support either full URL or slug-based construction
     const baseUrl =
       process.env.BLOGFLOW_VERCEL_OAUTH_URL ||
@@ -207,7 +207,7 @@ export class VercelProvider implements CloudProvider {
   /**
    * Refresh access token (Vercel tokens don't expire, so this is a no-op)
    */
-  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
+  async refreshAccessToken(_refreshToken: string): Promise<OAuthTokens> {
     throw new ProviderError(
       'Vercel tokens do not expire and cannot be refreshed',
       'vercel',

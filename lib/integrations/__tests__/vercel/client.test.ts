@@ -110,14 +110,14 @@ describe('Vercel Client', () => {
     it('should throw error if token is null', () => {
       // Act & Assert
       expect(() => {
-        new VercelClient(null as any);
+        new VercelClient(null as unknown as string);
       }).toThrow('Vercel token is required');
     });
 
     it('should throw error if token is undefined', () => {
       // Act & Assert
       expect(() => {
-        new VercelClient(undefined as any);
+        new VercelClient(undefined as unknown as string);
       }).toThrow('Vercel token is required');
     });
   });
@@ -201,7 +201,7 @@ describe('Vercel Client', () => {
       await client.request('GET', '/v13/projects');
 
       // Assert
-      const call = (global.fetch as any).mock.calls[0];
+      const call = vi.mocked(global.fetch).mock.calls[0];
       expect(call[1].headers.Authorization).toBe('Bearer test-token-abc123');
     });
 

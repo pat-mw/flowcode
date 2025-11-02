@@ -301,7 +301,7 @@ describe('oRPC Integration Router', () => {
       await router.connectVercel(code, state);
 
       // Assert
-      const callArgs = (mockIntegrationDAL.createIntegration as any).mock.calls[0][0];
+      const callArgs = vi.mocked(mockIntegrationDAL.createIntegration).mock.calls[0][0];
       const afterTime = Date.now();
 
       // Token should expire in ~1 hour from now

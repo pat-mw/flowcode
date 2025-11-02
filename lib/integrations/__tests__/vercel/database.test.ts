@@ -158,14 +158,14 @@ describe('Vercel Database Manager', () => {
     it('should throw error if client is not provided', () => {
       // Act & Assert
       expect(() => {
-        new VercelDatabaseManager(null as any);
+        new VercelDatabaseManager(null as unknown as VercelClient);
       }).toThrow('VercelClient is required');
     });
 
     it('should throw error if client is undefined', () => {
       // Act & Assert
       expect(() => {
-        new VercelDatabaseManager(undefined as any);
+        new VercelDatabaseManager(undefined as unknown as VercelClient);
       }).toThrow('VercelClient is required');
     });
   });
@@ -187,7 +187,7 @@ describe('Vercel Database Manager', () => {
         status: 'creating',
       };
 
-      (mockClient.request as any).mockResolvedValueOnce(mockResponse);
+      vi.mocked(mockClient.request).mockResolvedValueOnce(mockResponse);
 
       // Act
       const result = await manager.createDatabase(projectId, config);
@@ -218,7 +218,7 @@ describe('Vercel Database Manager', () => {
         status: 'creating',
       };
 
-      (mockClient.request as any).mockResolvedValueOnce(mockResponse);
+      vi.mocked(mockClient.request).mockResolvedValueOnce(mockResponse);
 
       // Act
       await manager.createDatabase(projectId, config);
@@ -246,7 +246,7 @@ describe('Vercel Database Manager', () => {
         status: 'creating',
       };
 
-      (mockClient.request as any).mockResolvedValueOnce(mockResponse);
+      vi.mocked(mockClient.request).mockResolvedValueOnce(mockResponse);
 
       // Act
       await manager.createDatabase(projectId, config);
@@ -335,7 +335,7 @@ describe('Vercel Database Manager', () => {
       };
 
       for (const name of validNames) {
-        (mockClient.request as any).mockResolvedValueOnce(mockResponse);
+        vi.mocked(mockClient.request).mockResolvedValueOnce(mockResponse);
 
         // Act
         await manager.createDatabase(projectId, { name });
@@ -347,7 +347,7 @@ describe('Vercel Database Manager', () => {
 
     it('should handle API error for quota exceeded', async () => {
       // Arrange
-      (mockClient.request as any).mockRejectedValueOnce(
+      vi.mocked(mockClient.request).mockRejectedValueOnce(
         new Error('QUOTA_EXCEEDED: Maximum number of databases reached')
       );
 
@@ -359,7 +359,7 @@ describe('Vercel Database Manager', () => {
 
     it('should handle API error for invalid region', async () => {
       // Arrange
-      (mockClient.request as any).mockRejectedValueOnce(
+      vi.mocked(mockClient.request).mockRejectedValueOnce(
         new Error('Invalid region: us-west-99')
       );
 
@@ -371,7 +371,7 @@ describe('Vercel Database Manager', () => {
 
     it('should handle network errors', async () => {
       // Arrange
-      (mockClient.request as any).mockRejectedValueOnce(new Error('Network error'));
+      vi.mocked(mockClient.request).mockRejectedValueOnce(new Error('Network error'));
 
       // Act & Assert
       await expect(
@@ -403,7 +403,7 @@ describe('Vercel Database Manager', () => {
         },
       ];
 
-      (mockClient.request as any).mockResolvedValueOnce({ databases: mockDatabases });
+      vi.mocked(mockClient.request).mockResolvedValueOnce({ databases: mockDatabases });
 
       // Act
       const result = await manager.getDatabases(projectId);
@@ -419,7 +419,7 @@ describe('Vercel Database Manager', () => {
     it('should return empty array when no databases exist', async () => {
       // Arrange
       const projectId = 'proj-123';
-      (mockClient.request as any).mockResolvedValueOnce({ databases: [] });
+      vi.mocked(mockClient.request).mockResolvedValueOnce({ databases: [] });
 
       // Act
       const result = await manager.getDatabases(projectId);
@@ -431,7 +431,7 @@ describe('Vercel Database Manager', () => {
     it('should handle missing databases property gracefully', async () => {
       // Arrange
       const projectId = 'proj-123';
-      (mockClient.request as any).mockResolvedValueOnce({}); // No databases property
+      vi.mocked(mockClient.request).mockResolvedValueOnce({}); // No databases property
 
       // Act
       const result = await manager.getDatabases(projectId);
@@ -447,7 +447,7 @@ describe('Vercel Database Manager', () => {
 
     it('should handle API errors', async () => {
       // Arrange
-      (mockClient.request as any).mockRejectedValueOnce(
+      vi.mocked(mockClient.request).mockRejectedValueOnce(
         new Error('Project not found')
       );
 
@@ -472,7 +472,7 @@ describe('Vercel Database Manager', () => {
         status: 'ready',
       };
 
-      (mockClient.request as any).mockResolvedValueOnce(mockDatabase);
+      vi.mocked(mockClient.request).mockResolvedValueOnce(mockDatabase);
 
       // Act
       const result = await manager.getDatabase(projectId, databaseId);
@@ -501,7 +501,7 @@ describe('Vercel Database Manager', () => {
 
     it('should handle database not found error', async () => {
       // Arrange
-      (mockClient.request as any).mockRejectedValueOnce(
+      vi.mocked(mockClient.request).mockRejectedValueOnce(
         new Error('Database not found')
       );
 
@@ -518,7 +518,7 @@ describe('Vercel Database Manager', () => {
       const projectId = 'proj-123';
       const databaseId = 'db-456';
 
-      (mockClient.request as any).mockResolvedValueOnce(undefined);
+      vi.mocked(mockClient.request).mockResolvedValueOnce(undefined);
 
       // Act
       await manager.deleteDatabase(projectId, databaseId);
@@ -546,7 +546,7 @@ describe('Vercel Database Manager', () => {
 
     it('should handle database not found error', async () => {
       // Arrange
-      (mockClient.request as any).mockRejectedValueOnce(
+      vi.mocked(mockClient.request).mockRejectedValueOnce(
         new Error('Database not found')
       );
 
@@ -558,7 +558,7 @@ describe('Vercel Database Manager', () => {
 
     it('should handle deletion forbidden (insufficient permissions)', async () => {
       // Arrange
-      (mockClient.request as any).mockRejectedValueOnce(
+      vi.mocked(mockClient.request).mockRejectedValueOnce(
         new Error('You do not have permission to delete this database')
       );
 
@@ -583,7 +583,7 @@ describe('Vercel Database Manager', () => {
         status: 'ready',
       };
 
-      (mockClient.request as any).mockResolvedValueOnce(readyDatabase);
+      vi.mocked(mockClient.request).mockResolvedValueOnce(readyDatabase);
 
       // Act
       const result = await manager.waitForDatabaseReady(projectId, databaseId);
@@ -609,7 +609,7 @@ describe('Vercel Database Manager', () => {
         status: 'ready',
       };
 
-      (mockClient.request as any)
+      vi.mocked(mockClient.request)
         .mockResolvedValueOnce(creatingDatabase) // First poll - still creating
         .mockResolvedValueOnce(creatingDatabase) // Second poll - still creating
         .mockResolvedValueOnce(readyDatabase); // Third poll - ready
@@ -645,7 +645,7 @@ describe('Vercel Database Manager', () => {
         status: 'error',
       };
 
-      (mockClient.request as any).mockResolvedValueOnce(errorDatabase);
+      vi.mocked(mockClient.request).mockResolvedValueOnce(errorDatabase);
 
       // Act & Assert
       await expect(
@@ -666,7 +666,7 @@ describe('Vercel Database Manager', () => {
         status: 'creating',
       };
 
-      (mockClient.request as any).mockResolvedValue(creatingDatabase);
+      vi.mocked(mockClient.request).mockResolvedValue(creatingDatabase);
 
       vi.useFakeTimers();
 
@@ -691,7 +691,7 @@ describe('Vercel Database Manager', () => {
         status: 'creating',
       };
 
-      (mockClient.request as any).mockResolvedValue(creatingDatabase);
+      vi.mocked(mockClient.request).mockResolvedValue(creatingDatabase);
 
       vi.useFakeTimers();
 
@@ -711,7 +711,7 @@ describe('Vercel Database Manager', () => {
     it('should send correct HTTP method and path for create', async () => {
       // Arrange
       const projectId = 'proj-123';
-      (mockClient.request as any).mockResolvedValueOnce({
+      vi.mocked(mockClient.request).mockResolvedValueOnce({
         id: 'db-456',
         name: 'test-db',
         region: 'us-east-1',
@@ -734,7 +734,7 @@ describe('Vercel Database Manager', () => {
     it('should send correct HTTP method and path for list', async () => {
       // Arrange
       const projectId = 'proj-123';
-      (mockClient.request as any).mockResolvedValueOnce({ databases: [] });
+      vi.mocked(mockClient.request).mockResolvedValueOnce({ databases: [] });
 
       // Act
       await manager.getDatabases(projectId);

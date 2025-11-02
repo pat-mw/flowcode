@@ -302,7 +302,7 @@ describe('Vercel OAuth', () => {
 
     it('should throw error if code is undefined', async () => {
       // Act & Assert
-      await expect(oauth.exchangeCodeForToken(undefined as any)).rejects.toThrow(
+      await expect(oauth.exchangeCodeForToken(undefined as unknown as string)).rejects.toThrow(
         'Authorization code is required'
       );
     });
@@ -365,7 +365,7 @@ describe('Vercel OAuth', () => {
       );
 
       // Verify request body contains required parameters
-      const callArgs = (global.fetch as any).mock.calls[0];
+      const callArgs = vi.mocked(global.fetch).mock.calls[0];
       const bodyParams = new URLSearchParams(callArgs[1].body);
       expect(bodyParams.get('client_id')).toBe(mockConfig.clientId);
       expect(bodyParams.get('client_secret')).toBe(mockConfig.clientSecret);
@@ -506,7 +506,7 @@ describe('Vercel OAuth', () => {
       await oauth.refreshAccessToken(refreshToken);
 
       // Assert
-      const callArgs = (global.fetch as any).mock.calls[0];
+      const callArgs = vi.mocked(global.fetch).mock.calls[0];
       const bodyParams = new URLSearchParams(callArgs[1].body);
       expect(bodyParams.get('grant_type')).toBe('refresh_token');
       expect(bodyParams.get('refresh_token')).toBe(refreshToken);
@@ -527,7 +527,7 @@ describe('Vercel OAuth', () => {
       await oauth.refreshAccessToken('refresh-token-123');
 
       // Assert
-      const callArgs = (global.fetch as any).mock.calls[0];
+      const callArgs = vi.mocked(global.fetch).mock.calls[0];
       const bodyParams = new URLSearchParams(callArgs[1].body);
       expect(bodyParams.get('client_id')).toBe(mockConfig.clientId);
       expect(bodyParams.get('client_secret')).toBe(mockConfig.clientSecret);
@@ -685,7 +685,7 @@ describe('Vercel OAuth', () => {
       await oauth.exchangeCodeForToken('code-123');
 
       // Assert
-      const callArgs = (global.fetch as any).mock.calls[0];
+      const callArgs = vi.mocked(global.fetch).mock.calls[0];
       const bodyParams = new URLSearchParams(callArgs[1].body);
       expect(bodyParams.get('client_secret')).toBe(mockConfig.clientSecret);
     });

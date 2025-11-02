@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { orpc } from '@/lib/orpc-client';
@@ -52,19 +52,13 @@ import {
   Rocket,
 } from 'lucide-react';
 
-type Integration = {
-  id: string;
-  provider: string;
-  createdAt: Date;
-  metadata: Record<string, unknown> | null;
-};
 
 type Database = {
   id: string;
   name: string;
   region: string;
   status: string;
-  createdAt: string;
+  createdAt: Date;
 };
 
 type Deployment = {
@@ -89,7 +83,10 @@ const DEPLOYMENT_TEMPLATES = [
   { value: 'nextjs-hello-world', label: 'Next.js Hello World' },
 ] as const;
 
-export default function IntegrationsTestPage() {
+// This page uses useSearchParams and needs to be dynamically rendered
+export const dynamic = 'force-dynamic';
+
+function IntegrationsTestPageContent() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const [connecting, setConnecting] = useState(false);
@@ -137,7 +134,6 @@ export default function IntegrationsTestPage() {
   // Fetch deployments list
   const {
     data: deploymentsData,
-    isLoading: loadingDeployments,
     refetch: refetchDeployments,
   } = useQuery({
     ...orpc.integrations.listVercelDeployments.queryOptions({
@@ -249,7 +245,7 @@ export default function IntegrationsTestPage() {
     createDatabaseMutation.mutate({
       integrationId: vercelIntegration.id,
       name: dbName.trim(),
-      region: dbRegion as any,
+      region: dbRegion as 'us-east-1' | 'us-west-1' | 'eu-west-1' | 'ap-southeast-1' | 'ap-northeast-1',
     });
   };
 
@@ -319,7 +315,7 @@ export default function IntegrationsTestPage() {
     createDeploymentMutation.mutate({
       integrationId: vercelIntegration.id,
       name: deploymentName.trim(),
-      template: deploymentTemplate as any,
+      template: deploymentTemplate as 'static' | 'nextjs-hello-world',
     });
   };
 
@@ -734,5 +730,13 @@ export default function IntegrationsTestPage() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  );
+}
+
+export default function IntegrationsTestPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <IntegrationsTestPageContent />
+    </Suspense>
   );
 }

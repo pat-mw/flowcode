@@ -329,7 +329,7 @@ describe('ProviderRegistry', () => {
       const mockProvider = {
         name: '',
         version: '1.0.0',
-      } as any;
+      } as unknown as CloudProvider;
 
       // Act & Assert
       expect(() => {

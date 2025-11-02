@@ -422,7 +422,7 @@ const createVercelDeployment = protectedProcedure
             data: html,
           },
         ],
-        target: 'production',
+        target: 'production' as const,
       };
     } else {
       // Next.js hello-world example from Vercel
@@ -434,7 +434,7 @@ const createVercelDeployment = protectedProcedure
           ref: 'canary',
           path: 'examples/hello-world',
         },
-        target: 'production',
+        target: 'production' as const,
       };
     }
 
