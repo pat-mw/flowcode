@@ -143,6 +143,10 @@ export class VercelProvider implements CloudProvider {
 
   /**
    * Generate OAuth authorization URL
+   *
+   * Vercel integrations use a clean installation URL without OAuth query parameters.
+   * All configuration (redirect_uri, scopes, etc.) is set in the Vercel dashboard.
+   * The client_id and client_secret are only used during token exchange, not in the URL.
    */
   generateAuthUrl(config: OAuthConfig, state: string): string {
     // Support either full URL or slug-based construction
@@ -150,15 +154,9 @@ export class VercelProvider implements CloudProvider {
       process.env.VERCEL_OAUTH_AUTHORIZE_URL ||
       getVercelOAuthAuthorizeUrl(process.env.VERCEL_INTEGRATION_SLUG);
 
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: config.clientId,
-      redirect_uri: config.redirectUri,
-      state,
-      scope: config.scopes.join(' '),
-    });
-
-    return `${baseUrl}?${params.toString()}`;
+    // Vercel integration flow uses a clean URL: https://vercel.com/integrations/{slug}/new
+    // No query parameters needed - everything is configured in Vercel dashboard
+    return baseUrl;
   }
 
   /**

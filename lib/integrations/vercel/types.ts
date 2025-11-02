@@ -18,12 +18,13 @@ export const VERCEL_OAUTH_TOKEN_URL = 'https://api.vercel.com/v2/oauth/access_to
 
 /**
  * Get Vercel OAuth authorize URL
- * For integrations with a slug, use the integration-specific URL
- * For integrations without a slug (deprecated), use the generic URL
+ * For integrations with a slug, use the integration installation URL
+ * This is the Vercel integration-specific flow, not standard OAuth
+ * The installation URL is clean without query parameters
  */
 export function getVercelOAuthAuthorizeUrl(slug?: string): string {
   if (slug) {
-    return `https://vercel.com/integrations/${slug}/oauth/authorize`;
+    return `https://vercel.com/integrations/${slug}/new`;
   }
   return 'https://vercel.com/oauth/authorize';
 }
