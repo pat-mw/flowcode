@@ -3,7 +3,7 @@
 import { NavbarWrapper } from "@/src/libraries/webcn/components/Navbar.webflow";
 import { HeroWrapper } from "@/src/libraries/webcn/components/Hero.webflow";
 import { FeaturesSummaryWrapper } from "@/src/libraries/webcn/components/FeaturesSummary.webflow";
-import { ComponentGridWrapper } from "@/src/libraries/webcn/components/ComponentGrid.webflow";
+import { ComponentGridWrapper } from "@/src/libraries/registry-dashboard/components/ComponentGrid.webflow";
 import { WaitlistSectionWrapper } from "@/src/libraries/webcn/components/WaitlistSection.webflow";
 import { DemoSectionWrapper } from "@/src/libraries/webcn/components/DemoSection.webflow";
 import { VideoSectionWrapper } from "@/src/libraries/webcn/components/VideoSection.webflow";
