@@ -1,181 +1,203 @@
 /**
  * Component Registry for Live Previews
- * Maps component IDs to their actual Webflow wrapper components
+ * Maps component IDs to their actual RAW React components (NOT Webflow wrappers)
  *
- * IMPORTANT: Import NAMED exports (e.g., LoginFormWrapper), NOT default exports
- * Default exports from .webflow.tsx files are declareComponent() results (Webflow-specific)
- * Named exports are the actual React components we need for previews
+ * CRITICAL ARCHITECTURE RULE:
+ * - This registry uses RAW components from /components folder
+ * - Webflow wrappers (.webflow.tsx) are ONLY for Webflow deployment
+ * - Dynamic imports work with raw components (not wrappers)
+ * - Wrappers break when bundled with Webflow's webpack config
+ *
+ * Why raw components?
+ * 1. Dynamic imports work reliably in Next.js
+ * 2. No Webflow bundler compatibility issues
+ * 3. Smaller bundle size (no wrapper overhead)
+ * 4. Faster loading (lazy loaded on demand)
+ * 5. Better development experience (direct access to implementations)
  */
 
 import dynamic from "next/dynamic";
 import { ComponentType } from "react";
 
-// Core components
-const LoginFormWrapper = dynamic(
-  () => import("@/src/libraries/core/components/LoginForm.webflow").then(m => m.LoginFormWrapper),
+// ============================================================================
+// CORE LIBRARY COMPONENTS
+// ============================================================================
+
+const LoginForm = dynamic(() => import("@/components/LoginForm"), {
+  ssr: false,
+});
+const RegistrationForm = dynamic(() => import("@/components/RegistrationForm"), {
+  ssr: false,
+});
+const PostEditor = dynamic(() => import("@/components/PostEditor"), {
+  ssr: false,
+});
+const Navigation = dynamic(() => import("@/components/Navigation"), {
+  ssr: false,
+});
+const Dashboard = dynamic(() => import("@/components/Dashboard"), {
+  ssr: false,
+});
+const HelloUser = dynamic(() => import("@/components/HelloUser"), {
+  ssr: false,
+});
+
+// ============================================================================
+// ANALYTICS LIBRARY COMPONENTS
+// ============================================================================
+
+const ChartTest = dynamic(() => import("@/components/ChartTest"), {
+  ssr: false,
+});
+const PieChartDemo = dynamic(() => import("@/components/PieChartDemo"), {
+  ssr: false,
+});
+const BarChartDemo = dynamic(() => import("@/components/BarChartDemo"), {
+  ssr: false,
+});
+
+// ============================================================================
+// INTERACTIVE LIBRARY COMPONENTS
+// ============================================================================
+
+const Lanyard = dynamic(() => import("@/components/Lanyard"), {
+  ssr: false,
+});
+const BlueSlider = dynamic(
+  () => import("@/src/libraries/interactive/components/BlueSlider"),
   { ssr: false }
 );
-const RegistrationFormWrapper = dynamic(
-  () => import("@/src/libraries/core/components/RegistrationForm.webflow").then(m => m.RegistrationFormWrapper),
+const RedSlider = dynamic(
+  () => import("@/src/libraries/interactive/components/RedSlider"),
   { ssr: false }
 );
-const PostEditorWrapper = dynamic(
-  () => import("@/src/libraries/core/components/PostEditor.webflow").then(m => m.PostEditorWrapper),
-  { ssr: false }
-);
-const NavigationWrapper = dynamic(
-  () => import("@/src/libraries/core/components/Navigation.webflow").then(m => m.NavigationWrapper),
-  { ssr: false }
-);
-const DashboardWrapper = dynamic(
-  () => import("@/src/libraries/core/components/Dashboard.webflow").then(m => m.DashboardWrapper),
-  { ssr: false }
-);
-const HelloUserWrapper = dynamic(
-  () => import("@/src/libraries/core/components/HelloUser.webflow").then(m => m.HelloUserWrapper),
+const LaserFlowHero = dynamic(
+  () => import("@/components/react-bits/laser-flow/hero"),
   { ssr: false }
 );
 
-// Analytics components
-const ChartTestWrapper = dynamic(
-  () => import("@/src/libraries/analytics/components/ChartTest.webflow").then(m => m.ChartTestWrapper),
+// ============================================================================
+// WEBCN LIBRARY COMPONENTS
+// ============================================================================
+
+const Navbar = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/Navbar"),
   { ssr: false }
 );
-const PieChartDemoWrapper = dynamic(
-  () => import("@/src/libraries/analytics/components/PieChartDemo.webflow").then(m => m.PieChartDemoWrapper),
+const Hero = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/Hero"),
   { ssr: false }
 );
-const BarChartDemoWrapper = dynamic(
-  () => import("@/src/libraries/analytics/components/BarChartDemo.webflow").then(m => m.BarChartDemoWrapper),
+const Features = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/Features"),
+  { ssr: false }
+);
+const Footer = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/Footer"),
+  { ssr: false }
+);
+const WaitlistSection = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/WaitlistSection"),
   { ssr: false }
 );
 
-// Interactive components
-const LanyardWrapper = dynamic(
-  () => import("@/src/libraries/interactive/components/Lanyard.webflow").then(m => m.LanyardWrapper),
+// ============================================================================
+// WAITLIST LIBRARY COMPONENTS
+// ============================================================================
+
+const WaitlistCapture = dynamic(
+  () => import("@/components/waitlist/WaitlistCapture"),
   { ssr: false }
 );
-const BlueSliderWrapper = dynamic(
-  () => import("@/src/libraries/interactive/components/BlueSlider.webflow").then(m => m.BlueSliderWrapper),
-  { ssr: false }
-);
-const RedSliderWrapper = dynamic(
-  () => import("@/src/libraries/interactive/components/RedSlider.webflow").then(m => m.RedSliderWrapper),
-  { ssr: false }
-);
-const LaserFlowHeroWrapper = dynamic(
-  () => import("@/src/libraries/interactive/components/LaserFlowHero.webflow").then(m => m.LaserFlowHeroWrapper),
+const WaitlistAdmin = dynamic(
+  () => import("@/components/waitlist/WaitlistAdmin"),
   { ssr: false }
 );
 
-// webcn components
-const NavbarWrapper = dynamic(
-  () => import("@/src/libraries/webcn/components/Navbar.webflow").then(m => m.NavbarWrapper),
+// ============================================================================
+// REGISTRY DASHBOARD LIBRARY COMPONENTS
+// ============================================================================
+
+const ComponentGrid = dynamic(
+  () => import("@/components/registry-dashboard/ComponentGrid"),
   { ssr: false }
 );
-const HeroWrapper = dynamic(
-  () => import("@/src/libraries/webcn/components/Hero.webflow").then(m => m.HeroWrapper),
+const ComponentDetailHeader = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailHeader"),
   { ssr: false }
 );
-const FeaturesWrapper = dynamic(
-  () => import("@/src/libraries/webcn/components/Features.webflow").then(m => m.FeaturesWrapper),
+const ComponentDetailPreview = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailPreview"),
   { ssr: false }
 );
-const ComponentGridWrapper = dynamic(
-  () => import("@/src/libraries/webcn/components/ComponentGrid.webflow").then(m => m.ComponentGridWrapper),
+const ComponentDetailProps = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailProps"),
   { ssr: false }
 );
-const FooterWrapper = dynamic(
-  () => import("@/src/libraries/webcn/components/Footer.webflow").then(m => m.FooterWrapper),
+const ComponentDetailUsage = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailUsage"),
   { ssr: false }
 );
-const WaitlistSectionWrapper = dynamic(
-  () => import("@/src/libraries/webcn/components/WaitlistSection.webflow").then(m => m.WaitlistSectionWrapper),
+const ComponentDetailSidebar = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailSidebar"),
   { ssr: false }
 );
 
-// Waitlist components
-const WaitlistCaptureWrapper = dynamic(
-  () => import("@/src/libraries/waitlist/components/WaitlistCapture.webflow").then(m => m.WaitlistCaptureWrapper),
-  { ssr: false }
-);
-const WaitlistAdminWrapper = dynamic(
-  () => import("@/src/libraries/waitlist/components/WaitlistAdmin.webflow").then(m => m.WaitlistAdminWrapper),
-  { ssr: false }
-);
-
-// Registry Dashboard components
-const RegistryComponentGridWrapper = dynamic(
-  () => import("@/src/libraries/registry-dashboard/components/ComponentGrid.webflow").then(m => m.ComponentGridWrapper),
-  { ssr: false }
-);
-const RegistryDetailHeaderWrapper = dynamic(
-  () => import("@/src/libraries/registry-dashboard/components/ComponentDetailHeader.webflow").then(m => m.ComponentDetailHeaderWrapper),
-  { ssr: false }
-);
-const RegistryDetailPreviewWrapper = dynamic(
-  () => import("@/src/libraries/registry-dashboard/components/ComponentDetailPreview.webflow").then(m => m.ComponentDetailPreviewWrapper),
-  { ssr: false }
-);
-const RegistryDetailPropsWrapper = dynamic(
-  () => import("@/src/libraries/registry-dashboard/components/ComponentDetailProps.webflow").then(m => m.ComponentDetailPropsWrapper),
-  { ssr: false }
-);
-const RegistryDetailUsageWrapper = dynamic(
-  () => import("@/src/libraries/registry-dashboard/components/ComponentDetailUsage.webflow").then(m => m.ComponentDetailUsageWrapper),
-  { ssr: false }
-);
-const RegistryDetailSidebarWrapper = dynamic(
-  () => import("@/src/libraries/registry-dashboard/components/ComponentDetailSidebar.webflow").then(m => m.ComponentDetailSidebarWrapper),
-  { ssr: false }
-);
+// ============================================================================
+// COMPONENT REGISTRY
+// ============================================================================
 
 /**
- * Registry mapping component IDs to their wrapper components
+ * Registry mapping component IDs to their raw React components
+ *
+ * NOTE: These are RAW components, NOT Webflow wrappers
+ * Wrappers are only used in:
+ * 1. Webflow deployment (via .webflow.tsx files)
+ * 2. app/(tests)/test-webflow-wrappers page (for testing)
  */
 export const componentRegistry: Record<string, ComponentType<any>> = {
   // Core
-  "core-login-form": LoginFormWrapper,
-  "core-registration-form": RegistrationFormWrapper,
-  "core-post-editor": PostEditorWrapper,
-  "core-navigation": NavigationWrapper,
-  "core-dashboard": DashboardWrapper,
-  "core-hello-user": HelloUserWrapper,
+  "core-login-form": LoginForm,
+  "core-registration-form": RegistrationForm,
+  "core-post-editor": PostEditor,
+  "core-navigation": Navigation,
+  "core-dashboard": Dashboard,
+  "core-hello-user": HelloUser,
 
   // Analytics
-  "analytics-chart-test": ChartTestWrapper,
-  "analytics-pie-chart": PieChartDemoWrapper,
-  "analytics-bar-chart": BarChartDemoWrapper,
+  "analytics-chart-test": ChartTest,
+  "analytics-pie-chart": PieChartDemo,
+  "analytics-bar-chart": BarChartDemo,
 
   // Interactive
-  "interactive-lanyard": LanyardWrapper,
-  "interactive-blue-slider": BlueSliderWrapper,
-  "interactive-red-slider": RedSliderWrapper,
-  "interactive-laser-flow-hero": LaserFlowHeroWrapper,
+  "interactive-lanyard": Lanyard,
+  "interactive-blue-slider": BlueSlider,
+  "interactive-red-slider": RedSlider,
+  "interactive-laser-flow-hero": LaserFlowHero,
 
   // webcn
-  "webcn-navbar": NavbarWrapper,
-  "webcn-hero": HeroWrapper,
-  "webcn-features": FeaturesWrapper,
-  "webcn-component-grid": ComponentGridWrapper,
-  "webcn-footer": FooterWrapper,
-  "webcn-waitlist-section": WaitlistSectionWrapper,
+  "webcn-navbar": Navbar,
+  "webcn-hero": Hero,
+  "webcn-features": Features,
+  "webcn-footer": Footer,
+  "webcn-waitlist-section": WaitlistSection,
 
   // Waitlist
-  "waitlist-capture": WaitlistCaptureWrapper,
-  "waitlist-admin": WaitlistAdminWrapper,
+  "waitlist-capture": WaitlistCapture,
+  "waitlist-admin": WaitlistAdmin,
 
   // Registry Dashboard
-  "registry-component-grid": RegistryComponentGridWrapper,
-  "registry-detail-header": RegistryDetailHeaderWrapper,
-  "registry-detail-preview": RegistryDetailPreviewWrapper,
-  "registry-detail-props": RegistryDetailPropsWrapper,
-  "registry-detail-usage": RegistryDetailUsageWrapper,
-  "registry-detail-sidebar": RegistryDetailSidebarWrapper,
+  "registry-component-grid": ComponentGrid,
+  "registry-detail-header": ComponentDetailHeader,
+  "registry-detail-preview": ComponentDetailPreview,
+  "registry-detail-props": ComponentDetailProps,
+  "registry-detail-usage": ComponentDetailUsage,
+  "registry-detail-sidebar": ComponentDetailSidebar,
 };
 
 /**
- * Get component wrapper by ID
+ * Get component by ID
+ * Returns raw React component (NOT Webflow wrapper)
  */
 export function getComponentWrapper(id: string): ComponentType<any> | null {
   return componentRegistry[id] || null;

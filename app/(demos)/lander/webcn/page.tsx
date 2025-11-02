@@ -1,48 +1,50 @@
 "use client";
 
-import { NavbarWrapper } from "@/src/libraries/webcn/components/Navbar.webflow";
-import { HeroWrapper } from "@/src/libraries/webcn/components/Hero.webflow";
-import { FeaturesSummaryWrapper } from "@/src/libraries/webcn/components/FeaturesSummary.webflow";
-import { ComponentGridWrapper } from "@/src/libraries/registry-dashboard/components/ComponentGrid.webflow";
-import { WaitlistSectionWrapper } from "@/src/libraries/webcn/components/WaitlistSection.webflow";
-import { DemoSectionWrapper } from "@/src/libraries/webcn/components/DemoSection.webflow";
-import { VideoSectionWrapper } from "@/src/libraries/webcn/components/VideoSection.webflow";
-import { StorySectionWrapper } from "@/src/libraries/webcn/components/StorySection.webflow";
-import { BlogCTAWrapper } from "@/src/libraries/webcn/components/BlogCTA.webflow";
-import { FooterWrapper } from "@/src/libraries/webcn/components/Footer.webflow";
+// Import raw components (NOT Webflow wrappers)
+// Wrappers are for Webflow deployment only, not Next.js app usage
+import Navbar from "@/components/webcn/landing_page/webcn.webflow.io/Navbar";
+import Hero from "@/components/webcn/landing_page/webcn.webflow.io/Hero";
+import FeaturesSummary from "@/components/webcn/landing_page/webcn.webflow.io/FeaturesSummary";
+import ComponentGrid from "@/components/registry-dashboard/ComponentGrid";
+import WaitlistSection from "@/components/webcn/landing_page/webcn.webflow.io/WaitlistSection";
+import DemoSection from "@/components/webcn/landing_page/webcn.webflow.io/DemoSection";
+import VideoSection from "@/components/webcn/landing_page/webcn.webflow.io/VideoSection";
+import StorySection from "@/components/webcn/landing_page/webcn.webflow.io/StorySection";
+import BlogCTA from "@/components/webcn/landing_page/webcn.webflow.io/BlogCTA";
+import Footer from "@/components/webcn/landing_page/webcn.webflow.io/Footer";
 
 export default function WebcnLandingDemo() {
   return (
     <div className="min-h-screen w-full bg-background">
       {/* Navigation */}
-      <NavbarWrapper />
+      <Navbar />
 
       {/* Hero Section */}
-      <HeroWrapper showBackground={true} />
+      <Hero showBackground={true} />
 
       {/* Features Summary - High-level overview */}
-      <FeaturesSummaryWrapper />
+      <FeaturesSummary />
 
       {/* Component Grid */}
-      <ComponentGridWrapper />
+      <ComponentGrid />
 
       {/* Waitlist Section (Tests cross-library imports) */}
-      <WaitlistSectionWrapper />
+      <WaitlistSection />
 
       {/* Demo Section */}
-      <DemoSectionWrapper />
+      <DemoSection />
 
       {/* Video Section */}
-      <VideoSectionWrapper />
+      <VideoSection />
 
       {/* Story Section */}
-      <StorySectionWrapper />
+      <StorySection />
 
       {/* Blog CTA */}
-      <BlogCTAWrapper />
+      <BlogCTA />
 
       {/* Footer */}
-      <FooterWrapper />
+      <Footer />
     </div>
   );
 }
