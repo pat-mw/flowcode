@@ -74,9 +74,9 @@ export async function GET(request: NextRequest) {
       metadata: tokens.teamId ? { teamId: tokens.teamId } : null,
     });
 
-    // Clear OAuth state cookie
+    // Clear OAuth state cookie and redirect to success page
     const response = NextResponse.redirect(
-      new URL('/integrations/test?success=true', request.url)
+      new URL('/integrations/vercel/success', request.url)
     );
     response.cookies.delete('vercel_oauth_state');
 

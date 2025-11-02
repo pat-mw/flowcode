@@ -53,7 +53,7 @@ export interface DatabaseResult {
   createdAt: Date;
 
   /** Provider-specific metadata */
-  metadata?: Record<string, unknown>;
+  metadata?: unknown;
 }
 
 /**
@@ -81,7 +81,7 @@ export interface EnvVarsResult {
   updated: number;
 
   /** Provider-specific response metadata */
-  metadata?: Record<string, unknown>;
+  metadata?: unknown;
 }
 
 /**
@@ -119,6 +119,9 @@ export interface OAuthTokens {
 
   /** Granted OAuth scopes */
   scope?: string;
+
+  /** Team ID (for team-scoped integrations like Vercel) */
+  teamId?: string;
 }
 
 /**

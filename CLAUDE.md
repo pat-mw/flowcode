@@ -50,11 +50,15 @@ export default declareComponent(Component, {
 ### Directory Structure
 
 - `app/` - Next.js app router pages
+  - `app/integrations/` - Cloud integration UI pages (OAuth flows, dashboard)
+  - `app/api/` - API routes and oRPC handlers
 - `src/components/` - Custom Webflow components (*.webflow.tsx files and their implementations)
 - `components/` - Shared React components including shadcn/ui components (can also contain implementation components)
 - `components/ui/` - shadcn/ui component library
 - `lib/` - Utility functions and stores
-- `lib/stores/` - Zustand state management stores (for cross-component state)
+  - `lib/stores/` - Zustand state management stores (for cross-component state)
+  - `lib/integrations/` - Cloud provider integration system (Vercel, etc.)
+  - `lib/api/routers/` - oRPC router definitions
 - `hooks/` - Custom React hooks
 - `public/` - Static assets
 - `docs/` - Extended documentation and architecture guides
@@ -79,6 +83,7 @@ TypeScript is configured with `@/*` alias pointing to the project root:
 - **State Management:** Zustand (for cross-component state in Webflow)
 - **3D Graphics:** React Three Fiber, Drei, Rapier (physics)
 - **Webflow Integration:** @webflow/react, @webflow/data-types, @webflow/webflow-cli
+- **Cloud Integrations:** Vercel OAuth, Vercel API (database & deployment management)
 - **Package Manager:** pnpm
 
 ## Development Commands
@@ -265,6 +270,79 @@ Configures shadcn/ui component generation:
 - Icon library: "lucide"
 - Path aliases that match the project structure
 
+## Cloud Provider Integrations
+
+### Vercel Integration Architecture
+
+The project includes a production-ready cloud provider integration system with OAuth authentication, encrypted token storage, and a pluggable provider interface.
+
+**Key Components:**
+
+1. **Provider Interface** (`lib/integrations/types.ts`)
+   - `CloudProvider` - Abstract interface for all cloud providers
+   - `OAuthConfig`, `OAuthTokens` - OAuth flow types
+   - `DatabaseConfig`, `DatabaseResult` - Database provisioning types
+   - Provider-specific error classes: `ProviderError`, `AuthenticationError`, `RateLimitError`, `QuotaExceededError`
+
+2. **Vercel Provider** (`lib/integrations/vercel/client.ts`)
+   - Implements `CloudProvider` interface
+   - Methods: `createDatabase`, `listDatabases`, `deleteDatabase`, `createDeployment`, `getDeployment`, `listDeployments`, `listProjects`
+   - Full OAuth flow support with authorization URL generation and code exchange
+   - Rate limit tracking via response headers
+   - Comprehensive error handling with typed exceptions
+
+3. **Token Encryption** (`lib/integrations/encryption.ts`)
+   - AES-256-GCM encryption for OAuth tokens
+   - Encrypted storage in database with separate IV and auth tag columns
+   - Requires `ENCRYPTION_SECRET` environment variable (generate with: `openssl rand -hex 32`)
+
+4. **oRPC Integration Router** (`lib/api/routers/integrations.ts`)
+   - All procedures require authentication (`protectedProcedure`)
+   - OAuth: `connectVercel`, `listIntegrations`, `disconnectIntegration`
+   - Databases: `createVercelDatabase`, `listVercelDatabases`, `deleteVercelDatabase`
+   - Deployments: `createVercelDeployment`, `getVercelDeploymentStatus`, `listVercelDeployments`, `listVercelProjects`
+   - Environment: `updateVercelEnvVars`
+
+5. **OAuth Flow Implementation**
+   - **Authorization**: `/api/integrations/vercel/auth-url/route.ts` - Generates OAuth URL with state token
+   - **Callback**: `/api/integrations/vercel/callback/route.ts` - Exchanges code for tokens, stores encrypted tokens
+   - **Success Page**: `/app/integrations/vercel/success/page.tsx` - Post-OAuth landing page with navigation cards
+
+6. **Deployment Templates**
+   - **Static HTML**: Instant deployment with gradient design (base64-encoded file)
+   - **Next.js Hello World**: Deploys from Vercel's official examples repository
+
+**Environment Variables Required:**
+```env
+# Encryption (generate with: openssl rand -hex 32)
+ENCRYPTION_SECRET=your-256-bit-secret-key
+
+# Vercel OAuth Application
+VERCEL_OAUTH_CLIENT_ID=your-client-id
+VERCEL_OAUTH_CLIENT_SECRET=your-client-secret
+VERCEL_OAUTH_REDIRECT_URI=http://localhost:3000/api/integrations/vercel/callback
+
+# Optional: Vercel Integration Slug (for integration-specific OAuth URLs)
+VERCEL_INTEGRATION_SLUG=your-integration-slug
+```
+
+**Key Patterns:**
+
+- **Provider Abstraction**: All cloud providers implement `CloudProvider` interface for consistency
+- **Encrypted Token Storage**: OAuth tokens stored encrypted in database, never exposed in API responses
+- **User Isolation**: All integration operations verify user ownership via `userId` + `integrationId`
+- **Real-time Status Polling**: Frontend polls deployment status every 3 seconds using `useEffect` interval
+- **Confirmation Dialogs**: AlertDialog from shadcn/ui for destructive actions (database deletion)
+- **oRPC Query Pattern**: All API calls use `orpc.integrations.procedureName.queryOptions({ input: {...} })`
+
+**Testing:**
+- Visit `/integrations/test` after OAuth connection
+- Create databases and deployments
+- Monitor status with real-time polling
+- Delete resources with confirmation dialogs
+
+See `lib/integrations/README.md` for detailed integration system documentation.
+
 ## Additional Documentation
 
 The `docs/` folder contains extended architecture documentation including:
@@ -273,6 +351,7 @@ The `docs/` folder contains extended architecture documentation including:
 - **Routing strategies** - Query parameters vs dynamic routes (Webflow constraints)
 - **Database schemas and API design** - PostgreSQL schema and oRPC procedures
 - **Local development and debugging** - `docs/webflow-local-development.md` - Bundling, debugging, and testing Webflow components locally
+- **Vercel integration guide** - `docs/vercel-integration-guide.md` - OAuth setup, database provisioning, deployment management
 
 Refer to `docs/README.md` for a complete overview of available documentation.
 
@@ -667,9 +746,23 @@ All foreign keys use CASCADE delete for data integrity.
 
 Required in `.env.local`:
 ```env
+# Database
 DATABASE_URL=./data/local.db
+
+# Authentication
 NEXTAUTH_SECRET=<generated-secret>
 NEXTAUTH_URL=http://localhost:3000
+
+# Cloud Integrations - Encryption
+ENCRYPTION_SECRET=<generate-with-openssl-rand-hex-32>
+
+# Vercel OAuth Integration
+VERCEL_OAUTH_CLIENT_ID=<your-vercel-client-id>
+VERCEL_OAUTH_CLIENT_SECRET=<your-vercel-client-secret>
+VERCEL_OAUTH_REDIRECT_URI=http://localhost:3000/api/integrations/vercel/callback
+VERCEL_INTEGRATION_SLUG=<optional-integration-slug>
+
+# External APIs (Optional)
 TWELVE_DATA_API_KEY=<optional-free-tier-key>
 ```
 
@@ -683,6 +776,13 @@ TWELVE_DATA_API_KEY=<optional-free-tier-key>
   - Never commit API keys to version control
   - Use `.env.local` for local development
   - Replace with production secrets in deployment environments
+
+#### Vercel OAuth Application
+- **Create Application**: https://vercel.com/account/integrations
+- **Redirect URI**: Must match `VERCEL_OAUTH_REDIRECT_URI` exactly
+- **Scopes**: Deployment, database, and project management
+- **Token Encryption**: All OAuth tokens encrypted with AES-256-GCM before database storage
+- **Generate Encryption Secret**: `openssl rand -hex 32`
 
 ## Demo Credentials
 

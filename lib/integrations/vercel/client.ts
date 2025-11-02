@@ -25,9 +25,13 @@ import {
 } from '../types';
 import type {
   VercelDatabaseRegion,
+  VercelDeployment,
+  VercelDeploymentConfig,
+  VercelDeploymentList,
   VercelErrorResponse,
   VercelPostgresConfig,
   VercelPostgresDatabase,
+  VercelProject,
   VercelRateLimitInfo,
 } from './types';
 import {
@@ -309,5 +313,66 @@ export class VercelProvider implements CloudProvider {
    */
   getRateLimitInfo(): VercelRateLimitInfo | null {
     return this.rateLimitInfo;
+  }
+
+  /**
+   * Create a new deployment
+   */
+  async createDeployment(
+    config: VercelDeploymentConfig,
+    accessToken: string
+  ): Promise<VercelDeployment> {
+    return this.request<VercelDeployment>('/v13/deployments', accessToken, {
+      method: 'POST',
+      body: JSON.stringify(config),
+    });
+  }
+
+  /**
+   * Get deployment status by ID
+   */
+  async getDeployment(
+    deploymentId: string,
+    accessToken: string
+  ): Promise<VercelDeployment> {
+    return this.request<VercelDeployment>(
+      `/v13/deployments/${deploymentId}`,
+      accessToken
+    );
+  }
+
+  /**
+   * List deployments (optionally filtered by project)
+   */
+  async listDeployments(
+    accessToken: string,
+    projectId?: string
+  ): Promise<VercelDeploymentList> {
+    const endpoint = projectId
+      ? `/v6/deployments?projectId=${projectId}`
+      : '/v6/deployments';
+
+    return this.request<VercelDeploymentList>(endpoint, accessToken);
+  }
+
+  /**
+   * List all projects
+   */
+  async listProjects(accessToken: string): Promise<{ projects: VercelProject[] }> {
+    return this.request<{ projects: VercelProject[] }>('/v9/projects', accessToken);
+  }
+
+  /**
+   * Create a new project
+   */
+  async createProject(
+    name: string,
+    accessToken: string,
+    framework?: string
+  ): Promise<VercelProject> {
+    return this.request<VercelProject>('/v10/projects', accessToken, {
+      method: 'POST',
+      body: JSON.stringify({ name, framework }),
+    });
   }
 }

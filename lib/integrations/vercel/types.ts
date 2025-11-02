@@ -148,3 +148,88 @@ export interface VercelRateLimitInfo {
   remaining: number;
   reset: number; // Unix timestamp
 }
+
+/**
+ * Vercel deployment ready state
+ */
+export type VercelDeploymentReadyState =
+  | 'QUEUED'
+  | 'BUILDING'
+  | 'READY'
+  | 'ERROR'
+  | 'CANCELED';
+
+/**
+ * Vercel deployment state (deprecated, use readyState)
+ */
+export type VercelDeploymentState = 'BUILDING' | 'READY' | 'ERROR' | 'CANCELED';
+
+/**
+ * Vercel deployment response
+ */
+export interface VercelDeployment {
+  id: string;
+  url: string;
+  name: string;
+  state?: VercelDeploymentState; // Deprecated
+  readyState: VercelDeploymentReadyState;
+  createdAt: number;
+  creator: {
+    uid: string;
+    username?: string;
+  };
+  inspectorUrl?: string;
+  meta?: Record<string, unknown>;
+  target?: 'production' | 'staging' | 'preview';
+  projectId?: string;
+  alias?: string[];
+}
+
+/**
+ * Git source configuration for deployment
+ */
+export interface VercelGitSource {
+  type: 'github' | 'gitlab' | 'bitbucket';
+  repo: string; // "owner/repo"
+  ref?: string; // branch/tag (default: default branch)
+  path?: string; // subdirectory path
+}
+
+/**
+ * Project settings for deployment
+ */
+export interface VercelProjectSettings {
+  framework?: 'nextjs' | 'vite' | 'create-react-app' | 'remix' | 'static' | null;
+  buildCommand?: string;
+  outputDirectory?: string;
+  installCommand?: string;
+  devCommand?: string;
+}
+
+/**
+ * Deployment file for file-based deployments
+ */
+export interface VercelDeploymentFile {
+  file: string; // File path
+  data: string; // Base64 encoded content
+}
+
+/**
+ * Vercel deployment configuration
+ */
+export interface VercelDeploymentConfig {
+  name: string;
+  gitSource?: VercelGitSource;
+  files?: VercelDeploymentFile[];
+  projectSettings?: VercelProjectSettings;
+  target?: 'production' | 'staging';
+  env?: Record<string, string>;
+}
+
+/**
+ * Vercel deployment list response
+ */
+export interface VercelDeploymentList {
+  deployments: VercelDeployment[];
+  pagination: VercelPagination;
+}
