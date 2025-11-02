@@ -9,6 +9,7 @@ import { postsRouter } from './routers/posts';
 import { peopleRouter } from './routers/people';
 import { waitlistRouter } from './routers/waitlist';
 import { integrationsRouter } from './routers/integrations';
+import { webflowRouter } from './routers/webflow';
 
 export const appRouter = os.router({
   auth: authRouter,
@@ -16,6 +17,7 @@ export const appRouter = os.router({
   people: peopleRouter,
   waitlist: waitlistRouter,
   integrations: integrationsRouter,
+  webflow: webflowRouter,
 });
 
 export type AppRouter = typeof appRouter;

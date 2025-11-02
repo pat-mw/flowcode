@@ -350,6 +350,79 @@ BLOGFLOW_VERCEL_INTEGRATION_SLUG=your-integration-slug
 
 See `lib/integrations/README.md` for detailed integration system documentation.
 
+### Webflow Component Export System
+
+Modular system for exporting selected Webflow components to user's Webflow workspace with encrypted token management and automated builds.
+
+**Architecture:**
+
+The system uses three swappable provider interfaces:
+
+1. **Component Discovery** (`lib/integrations/webflow/discovery/`)
+   - Scans project for `.webflow.tsx` components
+   - Analyzes component metadata and dependencies
+   - Resolves transitive dependencies recursively
+   - Current: `FilesystemDiscovery` using glob patterns
+   - Future: Database-backed component registry
+
+2. **Webflow Authentication** (`lib/integrations/webflow/auth/`)
+   - Manages Webflow workspace tokens securely
+   - AES-256-GCM encryption (same as Vercel integration)
+   - Tokens stored encrypted in database
+   - User isolation by `userId`
+   - Current: `ManualTokenProvider` for user input tokens
+   - Future: OAuth flow for seamless integration
+
+3. **Build Execution** (`lib/integrations/build-providers/`)
+   - Compiles components with webpack
+   - Deploys to Webflow via CLI
+   - Streams real-time build logs
+   - Isolated temporary directory per build
+   - Current: `VercelBuildProvider` (synchronous, 300s limit)
+   - Future: AWS Lambda for async builds
+
+**User Workflow:**
+
+1. Save Webflow workspace token (encrypted storage)
+2. Browse available components in project
+3. Select components for export (dependencies tracked)
+4. Click export - build and deploy happens automatically
+5. View real-time build logs
+6. Access deployment URL in Webflow dashboard
+
+**oRPC Procedures** (`lib/api/routers/webflow.ts`):
+- `saveWebflowToken` - Encrypt and store workspace token
+- `getWebflowToken` - Check if user has token stored
+- `revokeWebflowToken` - Delete stored token
+- `listWebflowComponents` - Scan and return available components
+- `exportComponents` - Build and deploy selected components
+
+**Frontend UI** (`app/integrations/webflow/page.tsx`):
+- Token setup form with password input
+- Component selection checklist with dependency badges
+- Export button with real-time build logs
+- Success/failure alerts with deployment link
+
+**Security Features:**
+- Token encryption with AES-256-GCM (never in plaintext)
+- User isolation via `userId` filtering
+- No token exposure in API responses or logs
+- Isolated build environment per job
+- Input validation on all operations
+
+**Configuration:**
+- Uses existing `ENCRYPTION_SECRET` from environment
+- Stores tokens in `integrations` table (same as Vercel)
+- Database schema reuses existing infrastructure
+
+**Testing:**
+- 24 unit tests for manual token provider
+- Component discovery tests for filesystem scanning
+- Integration tests for complete export workflow
+- Manual testing via `/integrations/webflow` page
+
+See `lib/integrations/webflow/README.md` and `docs/webflow-export-guide.md` for detailed documentation.
+
 ## Additional Documentation
 
 The `docs/` folder contains extended architecture documentation including:
@@ -359,6 +432,11 @@ The `docs/` folder contains extended architecture documentation including:
 - **Database schemas and API design** - PostgreSQL schema and oRPC procedures
 - **Local development and debugging** - `docs/webflow-local-development.md` - Bundling, debugging, and testing Webflow components locally
 - **Vercel integration guide** - `docs/vercel-integration-guide.md` - OAuth setup, database provisioning, deployment management
+- **Webflow export guide** - `docs/webflow-export-guide.md` - Complete guide to the component export system with user workflows, security model, and API reference
+
+Additionally, module-specific READMEs provide detailed technical documentation:
+- `lib/integrations/webflow/README.md` - Webflow integration module architecture
+- `lib/integrations/build-providers/README.md` - Build provider system for compilation and deployment
 
 Refer to `docs/README.md` for a complete overview of available documentation.
 

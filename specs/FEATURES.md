@@ -241,3 +241,119 @@ All backend and frontend code has been implemented:
 5. Create Next.js deployment (takes 1-2 minutes)
 6. Monitor deployment status polling
 7. Click deployment URLs and verify they work
+
+## 3. Webflow Component Export System
+- [ ] Unit tests have been written
+- [ ] E2E tests for user workflows have been written (including all button clicks and component interactions)
+- [X] Feature has been implemented
+- [ ] ALL E2E tests and unit tests pass
+- [X] Every new component has been successfully interacted with using Playwright MCP:
+  - [X] Token entry form
+  - [X] Component selection checklist
+  - [X] Export button and progress display
+
+### Feature Description
+Modular system for exporting selected Webflow components to user's Webflow workspace with three swappable layers:
+- **Build Provider**: Vercel Functions (MVP) → AWS Lambda (future)
+- **Webflow Auth**: Manual token entry (MVP) → OAuth (future)
+- **Component Discovery**: Filesystem scanning (MVP) → Database registry (future)
+
+### Technical Details
+- **Three Provider Interfaces**: BuildProvider, WebflowAuthProvider, ComponentDiscovery
+- **Token Storage**: Encrypted workspace API tokens using existing integrations table
+- **Component Discovery**: Glob-based filesystem scanning with dependency analysis
+- **Build Isolation**: Temporary directory with filtered component files
+- **Deployment**: Webpack compilation + Webflow CLI execution
+- **Timeout Handling**: Single synchronous job within 300s Vercel Function limit
+
+### Implementation Progress
+
+#### Phase 1: Core Interfaces
+- [ ] Define `BuildProvider` interface in lib/integrations/build-providers/types.ts
+- [ ] Define `WebflowAuthProvider` interface in lib/integrations/webflow/auth/types.ts
+- [ ] Define `ComponentDiscovery` interface in lib/integrations/webflow/discovery/types.ts
+
+#### Phase 2: Manual Token Provider
+- [ ] Implement `ManualTokenProvider` in lib/integrations/webflow/auth/manual-token.ts
+- [ ] Add oRPC procedure: `saveWebflowToken()`
+- [ ] Add oRPC procedure: `getWebflowToken()`
+- [ ] Add oRPC procedure: `revokeWebflowToken()`
+
+#### Phase 3: Filesystem Discovery
+- [ ] Implement `FilesystemDiscovery` in lib/integrations/webflow/discovery/filesystem.ts
+- [ ] Component scanning with glob pattern
+- [ ] Dependency parser (import analysis)
+- [ ] Add oRPC procedure: `listWebflowComponents()`
+
+#### Phase 4: Vercel Build Provider
+- [ ] Implement `VercelBuildProvider` in lib/integrations/build-providers/vercel.ts
+- [ ] Build isolation logic (temp directory creation)
+- [ ] Webpack compilation wrapper
+- [ ] Webflow CLI execution
+- [ ] Log collection and error handling
+
+#### Phase 5: Export Orchestration
+- [ ] Add oRPC procedure: `exportComponents()`
+- [ ] Integrate all three providers (Auth, Discovery, Build)
+- [ ] Build log streaming/collection
+- [ ] Error handling and cleanup
+
+#### Phase 6: Frontend UI
+- [ ] Create page: app/integrations/webflow/page.tsx
+- [ ] Token setup form with save/revoke
+- [ ] Component selection checklist with dependencies
+- [ ] Export button with progress display
+- [ ] Build logs display
+- [ ] Error handling and success feedback
+
+#### Phase 7: Testing & Verification
+- [ ] Write unit tests for all interfaces
+- [ ] Write unit tests for all implementations
+- [ ] Write E2E tests for token management
+- [ ] Write E2E tests for component selection
+- [ ] Write E2E tests for export workflow
+- [X] Use Playwright MCP to test token form
+- [X] Use Playwright MCP to test component selection
+- [X] Use Playwright MCP to test export button
+- [ ] Fix all test failures
+
+### Current Status
+**✅ UI TESTED WITH PLAYWRIGHT MCP - Backend Issues Discovered**
+
+All phases implemented:
+- ✅ Phase 1: Core Interfaces (BuildProvider, WebflowAuthProvider, ComponentDiscovery)
+- ✅ Phase 2: Manual Token Provider with encrypted storage and oRPC procedures
+- ✅ Phase 3: Filesystem Discovery with component scanning and dependency resolution
+- ✅ Phase 4: Vercel Build Provider with webpack and Webflow CLI integration
+- ✅ Phase 5: Export Orchestration oRPC procedure tying all providers together
+- ✅ Phase 6: Frontend UI with token management, component selection, and export functionality
+
+**Dependencies Installed:**
+- `glob` package added for filesystem component discovery
+- All TypeScript types available
+
+**Playwright MCP Testing Results (✅ COMPLETE):**
+- ✅ Token entry form: Password masking works, save functionality works, success alert displays
+- ✅ Component selection: Individual checkbox selection works, "Select All"/"Deselect All" buttons work, selection count updates correctly
+- ✅ Export button: Button enables when components selected, loading state displays correctly ("Exporting..." with spinner), button disabled during export
+- ⚠️ Export process issues discovered:
+  - Dependency resolution fails: missing file extensions (e.g., `@/components/Navigation` should be `@/components/Navigation.tsx`)
+  - Export hangs during webpack/Webflow CLI execution (expected with test token)
+  - Errors logged to console but not displayed in UI
+
+**Screenshots Captured:**
+- `webflow-token-form.png` - Token entry and save functionality
+- `webflow-components-list.png` - Component list with 12 discovered components
+- `webflow-export-in-progress.png` - Export loading state
+
+**Known Issues:**
+1. ⚠️ **Dependency Resolution (lib/integrations/webflow/discovery/filesystem.ts:302-320)**: `resolveDependencyPath()` doesn't add file extensions when resolving paths, causing file read errors
+2. ⚠️ **Missing Error Display**: Export errors are logged to console but not shown in UI - frontend needs error display implementation
+3. ⚠️ **Build Process Hangs**: Export process doesn't timeout or show error when build fails (may need better timeout handling)
+
+**Next Steps:**
+1. Fix dependency resolution to add file extensions (.tsx, .ts, .js, .jsx)
+2. Add error display in frontend UI for failed exports
+3. Write unit tests for all interfaces and implementations
+4. Write E2E tests for complete workflows
+5. Test with real Webflow workspace token
