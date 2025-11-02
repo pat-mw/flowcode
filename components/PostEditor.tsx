@@ -12,6 +12,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
+import { getApiBaseUrl } from '@/lib/env';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -109,7 +110,7 @@ export default function PostEditor() {
         setError(null);
 
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/getById`,
+          `${getApiBaseUrl()}/api/orpc/posts/getById`,
           {
             method: 'POST',
             credentials: 'include',
@@ -161,8 +162,8 @@ export default function PostEditor() {
       setError(null);
 
       const endpoint = isEditMode
-        ? `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/update`
-        : `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/create`;
+        ? `${getApiBaseUrl()}/api/orpc/posts/update`
+        : `${getApiBaseUrl()}/api/orpc/posts/create`;
 
       const body = isEditMode
         ? {
@@ -268,7 +269,7 @@ export default function PostEditor() {
       }
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/publish`,
+        `${getApiBaseUrl()}/api/orpc/posts/publish`,
         {
           method: 'POST',
           credentials: 'include',
@@ -300,7 +301,7 @@ export default function PostEditor() {
       setError(null);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/orpc/posts/delete`,
+        `${getApiBaseUrl()}/api/orpc/posts/delete`,
         {
           method: 'POST',
           credentials: 'include',

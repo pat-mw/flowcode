@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { signUp, signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { setToken } from '@/lib/token-storage';
+import { getApiBaseUrl } from '@/lib/env';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -138,7 +139,7 @@ export default function RegistrationForm({
       }
 
       // Auto-login after registration - call API directly to get session token
-      const loginAuthResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-in/email`, {
+      const loginAuthResponse = await fetch(`${getApiBaseUrl()}/api/auth/sign-in/email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -177,7 +178,7 @@ export default function RegistrationForm({
       if (loginResponse.data?.user) {
 
         // Fetch person profile (created by afterSignUp callback)
-        const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
+        const personResponse = await fetch(`${getApiBaseUrl()}/api/orpc/auth/getSession`, {
           method: 'POST',
           credentials: 'include',
         });

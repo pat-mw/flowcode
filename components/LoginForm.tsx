@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { signIn } from '@/lib/auth/client';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { setToken } from '@/lib/token-storage';
+import { getApiBaseUrl } from '@/lib/env';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -107,7 +108,8 @@ export default function LoginForm({
       }
 
       // Call Better Auth API directly to get session token
-      const authResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-in/email`, {
+      const apiBaseUrl = getApiBaseUrl();
+      const authResponse = await fetch(`${apiBaseUrl}/api/auth/sign-in/email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +144,7 @@ export default function LoginForm({
 
         // Fallback: try to get token from endpoint
         try {
-          const tokenResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/get-bearer-token`, {
+          const tokenResponse = await fetch(`${apiBaseUrl}/api/auth/get-bearer-token`, {
             method: 'GET',
             credentials: 'include',
           });
@@ -164,7 +166,7 @@ export default function LoginForm({
       // Update Zustand auth store
       if (response.data?.user) {
         // Fetch person profile
-        const personResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orpc/auth/getSession`, {
+        const personResponse = await fetch(`${apiBaseUrl}/api/orpc/auth/getSession`, {
           method: 'POST',
           credentials: 'include',
         });
