@@ -17,6 +17,9 @@ BlogFlow demonstrates a modern approach to building interactive web applications
 - ✅ **Responsive Design** - Works seamlessly across all devices
 - ✅ **Type-Safe API** - End-to-end type safety with oRPC
 - ✅ **Real-Time Updates** - React Query for optimistic UI updates
+- ✅ **Cloud Integrations** - Connect Vercel account via OAuth
+- ✅ **Database Provisioning** - Create and manage Vercel Postgres databases
+- ✅ **Deployment Management** - Deploy static sites and Next.js apps to Vercel
 
 ## Tech Stack
 
@@ -35,6 +38,7 @@ BlogFlow demonstrates a modern approach to building interactive web applications
 - **Drizzle ORM** - Type-safe database queries
 - **PostgreSQL** - Primary database
 - **Webflow API SDK** - CMS synchronization
+- **Vercel API** - Cloud integration for database and deployment management
 - **Zod** - Schema validation
 
 ### DevOps
@@ -120,6 +124,12 @@ BlogFlow demonstrates a modern approach to building interactive web applications
 
    # API
    NEXT_PUBLIC_API_URL=http://localhost:3000/api/orpc
+
+   # Cloud Integrations (Optional - for Vercel integration features)
+   # Note: Prefixed with BLOGFLOW_ to avoid conflicts with Vercel's reserved env vars
+   ENCRYPTION_SECRET=your-256-bit-encryption-key  # Generate: openssl rand -hex 32
+   BLOGFLOW_VERCEL_CLIENT_ID=your-vercel-client-id
+   BLOGFLOW_VERCEL_CLIENT_SECRET=your-vercel-client-secret
    ```
 
 4. **Set up the database**
@@ -306,6 +316,11 @@ Comprehensive documentation is available in the `./docs` folder:
 - **[Webflow Routing Guide](./docs/webflow-routing-guide.md)** - Query parameter navigation
 - **[Advanced Patterns](./docs/advanced-patterns.md)** - Production best practices
 - **[Configuration Reference](./docs/configuration-reference.md)** - All config files explained
+- **[Vercel Integration Guide](./docs/vercel-integration-guide.md)** - OAuth setup and cloud resource management
+
+**Integration System Documentation:**
+- **[Integration System](./lib/integrations/README.md)** - Backend provider abstraction and encryption
+- **[Integration UI](./app/integrations/README.md)** - Frontend flows and component patterns
 
 ## Contributing
 

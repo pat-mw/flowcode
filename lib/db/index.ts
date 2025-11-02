@@ -12,6 +12,7 @@ import * as usersSchema from './schema/users';
 import * as peopleSchema from './schema/people';
 import * as postsSchema from './schema/posts';
 import * as waitlistSchema from './schema/waitlist';
+import * as integrationsSchema from './schema/integrations';
 
 // Use DRIZZLE_DATABASE_URL for Drizzle connections
 // Falls back to other common env vars if not set
@@ -39,6 +40,7 @@ export const db = drizzle(client, {
     ...peopleSchema,
     ...postsSchema,
     ...waitlistSchema,
+    ...integrationsSchema,
   },
 });
 
@@ -47,6 +49,7 @@ export * from './schema/users';
 export * from './schema/people';
 export * from './schema/posts';
 export * from './schema/waitlist';
+export * from './schema/integrations';
 
 // Export client for raw queries if needed
 export { client };

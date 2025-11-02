@@ -55,20 +55,23 @@ import { RPCLink } from '@orpc/client/fetch';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
 import type { RouterClient } from '@orpc/server';
 import { getToken } from '@/lib/token-storage';
+import { getApiBaseUrl } from '@/lib/env';
 
-// Validate required environment variable
-if (!process.env.NEXT_PUBLIC_API_URL) {
-  throw new Error(
-    'NEXT_PUBLIC_API_URL is required. Please set it in your .env file.\n' +
-    'Example: NEXT_PUBLIC_API_URL=http://localhost:3000'
-  );
+/**
+ * Get API URL
+ * Automatically uses VERCEL_URL on Vercel, window.location.origin in browser,
+ * or NEXT_PUBLIC_API_URL if explicitly set
+ */
+function getApiUrl(): string {
+  const baseUrl = getApiBaseUrl();
+  return `${baseUrl}/api/orpc`;
 }
 
 /**
  * RPCLink Configuration
  *
  * Configures HTTP transport for oRPC client:
- * - URL: API endpoint from environment variable
+ * - URL: API endpoint (uses current origin in browser, env variable in SSR)
  * - Credentials: Include cookies for authentication
  * - Headers: Content-Type and custom headers as needed
  *
@@ -79,7 +82,7 @@ if (!process.env.NEXT_PUBLIC_API_URL) {
  * - HTTP method selection (GET for queries, POST for mutations)
  */
 const link = new RPCLink({
-  url: `${process.env.NEXT_PUBLIC_API_URL}/api/orpc`,
+  url: getApiUrl(),
 
   // Include credentials (cookies) for authentication
   // Required for Better Auth session cookies

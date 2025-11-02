@@ -9,6 +9,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { clearToken, getToken } from '@/lib/token-storage';
+import { getApiBaseUrl } from '@/lib/env';
 
 interface User {
   id: string;
@@ -107,7 +108,7 @@ export async function revalidateAuthSession() {
     try {
       // Check if session is still valid by fetching from Better Auth
       // Use full URL for cross-origin requests (Webflow → Vercel)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+      const apiUrl = getApiBaseUrl();
 
       // Build headers including bearer token if available
       const headers: Record<string, string> = {

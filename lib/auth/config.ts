@@ -9,14 +9,11 @@ import { bearer } from 'better-auth/plugins';
 import { db } from '@/lib/db';
 import { users, sessions, accounts, verifications } from '@/lib/db';
 import { nanoid } from 'nanoid';
-import { ALLOWED_ORIGINS } from '@/app/api/config';
+import { getAllowedOrigins } from '@/app/api/config';
+import { getBaseUrl } from '@/lib/env';
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error('BETTER_AUTH_SECRET is required');
-}
-
-if (!process.env.BETTER_AUTH_URL) {
-  throw new Error('BETTER_AUTH_URL is required');
 }
 
 export const auth = betterAuth({
@@ -44,7 +41,8 @@ export const auth = betterAuth({
     },
   },
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  // Automatically uses VERCEL_URL on Vercel, or BETTER_AUTH_URL if explicitly set
+  baseURL: getBaseUrl(),
 
   // Session configuration
   session: {
@@ -69,8 +67,22 @@ export const auth = betterAuth({
     },
   },
 
-  // CORS configuration - allow Webflow domain to make auth requests
-  trustedOrigins: ALLOWED_ORIGINS,
+  // CORS configuration - automatically includes BETTER_AUTH_URL and NEXT_PUBLIC_API_URL
+  // Additional origins can be configured via ALLOWED_CORS_ORIGINS env var
+  // Function allows dynamic validation for Vercel preview deployments
+  trustedOrigins: async (request) => {
+    const staticOrigins = getAllowedOrigins();
+
+    // Get the origin from the request
+    const origin = request.headers.get('origin');
+
+    // Allow all Vercel deployment URLs (*.vercel.app)
+    if (origin && origin.endsWith('.vercel.app') && origin.startsWith('https://')) {
+      return [...staticOrigins, origin];
+    }
+
+    return staticOrigins;
+  },
 
   // Callbacks
   callbacks: {

@@ -1,0 +1,1 @@
+Stage all the changes. Add all new files from the main "vibecloud" directory. Write a comprehensive but brief desctiption of the staged changes. Use bullet points where appropriate.` Commit all the staged files with that description. Use "cyberwarrior6000" as the git username, and email.

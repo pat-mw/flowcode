@@ -1,0 +1,15 @@
+How can we save the auth keys 
+
+Product:
+
+Interactive library to ship react components to any use with just their webflow api token?
+
+1. which env variables are public and which are private?
+
+vercel offer oauth and so does webflow
+user logs in with both - we should have all the appropriate scope to generate AND push the webflow components
+
+I will handle the devops - 
+- create webcn - our library by forking this repo
+- investigate how the user can select which components the user needs: run the library share command with a manifest
+    - webflow.json(?) tells the compiler which patterns to search for for compilation
