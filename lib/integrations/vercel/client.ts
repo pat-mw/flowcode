@@ -67,6 +67,8 @@ export class VercelProvider implements CloudProvider {
   ): Promise<T> {
     const url = `${VERCEL_API_BASE}${endpoint}`;
 
+    console.log('[VercelProvider] Making request:', { url, method: options.method || 'GET' });
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -75,6 +77,8 @@ export class VercelProvider implements CloudProvider {
         ...options.headers,
       },
     });
+
+    console.log('[VercelProvider] Response status:', response.status, response.statusText);
 
     // Track rate limit information
     this.updateRateLimitInfo(response);
@@ -109,14 +113,25 @@ export class VercelProvider implements CloudProvider {
   private async handleErrorResponse(response: Response): Promise<never> {
     const contentType = response.headers.get('content-type');
     let errorData: VercelErrorResponse | null = null;
+    let rawBody: string | null = null;
 
     if (contentType?.includes('application/json')) {
       try {
-        errorData = await response.json();
+        const text = await response.text();
+        rawBody = text;
+        errorData = JSON.parse(text);
       } catch {
         // Failed to parse error response
       }
     }
+
+    console.log('[VercelProvider] Error response details:', {
+      status: response.status,
+      statusText: response.statusText,
+      contentType,
+      rawBody,
+      errorData
+    });
 
     const errorMessage = errorData?.error?.message || response.statusText;
     const errorCode = errorData?.error?.code;
@@ -330,12 +345,21 @@ export class VercelProvider implements CloudProvider {
    */
   async createDeployment(
     config: VercelDeploymentConfig,
-    accessToken: string
+    accessToken: string,
+    teamId?: string
   ): Promise<VercelDeployment> {
-    return this.request<VercelDeployment>('/v13/deployments', accessToken, {
-      method: 'POST',
-      body: JSON.stringify(config),
-    });
+    // Build query parameters
+    const params = new URLSearchParams({ skipAutoDetectionConfirmation: '1' });
+    if (teamId) params.set('teamId', teamId);
+
+    return this.request<VercelDeployment>(
+      `/v13/deployments?${params.toString()}`,
+      accessToken,
+      {
+        method: 'POST',
+        body: JSON.stringify(config),
+      }
+    );
   }
 
   /**

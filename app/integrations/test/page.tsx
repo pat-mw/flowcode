@@ -112,7 +112,13 @@ export default function IntegrationsTestPage() {
     orpc.integrations.listIntegrations.queryOptions()
   );
 
-  const vercelIntegration = integrations.find((i) => i.provider === 'vercel');
+  const vercelIntegrations = integrations.filter((i) => i.provider === 'vercel');
+  console.log('[DEBUG] All Vercel integrations:', vercelIntegrations);
+
+  const vercelIntegration = vercelIntegrations
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+
+  console.log('[DEBUG] Selected integration:', vercelIntegration);
 
   // Fetch databases list
   const {
@@ -377,14 +383,20 @@ export default function IntegrationsTestPage() {
         </CardHeader>
         <CardContent>
           {vercelIntegration ? (
-            <div className="flex items-center gap-4">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <div>
-                <p className="font-medium">Connected to Vercel</p>
-                <p className="text-sm text-muted-foreground">
-                  Connected on {new Date(vercelIntegration.createdAt).toLocaleDateString()}
-                </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                <div>
+                  <p className="font-medium">Connected to Vercel</p>
+                  <p className="text-sm text-muted-foreground">
+                    Connected on {new Date(vercelIntegration.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
+              <Button onClick={handleConnectVercel} disabled={connecting} variant="outline">
+                {connecting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Reconnect to Vercel
+              </Button>
             </div>
           ) : (
             <Button onClick={handleConnectVercel} disabled={connecting}>

@@ -139,6 +139,16 @@ const createVercelDatabase = protectedProcedure
         throw new Error('Vercel integration not found');
       }
 
+      // Debug integration metadata
+      console.log('[createVercelDatabase] Integration details:', {
+        id: integration.id,
+        userId: integration.userId,
+        provider: integration.provider,
+        metadata: integration.metadata,
+        metadataType: typeof integration.metadata,
+        metadataKeys: integration.metadata ? Object.keys(integration.metadata) : 'null',
+      });
+
       // Decrypt access token
       console.log('[createVercelDatabase] Decrypting access token...');
       const accessToken = decrypt(
@@ -331,33 +341,40 @@ const createVercelDeployment = protectedProcedure
   .handler(async ({ input, context }) => {
     const ctx = context as Context & { userId: string };
 
-    // Get user's Vercel integration
-    const integration = await db.query.integrations.findFirst({
-      where: and(
-        eq(integrations.id, input.integrationId),
-        eq(integrations.userId, ctx.userId),
-        eq(integrations.provider, 'vercel')
-      ),
-    });
+    try {
+      console.log('[createVercelDeployment] Starting deployment creation:', { name: input.name, template: input.template });
 
-    if (!integration) {
-      throw new Error('Vercel integration not found');
-    }
+      // Get user's Vercel integration
+      const integration = await db.query.integrations.findFirst({
+        where: and(
+          eq(integrations.id, input.integrationId),
+          eq(integrations.userId, ctx.userId),
+          eq(integrations.provider, 'vercel')
+        ),
+      });
 
-    // Decrypt access token
-    const accessToken = decrypt(
-      integration.accessToken,
-      integration.accessTokenIv,
-      integration.accessTokenAuthTag
-    );
+      if (!integration) {
+        console.error('[createVercelDeployment] Integration not found:', { integrationId: input.integrationId, userId: ctx.userId });
+        throw new Error('Vercel integration not found');
+      }
 
-    // Prepare deployment config based on template
-    let deploymentConfig;
+      console.log('[createVercelDeployment] Integration found:', { id: integration.id });
+
+      // Decrypt access token
+      const accessToken = decrypt(
+        integration.accessToken,
+        integration.accessTokenIv,
+        integration.accessTokenAuthTag
+      );
+
+      console.log('[createVercelDeployment] Access token decrypted');
+
+      // Prepare deployment config based on template
+      let deploymentConfig;
 
     if (input.template === 'static') {
       // Simple static HTML deployment
-      const html = Buffer.from(`
-<!DOCTYPE html>
+      const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -395,8 +412,7 @@ const createVercelDeployment = protectedProcedure
     <p>Created with Blogflow Vercel Integration</p>
   </div>
 </body>
-</html>
-      `).toString('base64');
+</html>`;
 
       deploymentConfig = {
         name: input.name,
@@ -406,9 +422,7 @@ const createVercelDeployment = protectedProcedure
             data: html,
           },
         ],
-        projectSettings: {
-          framework: 'static' as const,
-        },
+        target: 'production',
       };
     } else {
       // Next.js hello-world example from Vercel
@@ -420,17 +434,25 @@ const createVercelDeployment = protectedProcedure
           ref: 'canary',
           path: 'examples/hello-world',
         },
-        projectSettings: {
-          framework: 'nextjs' as const,
-        },
+        target: 'production',
       };
     }
 
-    // Create deployment using Vercel provider
-    const provider = new VercelProvider();
-    const deployment = await provider.createDeployment(deploymentConfig, accessToken);
+      // Get teamId from metadata
+      const teamId = integration.metadata?.teamId as string | undefined;
+      console.log('[createVercelDeployment] TeamId:', teamId);
 
-    return deployment;
+      // Create deployment using Vercel provider
+      console.log('[createVercelDeployment] Creating deployment with config:', { name: deploymentConfig.name });
+      const provider = new VercelProvider();
+      const deployment = await provider.createDeployment(deploymentConfig, accessToken, teamId);
+
+      console.log('[createVercelDeployment] Deployment created successfully:', { id: deployment.id, url: deployment.url });
+      return deployment;
+    } catch (error) {
+      console.error('[createVercelDeployment] Error:', error);
+      throw error;
+    }
   });
 
 /**
