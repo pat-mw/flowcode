@@ -115,66 +115,80 @@ We need component preview to work in the Next.js app for development and testing
 - Create separate test page for Webflow wrappers
 - Update component registry to use raw components
 
-## Code Changes (This Session)
+### 3. Implemented the Fix
 
-### Files to Modify
+**All files have been updated successfully!**
 
-**1. app/(demos)/lander/webcn/page.tsx**
-- Revert all imports from Webflow wrappers to raw components
-- Example:
-  ```tsx
-  // REVERT FROM:
-  import { ComponentGridWrapper } from "@/src/libraries/registry-dashboard/components/ComponentGrid.webflow";
+## Code Changes (Completed)
 
-  // BACK TO:
-  import ComponentGrid from "@/components/registry-dashboard/ComponentGrid";
-  ```
+### Files Modified
 
-**2. lib/component-registry.tsx**
-- Update all dynamic imports to use raw components
-- Example:
-  ```tsx
-  // CHANGE FROM:
-  wrapper: dynamic(() => import("@/src/libraries/X/components/Y.webflow").then(m => m.YWrapper))
+**1. app/(demos)/lander/webcn/page.tsx** ✅
+- Reverted all imports from Webflow wrappers to raw components
+- Changed from: `import { NavbarWrapper } from "@/src/libraries/webcn/components/Navbar.webflow"`
+- Changed to: `import Navbar from "@/components/webcn/landing_page/webcn.webflow.io/Navbar"`
+- Updated all 10 component imports
+- Added comment explaining why raw components are used
 
-  // CHANGE TO:
-  wrapper: dynamic(() => import("@/components/X/Y"))
-  ```
-
-### Files to Create
-
-**3. app/(tests)/test-webflow-wrappers/page.tsx** (NEW)
-- Dedicated test page for Webflow wrapper integration
-- Uses all Webflow wrappers explicitly
-- Does NOT use dynamic imports
-- Purpose: Verify wrappers work before deploying to Webflow
-
-**Structure:**
+**Before:**
 ```tsx
-'use client';
-
-// Import ALL wrappers statically (no dynamic imports)
-import { ComponentGridWrapper } from "@/src/libraries/registry-dashboard/components/ComponentGrid.webflow";
 import { NavbarWrapper } from "@/src/libraries/webcn/components/Navbar.webflow";
-// ... all other wrappers
-
-export default function TestWebflowWrappersPage() {
-  return (
-    <div>
-      <h1>Webflow Wrappers Test Page</h1>
-      <p>This page tests Webflow wrappers in isolation.</p>
-
-      {/* Test each wrapper */}
-      <section>
-        <h2>Navbar Wrapper</h2>
-        <NavbarWrapper />
-      </section>
-
-      {/* ... more wrapper tests */}
-    </div>
-  );
-}
+// ... 9 more wrapper imports
+<NavbarWrapper />
 ```
+
+**After:**
+```tsx
+// Import raw components (NOT Webflow wrappers)
+// Wrappers are for Webflow deployment only, not Next.js app usage
+import Navbar from "@/components/webcn/landing_page/webcn.webflow.io/Navbar";
+// ... 9 more raw imports
+<Navbar />
+```
+
+**2. lib/component-registry.tsx** ✅
+- Completely rewrote to use raw components instead of Webflow wrappers
+- Updated all 25+ dynamic imports
+- Changed from: `dynamic(() => import("@/src/libraries/core/components/LoginForm.webflow").then(m => m.LoginFormWrapper))`
+- Changed to: `dynamic(() => import("@/components/LoginForm"))`
+- Added extensive documentation explaining architecture
+- Organized by library for clarity
+
+**Changes:**
+- All imports now point to `/components` folder (raw implementations)
+- Removed `.then(m => m.XWrapper)` pattern (no longer needed)
+- Added clear comments for each library section
+- Updated function documentation
+
+**Example change:**
+```tsx
+// BEFORE (Webflow wrapper):
+const LoginFormWrapper = dynamic(
+  () => import("@/src/libraries/core/components/LoginForm.webflow").then(m => m.LoginFormWrapper),
+  { ssr: false }
+);
+
+// AFTER (Raw component):
+const LoginForm = dynamic(() => import("@/components/LoginForm"), {
+  ssr: false,
+});
+```
+
+### Files Created
+
+**3. app/(tests)/test-webflow-wrappers/page.tsx** ✅ (NEW)
+- Created dedicated test page for Webflow wrapper integration
+- Uses all Webflow wrappers explicitly (static imports only)
+- Tests both webcn and registry-dashboard library wrappers
+- Includes test checklist for manual verification
+- Has warning about ComponentDetailPreview likely failing (known limitation)
+
+**Features:**
+- Static imports for all wrappers (no dynamic imports)
+- Organized by library (webcn, registry-dashboard)
+- Test checklist for verification
+- Warning about expected failures (preview with dynamic imports)
+- Educational comments explaining this is the ONLY page that should use wrappers
 
 ## Architecture Clarity
 
@@ -237,12 +251,51 @@ components/registry-dashboard/
 ## Next Steps
 
 - [x] Document issue and decision
-- [ ] Revert landing page imports to raw components
-- [ ] Create test-webflow-wrappers page
-- [ ] Update component registry to use raw components
-- [ ] Verify preview works again
-- [ ] Test both pages (landing + wrapper test)
+- [x] Revert landing page imports to raw components
+- [x] Create test-webflow-wrappers page
+- [x] Update component registry to use raw components
+- [ ] Verify preview works again (requires `pnpm dev` and browser testing)
+- [ ] Test landing page (requires `pnpm dev` and browser testing)
+- [ ] Test wrapper test page (requires `pnpm dev` and browser testing)
 - [ ] Update spec.md if needed
+
+## Summary of Session
+
+### Problem
+Component preview broke when we migrated the landing page to use Webflow wrappers instead of raw components. Dynamic imports don't work with Webflow's webpack bundler.
+
+### Solution
+Reverted to the correct architecture pattern:
+1. **Next.js app** → Uses raw components from `/components`
+2. **Component registry** → Uses raw components (dynamic imports work)
+3. **Webflow wrappers** → Deployment artifacts only (tested via dedicated page)
+
+### Files Changed
+
+✅ **Modified:**
+1. `app/(demos)/lander/webcn/page.tsx` - Reverted to raw component imports
+2. `lib/component-registry.tsx` - Completely rewrote to use raw components
+
+✅ **Created:**
+3. `app/(tests)/test-webflow-wrappers/page.tsx` - New test page for wrappers
+
+✅ **Documented:**
+4. `scratchpads/registry-dashboard-library/update_003.md` - This file
+
+### Status
+- ✅ Code changes complete
+- ⏳ Browser testing needed (run `pnpm dev`)
+- ⏳ Verify component preview works
+- ⏳ Verify landing page renders correctly
+
+### Key Architectural Insight
+
+**Wrappers are deployment artifacts, not development artifacts.**
+
+- Raw components = Development layer (Next.js app, testing, preview)
+- Webflow wrappers = Deployment layer (Webflow sites only)
+- Component registry = Always uses raw components (for dynamic imports)
+- Only test wrappers in dedicated test page with static imports
 
 ## Lessons Learned
 
