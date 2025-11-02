@@ -1,16 +1,17 @@
 /**
  * Centralized CORS configuration
- * Automatically includes BETTER_AUTH_URL and NEXT_PUBLIC_API_URL as allowed origins
+ * Automatically uses VERCEL_URL when deployed to Vercel
  */
+
+import { getBaseUrl } from '@/lib/env';
 
 /**
  * Get the list of allowed CORS origins
  *
  * Automatically includes:
- * - BETTER_AUTH_URL (your backend URL)
- * - NEXT_PUBLIC_API_URL (your frontend URL)
+ * - Current deployment URL (via VERCEL_URL or BETTER_AUTH_URL)
  * - Custom origins from ALLOWED_CORS_ORIGINS env var
- * - Hardcoded defaults for development
+ * - Hardcoded defaults (localhost, Webflow site)
  *
  * @returns Array of allowed origin URLs
  */
@@ -22,15 +23,10 @@ export function getAllowedOrigins(): string[] {
   origins.add('http://127.0.0.1:3000');
   origins.add('https://blogflow-three.webflow.io');
 
-  // Automatically add auth URL (your backend)
-  if (process.env.BETTER_AUTH_URL) {
-    origins.add(process.env.BETTER_AUTH_URL);
-  }
-
-  // Automatically add public API URL (might be different in some setups)
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    origins.add(process.env.NEXT_PUBLIC_API_URL);
-  }
+  // Automatically add current deployment URL
+  // This uses VERCEL_URL on Vercel, or BETTER_AUTH_URL if explicitly set
+  const baseUrl = getBaseUrl();
+  origins.add(baseUrl);
 
   // Add custom origins from env (comma-separated)
   if (process.env.ALLOWED_CORS_ORIGINS) {

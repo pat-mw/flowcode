@@ -55,26 +55,16 @@ import { RPCLink } from '@orpc/client/fetch';
 import { createTanstackQueryUtils } from '@orpc/tanstack-query';
 import type { RouterClient } from '@orpc/server';
 import { getToken } from '@/lib/token-storage';
+import { getApiBaseUrl } from '@/lib/env';
 
 /**
  * Get API URL
- * Uses window.location.origin in browser, falls back to env variable for SSR
+ * Automatically uses VERCEL_URL on Vercel, window.location.origin in browser,
+ * or NEXT_PUBLIC_API_URL if explicitly set
  */
 function getApiUrl(): string {
-  // In browser, use current origin to work with any port
-  if (typeof window !== 'undefined') {
-    return `${window.location.origin}/api/orpc`;
-  }
-
-  // In SSR/build, use environment variable
-  if (!process.env.NEXT_PUBLIC_API_URL) {
-    throw new Error(
-      'NEXT_PUBLIC_API_URL is required. Please set it in your .env file.\n' +
-      'Example: NEXT_PUBLIC_API_URL=http://localhost:3000'
-    );
-  }
-
-  return `${process.env.NEXT_PUBLIC_API_URL}/api/orpc`;
+  const baseUrl = getApiBaseUrl();
+  return `${baseUrl}/api/orpc`;
 }
 
 /**

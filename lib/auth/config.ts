@@ -10,13 +10,10 @@ import { db } from '@/lib/db';
 import { users, sessions, accounts, verifications } from '@/lib/db';
 import { nanoid } from 'nanoid';
 import { getAllowedOrigins } from '@/lib/cors-config';
+import { getBaseUrl } from '@/lib/env';
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error('BETTER_AUTH_SECRET is required');
-}
-
-if (!process.env.BETTER_AUTH_URL) {
-  throw new Error('BETTER_AUTH_URL is required');
 }
 
 export const auth = betterAuth({
@@ -44,7 +41,8 @@ export const auth = betterAuth({
     },
   },
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  // Automatically uses VERCEL_URL on Vercel, or BETTER_AUTH_URL if explicitly set
+  baseURL: getBaseUrl(),
 
   // Session configuration
   session: {
