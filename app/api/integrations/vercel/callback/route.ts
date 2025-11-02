@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const code = searchParams.get('code');
     const state = searchParams.get('state');
+    const teamId = searchParams.get('teamId');
+    const configurationId = searchParams.get('configurationId');
     const error = searchParams.get('error');
     const errorDescription = searchParams.get('error_description');
 
@@ -31,18 +33,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate required parameters
-    if (!code || !state) {
+    if (!code) {
       return NextResponse.redirect(
-        new URL('/integrations/test?error=invalid_request&error_description=Missing code or state parameter', request.url)
+        new URL('/integrations/test?error=invalid_request&error_description=Missing code parameter', request.url)
       );
     }
 
-    // Validate OAuth state (CSRF protection)
-    const storedState = request.cookies.get('vercel_oauth_state')?.value;
-    if (!storedState || !validateOAuthState(state, storedState)) {
-      return NextResponse.redirect(
-        new URL('/integrations/test?error=invalid_state&error_description=CSRF validation failed', request.url)
-      );
+    // For Vercel integrations using /integrations/{slug}/new flow, state parameter is optional
+    // Only validate state if it was provided
+    if (state) {
+      const storedState = request.cookies.get('vercel_oauth_state')?.value;
+      if (!storedState || !validateOAuthState(state, storedState)) {
+        return NextResponse.redirect(
+          new URL('/integrations/test?error=invalid_state&error_description=CSRF validation failed', request.url)
+        );
+      }
     }
 
     // Get authenticated user session
@@ -63,7 +68,11 @@ export async function GET(request: NextRequest) {
     // Encrypt the access token
     const encrypted = encrypt(tokens.accessToken);
 
-    // Store integration in database
+    // Store integration in database with teamId from query params
+    const metadata: Record<string, unknown> = {};
+    if (teamId) metadata.teamId = teamId;
+    if (configurationId) metadata.configurationId = configurationId;
+
     await db.insert(integrations).values({
       id: nanoid(),
       userId: session.user.id,
@@ -71,7 +80,7 @@ export async function GET(request: NextRequest) {
       accessToken: encrypted.encrypted,
       accessTokenIv: encrypted.iv,
       accessTokenAuthTag: encrypted.authTag,
-      metadata: tokens.teamId ? { teamId: tokens.teamId } : null,
+      metadata: Object.keys(metadata).length > 0 ? metadata : null,
     });
 
     // Clear OAuth state cookie and redirect to success page

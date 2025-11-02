@@ -203,14 +203,18 @@ export class VercelProvider implements CloudProvider {
   /**
    * Create a Postgres database
    */
-  async createDatabase(config: DatabaseConfig, accessToken: string): Promise<DatabaseResult> {
+  async createDatabase(config: DatabaseConfig, accessToken: string, teamId?: string): Promise<DatabaseResult> {
     const vercelConfig: VercelPostgresConfig = {
       name: config.name,
       region: (config.region as VercelDatabaseRegion) || 'us-east-1',
     };
 
+    const endpoint = teamId
+      ? `/v1/postgres/databases?teamId=${teamId}`
+      : '/v1/postgres/databases';
+
     const response = await this.request<VercelPostgresDatabase>(
-      '/v1/postgres/databases',
+      endpoint,
       accessToken,
       {
         method: 'POST',
@@ -233,9 +237,13 @@ export class VercelProvider implements CloudProvider {
   /**
    * List all Postgres databases
    */
-  async listDatabases(accessToken: string): Promise<DatabaseResult[]> {
+  async listDatabases(accessToken: string, teamId?: string): Promise<DatabaseResult[]> {
+    const endpoint = teamId
+      ? `/v1/postgres/databases?teamId=${teamId}`
+      : '/v1/postgres/databases';
+
     const response = await this.request<{ databases: VercelPostgresDatabase[] }>(
-      '/v1/postgres/databases',
+      endpoint,
       accessToken
     );
 
@@ -254,9 +262,13 @@ export class VercelProvider implements CloudProvider {
   /**
    * Delete a Postgres database
    */
-  async deleteDatabase(databaseId: string, accessToken: string): Promise<boolean> {
+  async deleteDatabase(databaseId: string, accessToken: string, teamId?: string): Promise<boolean> {
     try {
-      await this.request(`/v1/postgres/databases/${databaseId}`, accessToken, {
+      const endpoint = teamId
+        ? `/v1/postgres/databases/${databaseId}?teamId=${teamId}`
+        : `/v1/postgres/databases/${databaseId}`;
+
+      await this.request(endpoint, accessToken, {
         method: 'DELETE',
       });
       return true;

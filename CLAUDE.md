@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Testing Account
+
+Email: papa@john.com
+Password: 88888888
+
+Can be used to login and test the user flows.
+
 ## Project Overview
 
 This is a Next.js 15 project using React 19 that creates custom Webflow Code Components. Components are built in React/TypeScript and exported for use in Webflow sites via the Webflow CLI. The project uses Tailwind CSS for styling, shadcn/ui component library, and React Three Fiber for 3D components.

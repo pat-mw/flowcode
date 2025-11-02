@@ -124,37 +124,52 @@ const createVercelDatabase = protectedProcedure
   .handler(async ({ input, context }) => {
     const ctx = context as Context & { userId: string };
 
-    // Get user's Vercel integration
-    const integration = await db.query.integrations.findFirst({
-      where: and(
-        eq(integrations.id, input.integrationId),
-        eq(integrations.userId, ctx.userId),
-        eq(integrations.provider, 'vercel')
-      ),
-    });
+    try {
+      // Get user's Vercel integration
+      const integration = await db.query.integrations.findFirst({
+        where: and(
+          eq(integrations.id, input.integrationId),
+          eq(integrations.userId, ctx.userId),
+          eq(integrations.provider, 'vercel')
+        ),
+      });
 
-    if (!integration) {
-      throw new Error('Vercel integration not found');
+      if (!integration) {
+        console.error('[createVercelDatabase] Integration not found:', { integrationId: input.integrationId, userId: ctx.userId });
+        throw new Error('Vercel integration not found');
+      }
+
+      // Decrypt access token
+      console.log('[createVercelDatabase] Decrypting access token...');
+      const accessToken = decrypt(
+        integration.accessToken,
+        integration.accessTokenIv,
+        integration.accessTokenAuthTag
+      );
+      console.log('[createVercelDatabase] Token decrypted successfully');
+
+      // Get teamId from metadata
+      const teamId = integration.metadata?.teamId as string | undefined;
+      console.log('[createVercelDatabase] TeamId:', teamId);
+
+      // Create database using Vercel provider
+      const provider = new VercelProvider();
+      console.log('[createVercelDatabase] Creating database:', { name: input.name, region: input.region });
+      const database = await provider.createDatabase(
+        {
+          name: input.name,
+          region: input.region,
+        },
+        accessToken,
+        teamId
+      );
+      console.log('[createVercelDatabase] Database created successfully:', database.id);
+
+      return database;
+    } catch (error) {
+      console.error('[createVercelDatabase] Error:', error);
+      throw error;
     }
-
-    // Decrypt access token
-    const accessToken = decrypt(
-      integration.accessToken,
-      integration.accessTokenIv,
-      integration.accessTokenAuthTag
-    );
-
-    // Create database using Vercel provider
-    const provider = new VercelProvider();
-    const database = await provider.createDatabase(
-      {
-        name: input.name,
-        region: input.region,
-      },
-      accessToken
-    );
-
-    return database;
   });
 
 /**
@@ -169,31 +184,45 @@ const listVercelDatabases = protectedProcedure
   .handler(async ({ input, context }) => {
     const ctx = context as Context & { userId: string };
 
-    // Get user's Vercel integration
-    const integration = await db.query.integrations.findFirst({
-      where: and(
-        eq(integrations.id, input.integrationId),
-        eq(integrations.userId, ctx.userId),
-        eq(integrations.provider, 'vercel')
-      ),
-    });
+    try {
+      // Get user's Vercel integration
+      const integration = await db.query.integrations.findFirst({
+        where: and(
+          eq(integrations.id, input.integrationId),
+          eq(integrations.userId, ctx.userId),
+          eq(integrations.provider, 'vercel')
+        ),
+      });
 
-    if (!integration) {
-      throw new Error('Vercel integration not found');
+      if (!integration) {
+        console.error('[listVercelDatabases] Integration not found:', { integrationId: input.integrationId, userId: ctx.userId });
+        throw new Error('Vercel integration not found');
+      }
+
+      // Decrypt access token
+      console.log('[listVercelDatabases] Decrypting access token...');
+      const accessToken = decrypt(
+        integration.accessToken,
+        integration.accessTokenIv,
+        integration.accessTokenAuthTag
+      );
+      console.log('[listVercelDatabases] Token decrypted successfully');
+
+      // Get teamId from metadata
+      const teamId = integration.metadata?.teamId as string | undefined;
+      console.log('[listVercelDatabases] TeamId:', teamId);
+
+      // List databases using Vercel provider
+      const provider = new VercelProvider();
+      console.log('[listVercelDatabases] Calling Vercel API...');
+      const databases = await provider.listDatabases(accessToken, teamId);
+      console.log('[listVercelDatabases] Success:', databases.length, 'databases found');
+
+      return databases;
+    } catch (error) {
+      console.error('[listVercelDatabases] Error:', error);
+      throw error;
     }
-
-    // Decrypt access token
-    const accessToken = decrypt(
-      integration.accessToken,
-      integration.accessTokenIv,
-      integration.accessTokenAuthTag
-    );
-
-    // List databases using Vercel provider
-    const provider = new VercelProvider();
-    const databases = await provider.listDatabases(accessToken);
-
-    return databases;
   });
 
 /**
@@ -229,9 +258,12 @@ const deleteVercelDatabase = protectedProcedure
       integration.accessTokenAuthTag
     );
 
+    // Get teamId from metadata
+    const teamId = integration.metadata?.teamId as string | undefined;
+
     // Delete database using Vercel provider
     const provider = new VercelProvider();
-    const success = await provider.deleteDatabase(input.databaseId, accessToken);
+    const success = await provider.deleteDatabase(input.databaseId, accessToken, teamId);
 
     return { success };
   });
