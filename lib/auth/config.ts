@@ -9,7 +9,7 @@ import { bearer } from 'better-auth/plugins';
 import { db } from '@/lib/db';
 import { users, sessions, accounts, verifications } from '@/lib/db';
 import { nanoid } from 'nanoid';
-import { ALLOWED_ORIGINS } from '@/app/api/config';
+import { getAllowedOrigins } from '@/lib/cors-config';
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error('BETTER_AUTH_SECRET is required');
@@ -69,8 +69,9 @@ export const auth = betterAuth({
     },
   },
 
-  // CORS configuration - allow Webflow domain to make auth requests
-  trustedOrigins: ALLOWED_ORIGINS,
+  // CORS configuration - automatically includes BETTER_AUTH_URL and NEXT_PUBLIC_API_URL
+  // Additional origins can be configured via ALLOWED_CORS_ORIGINS env var
+  trustedOrigins: getAllowedOrigins(),
 
   // Callbacks
   callbacks: {
