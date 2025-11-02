@@ -126,10 +126,10 @@ BlogFlow demonstrates a modern approach to building interactive web applications
    NEXT_PUBLIC_API_URL=http://localhost:3000/api/orpc
 
    # Cloud Integrations (Optional - for Vercel integration features)
+   # Note: Prefixed with BLOGFLOW_ to avoid conflicts with Vercel's reserved env vars
    ENCRYPTION_SECRET=your-256-bit-encryption-key  # Generate: openssl rand -hex 32
-   VERCEL_OAUTH_CLIENT_ID=your-vercel-client-id
-   VERCEL_OAUTH_CLIENT_SECRET=your-vercel-client-secret
-   VERCEL_OAUTH_REDIRECT_URI=http://localhost:3000/api/integrations/vercel/callback
+   BLOGFLOW_VERCEL_CLIENT_ID=your-vercel-client-id
+   BLOGFLOW_VERCEL_CLIENT_SECRET=your-vercel-client-secret
    ```
 
 4. **Set up the database**

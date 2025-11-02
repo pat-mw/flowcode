@@ -15,13 +15,13 @@ import { VercelProvider } from './client';
  * Get Vercel OAuth configuration from environment variables
  */
 export function getVercelOAuthConfig(redirectUri: string): OAuthConfig {
-  const clientId = process.env.VERCEL_OAUTH_CLIENT_ID;
-  const clientSecret = process.env.VERCEL_OAUTH_CLIENT_SECRET;
+  const clientId = process.env.BLOGFLOW_VERCEL_CLIENT_ID;
+  const clientSecret = process.env.BLOGFLOW_VERCEL_CLIENT_SECRET;
 
   if (!clientId || !clientSecret) {
     throw new Error(
       'Vercel OAuth credentials not configured. ' +
-      'Please set VERCEL_OAUTH_CLIENT_ID and VERCEL_OAUTH_CLIENT_SECRET in .env'
+      'Please set BLOGFLOW_VERCEL_CLIENT_ID and BLOGFLOW_VERCEL_CLIENT_SECRET in .env'
     );
   }
 

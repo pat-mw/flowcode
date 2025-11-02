@@ -50,8 +50,8 @@ export class VercelProvider implements CloudProvider {
     supportedDatabases: ['postgres'],
     requiresTeam: false,
     oauthAuthUrl:
-      process.env.VERCEL_OAUTH_AUTHORIZE_URL ||
-      getVercelOAuthAuthorizeUrl(process.env.VERCEL_INTEGRATION_SLUG),
+      process.env.BLOGFLOW_VERCEL_OAUTH_URL ||
+      getVercelOAuthAuthorizeUrl(process.env.BLOGFLOW_VERCEL_INTEGRATION_SLUG),
     oauthTokenUrl: VERCEL_OAUTH_TOKEN_URL,
   };
 
@@ -166,8 +166,8 @@ export class VercelProvider implements CloudProvider {
   generateAuthUrl(config: OAuthConfig, state: string): string {
     // Support either full URL or slug-based construction
     const baseUrl =
-      process.env.VERCEL_OAUTH_AUTHORIZE_URL ||
-      getVercelOAuthAuthorizeUrl(process.env.VERCEL_INTEGRATION_SLUG);
+      process.env.BLOGFLOW_VERCEL_OAUTH_URL ||
+      getVercelOAuthAuthorizeUrl(process.env.BLOGFLOW_VERCEL_INTEGRATION_SLUG);
 
     // Vercel integration flow uses a clean URL: https://vercel.com/integrations/{slug}/new
     // No query parameters needed - everything is configured in Vercel dashboard

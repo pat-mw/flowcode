@@ -325,12 +325,12 @@ The project includes a production-ready cloud provider integration system with O
 ENCRYPTION_SECRET=your-256-bit-secret-key
 
 # Vercel OAuth Application
-VERCEL_OAUTH_CLIENT_ID=your-client-id
-VERCEL_OAUTH_CLIENT_SECRET=your-client-secret
-VERCEL_OAUTH_REDIRECT_URI=http://localhost:3000/api/integrations/vercel/callback
+# Note: Prefixed with BLOGFLOW_ to avoid conflicts with Vercel's reserved env vars
+BLOGFLOW_VERCEL_CLIENT_ID=your-client-id
+BLOGFLOW_VERCEL_CLIENT_SECRET=your-client-secret
 
 # Optional: Vercel Integration Slug (for integration-specific OAuth URLs)
-VERCEL_INTEGRATION_SLUG=your-integration-slug
+BLOGFLOW_VERCEL_INTEGRATION_SLUG=your-integration-slug
 ```
 
 **Key Patterns:**
@@ -764,10 +764,10 @@ NEXTAUTH_URL=http://localhost:3000
 ENCRYPTION_SECRET=<generate-with-openssl-rand-hex-32>
 
 # Vercel OAuth Integration
-VERCEL_OAUTH_CLIENT_ID=<your-vercel-client-id>
-VERCEL_OAUTH_CLIENT_SECRET=<your-vercel-client-secret>
-VERCEL_OAUTH_REDIRECT_URI=http://localhost:3000/api/integrations/vercel/callback
-VERCEL_INTEGRATION_SLUG=<optional-integration-slug>
+# Note: Prefixed with BLOGFLOW_ to avoid conflicts with Vercel's reserved env vars
+BLOGFLOW_VERCEL_CLIENT_ID=<your-vercel-client-id>
+BLOGFLOW_VERCEL_CLIENT_SECRET=<your-vercel-client-secret>
+BLOGFLOW_VERCEL_INTEGRATION_SLUG=<optional-integration-slug>
 
 # External APIs (Optional)
 TWELVE_DATA_API_KEY=<optional-free-tier-key>
