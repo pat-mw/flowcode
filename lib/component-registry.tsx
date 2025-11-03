@@ -86,20 +86,64 @@ const LaserFlowHero = dynamic(
 // WEBCN LIBRARY COMPONENTS
 // ============================================================================
 
-const Navbar = dynamic(
-  () => import("@/components/webcn/landing_page/webcn.webflow.io/Navbar"),
+const ArchitectureSection = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/ArchitectureSection"),
   { ssr: false }
 );
-const Hero = dynamic(
-  () => import("@/components/webcn/landing_page/webcn.webflow.io/Hero"),
+const BlogCTA = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/BlogCTA"),
+  { ssr: false }
+);
+const ComponentCard = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/ComponentCard"),
+  { ssr: false }
+);
+const DemoSection = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/DemoSection"),
   { ssr: false }
 );
 const Features = dynamic(
   () => import("@/components/webcn/landing_page/webcn.webflow.io/Features"),
   { ssr: false }
 );
+const FeaturesSummary = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/FeaturesSummary"),
+  { ssr: false }
+);
 const Footer = dynamic(
   () => import("@/components/webcn/landing_page/webcn.webflow.io/Footer"),
+  { ssr: false }
+);
+const Hero = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/Hero"),
+  { ssr: false }
+);
+const HubDashboardSection = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/HubDashboardSection"),
+  { ssr: false }
+);
+const HubDashboardSectionImage = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/HubDashboardSectionImage"),
+  { ssr: false }
+);
+const Navbar = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/Navbar"),
+  { ssr: false }
+);
+const StorySection = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/StorySection"),
+  { ssr: false }
+);
+const StylingControlSection = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/StylingControlSection"),
+  { ssr: false }
+);
+const StylingControlSectionImage = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/StylingControlSectionImage"),
+  { ssr: false }
+);
+const VideoSection = dynamic(
+  () => import("@/components/webcn/landing_page/webcn.webflow.io/VideoSection"),
   { ssr: false }
 );
 const WaitlistSection = dynamic(
@@ -126,6 +170,34 @@ const WaitlistAdmin = dynamic(
 
 const ComponentGrid = dynamic(
   () => import("@/components/registry-dashboard/ComponentGrid"),
+  { ssr: false }
+);
+const ComponentDetailHeader = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailHeader"),
+  { ssr: false }
+);
+const ComponentDetailHeaderCentered = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailHeaderCentered"),
+  { ssr: false }
+);
+const ComponentDetailPreview = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailPreview"),
+  { ssr: false }
+);
+const ComponentDetailPreviewSlot = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailPreviewSlot"),
+  { ssr: false }
+);
+const ComponentDetailProps = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailProps"),
+  { ssr: false }
+);
+const ComponentDetailUsage = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailUsage"),
+  { ssr: false }
+);
+const ComponentDetailSidebar = dynamic(
+  () => import("@/components/registry-dashboard/ComponentDetailSidebar"),
   { ssr: false }
 );
 
@@ -162,11 +234,23 @@ export const componentRegistry: Record<string, ComponentType<Record<string, unkn
   "interactive-laser-flow-hero": LaserFlowHero,
 
   // webcn
-  "webcn-navbar": Navbar,
-  "webcn-hero": Hero,
+  "webcn-architecture": ArchitectureSection,
+  "webcn-blog-cta": BlogCTA,
+  "webcn-component-card": ComponentCard,
+  "webcn-demo-section": DemoSection,
   "webcn-features": Features,
+  "webcn-features-summary": FeaturesSummary,
   "webcn-footer": Footer,
-  "webcn-waitlist-section": WaitlistSection,
+  "webcn-hero": Hero,
+  "webcn-hub-dashboard": HubDashboardSection,
+  "webcn-hub-dashboard-section-image": HubDashboardSectionImage,
+  "webcn-navbar": Navbar,
+  "webcn-story-section": StorySection,
+  "webcn-styling-control": StylingControlSection,
+  "webcn-styling-control-section-image": StylingControlSectionImage,
+  "webcn-video-section": VideoSection,
+  "webcn-waitlist": WaitlistSection,
+  "webcn-waitlist-section": WaitlistSection, // Alias for backward compatibility
 
   // Waitlist
   "waitlist-capture": WaitlistCapture,
@@ -174,6 +258,13 @@ export const componentRegistry: Record<string, ComponentType<Record<string, unkn
 
   // Registry Dashboard
   "registry-component-grid": ComponentGrid,
+  "registry-component-detail-header": ComponentDetailHeader,
+  "registry-component-detail-header-centered": ComponentDetailHeaderCentered,
+  "registry-component-detail-preview": ComponentDetailPreview,
+  "registry-component-detail-preview-slot": ComponentDetailPreviewSlot,
+  "registry-detail-props": ComponentDetailProps,
+  "registry-detail-usage": ComponentDetailUsage,
+  "registry-detail-sidebar": ComponentDetailSidebar,
 };
 
 /**
