@@ -60,7 +60,7 @@ export const waitlistLibrary: LibraryConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },
   deploy: {
-    enabled: true,
+    enabled: false,
     workspaceToken: process.env.WEBFLOW_WORKSPACE_API_TOKEN,
   },
 };
