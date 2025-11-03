@@ -28,13 +28,13 @@ export function PostViewWrapper({
 
 export default declareComponent(PostViewWrapper, {
   name: 'Post View',
-  description: 'Individual post view with full content, author info, and edit capability. Reads post ID from URL ?post=123 (preferred) or from prop.',
+  description: 'Individual post view with full content, author info, and edit capability. Reads post ID from URL ?id=POST_ID (preferred) or from prop.',
   group: 'BlogFlow Demo',
   props: {
     postId: props.Text({
       name: 'Post ID',
       defaultValue: '',
-      tooltip: 'ID of the post to display. URL param ?post=ID takes precedence over this prop.',
+      tooltip: 'ID of the post to display. URL param ?id=POST_ID takes precedence over this prop.',
     }),
     showBackButton: props.Boolean({
       name: 'Show Back Button',

@@ -41,8 +41,8 @@ export default function PostView({ postId: postIdProp }: PostViewProps) {
   const { user } = useAuthStore();
 
   // URL search param takes precedence over prop
-  // This allows using ?post=123 in the URL or passing postId as a prop
-  const postId = useParamOrProp('post', postIdProp) as string;
+  // This allows using ?id=123 in the URL or passing postId as a prop
+  const postId = useParamOrProp('id', postIdProp) as string;
 
   // Fetch single post by ID using efficient publicGetById endpoint
   const { data: post, isLoading, error } = useQuery({
@@ -63,7 +63,7 @@ export default function PostView({ postId: postIdProp }: PostViewProps) {
             <div className="text-center space-y-4">
               <h2 className="text-2xl font-bold">No Post Selected</h2>
               <p className="text-muted-foreground">
-                Please provide a post ID via URL parameter (?post=ID) or component prop
+                Please provide a post ID via URL parameter (?id=POST_ID) or component prop
               </p>
               <Button onClick={() => window.location.href = '/blog'}>
                 View All Posts
