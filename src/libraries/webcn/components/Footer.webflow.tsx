@@ -26,6 +26,8 @@ export function FooterWrapper({
   storyLink,
   storyLabel,
   githubLinkLabel,
+  showGithubIcon,
+  showTwitterIcon,
 }: FooterProps) {
   return (
     <WebflowProvidersWrapper>
@@ -44,6 +46,8 @@ export function FooterWrapper({
         storyLink={storyLink}
         storyLabel={storyLabel}
         githubLinkLabel={githubLinkLabel}
+        showGithubIcon={showGithubIcon}
+        showTwitterIcon={showTwitterIcon}
       />
     </WebflowProvidersWrapper>
   );
@@ -123,6 +127,16 @@ export default declareComponent(FooterWrapper, {
       name: 'GitHub Link Label',
       defaultValue: 'GitHub',
       tooltip: 'Text label for the GitHub navigation link',
+    }),
+    showGithubIcon: props.Visibility({
+      name: 'Show GitHub Icon',
+      defaultValue: true,
+      tooltip: 'Toggle visibility of the GitHub social icon',
+    }),
+    showTwitterIcon: props.Visibility({
+      name: 'Show Twitter Icon',
+      defaultValue: false,
+      tooltip: 'Toggle visibility of the Twitter social icon',
     }),
   },
 });

@@ -19,6 +19,7 @@ export function DemoSectionWrapper({
   demoDescription,
   ctaButtonText,
   showBadge,
+  tagline,
 }: DemoSectionProps) {
   return (
     <WebflowProvidersWrapper>
@@ -30,6 +31,7 @@ export function DemoSectionWrapper({
         demoDescription={demoDescription}
         ctaButtonText={ctaButtonText}
         showBadge={showBadge}
+        tagline={tagline}
       />
     </WebflowProvidersWrapper>
   );
@@ -74,6 +76,11 @@ export default declareComponent(DemoSectionWrapper, {
       name: 'Show Badge',
       defaultValue: true,
       tooltip: 'Toggle visibility of the badge',
+    }),
+    tagline: props.Text({
+      name: 'Tagline',
+      defaultValue: 'No external services. No API keys. No deployment hassles. Just pure Webflow.',
+      tooltip: 'Bottom tagline text displayed below the demo card',
     }),
   },
 });

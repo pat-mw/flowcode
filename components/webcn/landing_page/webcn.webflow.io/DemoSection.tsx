@@ -11,6 +11,7 @@ export interface DemoSectionProps {
   demoDescription?: string;
   ctaButtonText?: string;
   showBadge?: boolean;
+  tagline?: string;
 }
 
 const DemoSection = ({
@@ -21,6 +22,7 @@ const DemoSection = ({
   demoDescription = "A fully functional blogging platform showcasing the power of webcn. Users can register, authenticate, create posts, and collaborate — all running natively within Webflow using code components.",
   ctaButtonText = "Try blogflow Demo",
   showBadge = true,
+  tagline = "No external services. No API keys. No deployment hassles. Just pure Webflow.",
 }: DemoSectionProps) => {
   return (
     <section id="demo" className="py-24 px-4 relative overflow-hidden">
@@ -165,7 +167,7 @@ const DemoSection = ({
           {/* Bottom note */}
           <div className="text-center mt-12">
             <p className="text-muted-foreground">
-              No external services. No API keys. No deployment hassles. Just pure Webflow.
+              {tagline}
             </p>
           </div>
         </div>
