@@ -50,13 +50,24 @@ const list = protectedProcedure
   }))
   .handler(async ({ input, context }) => {
     const ctx = context as Context;
+
+    console.log('[posts.list] Starting handler');
+    console.log('[posts.list] Input:', input);
+    console.log('[posts.list] UserId:', ctx.userId);
+
     const person = await db.query.people.findFirst({
       where: eq(people.userId, ctx.userId!),
     });
 
     if (!person) {
+      console.log('[posts.list] ERROR: Person profile not found for userId:', ctx.userId);
       throw new Error('Person profile not found');
     }
+
+    console.log('[posts.list] Person found:', {
+      personId: person.id,
+      displayName: person.displayName,
+    });
 
     const conditions = [eq(posts.authorId, person.id)];
 
@@ -74,11 +85,18 @@ const list = protectedProcedure
       }
     }
 
+    console.log('[posts.list] Querying posts with authorId:', person.id);
+
     const postsList = await db.query.posts.findMany({
       where: and(...conditions),
       orderBy: [desc(posts.updatedAt)],
       limit: input.limit,
       offset: input.offset,
+    });
+
+    console.log('[posts.list] Found posts:', {
+      count: postsList.length,
+      posts: postsList.map(p => ({ id: p.id, title: p.title, status: p.status })),
     });
 
     return postsList;

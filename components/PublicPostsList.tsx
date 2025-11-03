@@ -6,27 +6,30 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Search, Calendar, User } from 'lucide-react';
+import { Loader2, Search, Calendar, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PublicPostsListProps {
-  initialLimit?: number;
+  pageSize?: number;
   enableSearch?: boolean;
 }
 
 export default function PublicPostsList({
-  initialLimit = 10,
+  pageSize = 9,
   enableSearch = true,
 }: PublicPostsListProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [limit, setLimit] = useState(initialLimit);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Calculate offset based on current page
+  const offset = (currentPage - 1) * pageSize;
 
   // Fetch published posts
   const { data: posts, isLoading, error } = useQuery(
     orpc.posts.publicList.queryOptions({
       input: {
         search: searchQuery || undefined,
-        limit,
-        offset: 0,
+        limit: pageSize,
+        offset,
       },
     })
   );
@@ -46,11 +49,26 @@ export default function PublicPostsList({
     return text.slice(0, maxLength) + '. . .';
   };
 
-  const handleLoadMore = () => {
-    setLimit((prev) => prev + initialLimit);
+  // Reset to page 1 when search query changes
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
   };
 
-  const hasMore = posts && posts.length >= limit;
+  // Pagination controls
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => prev + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Check if there are more pages
+  const hasMore = posts && posts.length === pageSize;
+  const hasPrevious = currentPage > 1;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -68,7 +86,7 @@ export default function PublicPostsList({
               type="text"
               placeholder="Search posts"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -101,7 +119,7 @@ export default function PublicPostsList({
       {/* Posts list */}
       {!isLoading && !error && posts && posts.length > 0 && (
         <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <Card key={post.id} className="flex flex-col">
                 {/* Cover Image */}
@@ -150,9 +168,7 @@ export default function PublicPostsList({
                     variant="outline"
                     className="w-full"
                     onClick={() => {
-                      // Future: Navigate to full post page
-                      // For now, just show an alert
-                      alert(`Post: ${post.title}\nSlug: ${post.slug}\n\nFull post view coming soon!`);
+                      window.location.href = `/post?id=${post.id}`;
                     }}
                   >
                     Read More
@@ -162,21 +178,30 @@ export default function PublicPostsList({
             ))}
           </div>
 
-          {/* Load More Button */}
-          {hasMore && (
-            <div className="mt-8 text-center">
-              <Button onClick={handleLoadMore} variant="outline" size="lg">
-                Load More Posts
-              </Button>
-            </div>
-          )}
+          {/* Pagination Controls */}
+          <div className="mt-8 flex items-center justify-between">
+            <Button
+              variant="outline"
+              onClick={handlePreviousPage}
+              disabled={!hasPrevious}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
 
-          {/* End of posts message */}
-          {!hasMore && posts.length > 0 && (
-            <div className="mt-8 text-center text-gray-500">
-              <p>You&apos;ve reached the end!</p>
+            <div className="text-sm text-gray-600">
+              Page {currentPage}
             </div>
-          )}
+
+            <Button
+              variant="outline"
+              onClick={handleNextPage}
+              disabled={!hasMore}
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
         </>
       )}
     </div>

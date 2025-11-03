@@ -9,7 +9,7 @@ export default function BlogPage() {
       <Navigation />
 
       <main className="flex-1">
-        <PublicPostsList initialLimit={10} enableSearch={true} />
+        <PublicPostsList pageSize={9} enableSearch={true} />
       </main>
     </div>
   );

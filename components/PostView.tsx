@@ -1,0 +1,255 @@
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import { orpc } from '@/lib/orpc-client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Loader2, Calendar, User, ArrowLeft, Edit } from 'lucide-react';
+import { useAuthStore } from '@/lib/stores/authStore';
+
+interface PostViewProps {
+  postId: string;
+}
+
+export default function PostView({ postId }: PostViewProps) {
+  const { user } = useAuthStore();
+
+  // Fetch post by ID - use publicList for public posts, getById for owned posts
+  // For now, we'll create a public endpoint query
+  const { data: posts, isLoading, error } = useQuery(
+    orpc.posts.publicList.queryOptions({
+      input: {
+        limit: 100,
+        offset: 0,
+      },
+    })
+  );
+
+  // Find the specific post
+  const post = posts?.find(p => p.id === postId);
+
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'Unknown date';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const handleBack = () => {
+    window.location.href = '/blog';
+  };
+
+  const handleEdit = () => {
+    window.location.href = `/dashboard/edit?post=${postId}`;
+  };
+
+  // Check if current user is the author
+  const isAuthor = post && user && (post.author as any)?.userId === user.id;
+
+  // Render content from Tiptap JSON
+  const renderContent = (content: any) => {
+    if (!content) return null;
+
+    // Basic Tiptap JSON to HTML rendering
+    // This is simplified - in production you'd use Tiptap's generateHTML
+    if (typeof content === 'string') {
+      return <div dangerouslySetInnerHTML={{ __html: content }} />;
+    }
+
+    // Handle Tiptap JSON structure
+    if (content.type === 'doc' && content.content) {
+      return (
+        <div className="prose prose-lg max-w-none">
+          {content.content.map((node: any, index: number) => {
+            if (node.type === 'paragraph') {
+              const text = node.content?.map((c: any) => c.text).join('') || '';
+              return <p key={index}>{text}</p>;
+            }
+            if (node.type === 'heading') {
+              const text = node.content?.map((c: any) => c.text).join('') || '';
+              const level = node.attrs?.level || 1;
+              const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+              return <Tag key={index}>{text}</Tag>;
+            }
+            if (node.type === 'bulletList') {
+              return (
+                <ul key={index}>
+                  {node.content?.map((item: any, i: number) => (
+                    <li key={i}>
+                      {item.content?.map((p: any) =>
+                        p.content?.map((c: any) => c.text).join('')
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              );
+            }
+            if (node.type === 'orderedList') {
+              return (
+                <ol key={index}>
+                  {node.content?.map((item: any, i: number) => (
+                    <li key={i}>
+                      {item.content?.map((p: any) =>
+                        p.content?.map((c: any) => c.text).join('')
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              );
+            }
+            return null;
+          })}
+        </div>
+      );
+    }
+
+    return <p className="text-gray-500">Content format not supported</p>;
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Back button */}
+      <div className="mb-6">
+        <Button variant="ghost" onClick={handleBack}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to Blog
+        </Button>
+      </div>
+
+      {/* Loading state */}
+      {isLoading && (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4">
+          <p className="font-semibold">Error loading post</p>
+          <p className="text-sm">{error.message}</p>
+        </div>
+      )}
+
+      {/* Post not found */}
+      {!isLoading && !error && !post && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Post Not Found</CardTitle>
+            <CardDescription>
+              The post you&apos;re looking for doesn&apos;t exist or has been removed.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={handleBack}>
+              Return to Blog
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Post content */}
+      {!isLoading && !error && post && (
+        <article>
+          {/* Cover Image */}
+          {post.coverImage && (
+            <div className="aspect-video w-full overflow-hidden rounded-lg mb-8">
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
+          {/* Header */}
+          <header className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Badge variant={post.status === 'published' ? 'default' : 'secondary'}>
+                {post.status}
+              </Badge>
+              {isAuthor && (
+                <Button variant="outline" size="sm" onClick={handleEdit}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Post
+                </Button>
+              )}
+            </div>
+
+            <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+
+            {post.excerpt && (
+              <p className="text-xl text-gray-600 mb-6">{post.excerpt}</p>
+            )}
+
+            {/* Meta information */}
+            <div className="flex items-center gap-6 text-gray-600 border-t border-b py-4">
+              {/* Author */}
+              {post.author && (
+                <div className="flex items-center gap-2">
+                  {(post.author as any).avatar && (
+                    <img
+                      src={(post.author as any).avatar}
+                      alt={(post.author as any).displayName || 'Author'}
+                      className="w-10 h-10 rounded-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  )}
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      <span className="font-medium">
+                        {(post.author as any).displayName || 'Unknown author'}
+                      </span>
+                    </div>
+                    {(post.author as any).bio && (
+                      <p className="text-sm text-gray-500">
+                        {(post.author as any).bio}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Published Date */}
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>{formatDate(post.publishedAt)}</span>
+              </div>
+            </div>
+          </header>
+
+          {/* Content */}
+          <div className="mb-8">
+            {renderContent(post.content)}
+          </div>
+
+          {/* Footer */}
+          <footer className="border-t pt-8">
+            <div className="flex justify-between items-center">
+              <Button variant="outline" onClick={handleBack}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Blog
+              </Button>
+
+              {isAuthor && (
+                <Button onClick={handleEdit}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit This Post
+                </Button>
+              )}
+            </div>
+          </footer>
+        </article>
+      )}
+    </div>
+  );
+}
