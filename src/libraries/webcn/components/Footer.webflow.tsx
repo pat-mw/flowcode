@@ -19,6 +19,13 @@ export function FooterWrapper({
   hackathonText,
   githubUrl,
   twitterUrl,
+  componentsLink,
+  componentsLabel,
+  demoLink,
+  demoLabel,
+  storyLink,
+  storyLabel,
+  githubLinkLabel,
 }: FooterProps) {
   return (
     <WebflowProvidersWrapper>
@@ -30,6 +37,13 @@ export function FooterWrapper({
         hackathonText={hackathonText}
         githubUrl={githubUrl}
         twitterUrl={twitterUrl}
+        componentsLink={componentsLink}
+        componentsLabel={componentsLabel}
+        demoLink={demoLink}
+        demoLabel={demoLabel}
+        storyLink={storyLink}
+        storyLabel={storyLabel}
+        githubLinkLabel={githubLinkLabel}
       />
     </WebflowProvidersWrapper>
   );
@@ -74,6 +88,41 @@ export default declareComponent(FooterWrapper, {
       name: 'Twitter URL',
       defaultValue: 'https://twitter.com',
       tooltip: 'URL for the Twitter link',
+    }),
+    componentsLink: props.Text({
+      name: 'Components Link',
+      defaultValue: '#components',
+      tooltip: 'URL for the Components navigation link',
+    }),
+    componentsLabel: props.Text({
+      name: 'Components Label',
+      defaultValue: 'Components',
+      tooltip: 'Text label for the Components link',
+    }),
+    demoLink: props.Text({
+      name: 'Demo Link',
+      defaultValue: '#demo',
+      tooltip: 'URL for the Demo navigation link',
+    }),
+    demoLabel: props.Text({
+      name: 'Demo Label',
+      defaultValue: 'Demo',
+      tooltip: 'Text label for the Demo link',
+    }),
+    storyLink: props.Text({
+      name: 'Story Link',
+      defaultValue: '#story',
+      tooltip: 'URL for the Story navigation link',
+    }),
+    storyLabel: props.Text({
+      name: 'Story Label',
+      defaultValue: 'Story',
+      tooltip: 'Text label for the Story link',
+    }),
+    githubLinkLabel: props.Text({
+      name: 'GitHub Link Label',
+      defaultValue: 'GitHub',
+      tooltip: 'Text label for the GitHub navigation link',
     }),
   },
 });

@@ -11,7 +11,9 @@ import ComponentDetailHeaderCentered, { type ComponentDetailHeaderCenteredProps 
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import type { WebflowCMSComponent } from '@/lib/webflow-cms-types';
 
-interface WrapperProps extends ComponentDetailHeaderCenteredProps {
+interface WrapperProps {
+  componentId?: string;
+  backToLibraryUrl?: { href: string; target?: string };
   // CMS fields from Webflow CMS Components Collection
   cmsName?: string;
   cmsComponentId?: string;
@@ -40,12 +42,15 @@ export function ComponentDetailHeaderCenteredWrapper({
       }
     : undefined;
 
+  // Extract URL from Link prop
+  const backToLibraryUrlString = backToLibraryUrl?.href || '/lander/webcn';
+
   return (
     <WebflowProvidersWrapper>
       <ComponentDetailHeaderCentered
         componentId={componentId}
         cmsData={cmsData}
-        backToLibraryUrl={backToLibraryUrl}
+        backToLibraryUrl={backToLibraryUrlString}
       />
     </WebflowProvidersWrapper>
   );
@@ -61,10 +66,9 @@ export default declareComponent(ComponentDetailHeaderCenteredWrapper, {
       defaultValue: '',
       tooltip: 'Component ID to display (e.g., "core-login-form"). If empty, reads from URL query parameter ?id=',
     }),
-    backToLibraryUrl: props.Text({
+    backToLibraryUrl: props.Link({
       name: 'Back to Library URL',
-      defaultValue: '/lander/webcn',
-      tooltip: 'URL for the "Back to Library" button. Defaults to "/lander/webcn".',
+      tooltip: 'Link for the "Back to Library" button (includes URL, target, and preload options). Defaults to "/lander/webcn".',
     }),
     cmsName: props.Text({
       name: 'CMS: Name',

@@ -11,6 +11,13 @@ export interface FooterProps {
   hackathonText?: string;
   githubUrl?: string;
   twitterUrl?: string;
+  componentsLink?: string;
+  componentsLabel?: string;
+  demoLink?: string;
+  demoLabel?: string;
+  storyLink?: string;
+  storyLabel?: string;
+  githubLinkLabel?: string;
 }
 
 const Footer = ({
@@ -21,6 +28,13 @@ const Footer = ({
   hackathonText = "for Webflow x Contra Hackathon",
   githubUrl = "https://github.com",
   twitterUrl = "https://twitter.com",
+  componentsLink = "#components",
+  componentsLabel = "Components",
+  demoLink = "#demo",
+  demoLabel = "Demo",
+  storyLink = "#story",
+  storyLabel = "Story",
+  githubLinkLabel = "GitHub",
 }: FooterProps) => {
   const footerRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -70,17 +84,17 @@ const Footer = ({
           <div className={`flex gap-8 transition-all duration-700 delay-150 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}>
-            <a href="#components" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Components
+            <a href={componentsLink} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              {componentsLabel}
             </a>
-            <a href="#demo" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Demo
+            <a href={demoLink} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              {demoLabel}
             </a>
-            <a href="#story" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              Story
+            <a href={storyLink} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              {storyLabel}
             </a>
             <a href={githubUrl} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              GitHub
+              {githubLinkLabel}
             </a>
           </div>
 

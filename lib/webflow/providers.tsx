@@ -36,7 +36,6 @@ import { ReactNode } from "react";
 import { useAuthRevalidation } from "@/hooks/useAuthRevalidation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { createQueryClient } from "@/lib/query-client";
-import { Toaster } from "sonner";
 
 /**
  * Singleton QueryClient for Webflow Code Components
@@ -112,7 +111,7 @@ export function WebflowProvidersWrapper({
   return (
     <QueryClientProvider client={webflowQueryClient}>
       <TooltipProvider delayDuration={200}>
-        <div className="dark"> {children} <Toaster /> </div>
+        <div className="dark">{children}</div>
       </TooltipProvider>
     </QueryClientProvider>
   );
