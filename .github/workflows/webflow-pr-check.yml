@@ -105,6 +105,7 @@ jobs:
 
       - name: Build library
         env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'http://localhost:3000' }}
           WEBFLOW_BUNDLE_SIZE_LIMIT_MB: ${{ secrets.WEBFLOW_BUNDLE_SIZE_LIMIT_MB || '15' }}
         run: |
           echo "================================================"
