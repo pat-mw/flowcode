@@ -4,14 +4,24 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getComponentById } from "@/lib/registry-utils";
+import type { WebflowCMSComponent } from "@/lib/webflow-cms-types";
+import { normalizeCMSArray } from "@/lib/webflow-cms-types";
 
 export interface ComponentDetailHeaderProps {
   componentId?: string;
+  /** Optional CMS data to override registry data */
+  cmsData?: WebflowCMSComponent;
+  /** URL for the "Back to Library" button */
+  backToLibraryUrl?: string;
 }
 
-const ComponentDetailHeader = ({ componentId: propComponentId }: ComponentDetailHeaderProps) => {
+const ComponentDetailHeader = ({
+  componentId: propComponentId,
+  cmsData,
+  backToLibraryUrl = '/lander/webcn',
+}: ComponentDetailHeaderProps) => {
   // Read component ID from URL if not provided as prop
-  const componentId = propComponentId || (typeof window !== 'undefined'
+  const componentId = propComponentId || cmsData?.componentId || (typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
     : null);
 
@@ -25,14 +35,26 @@ const ComponentDetailHeader = ({ componentId: propComponentId }: ComponentDetail
     );
   }
 
-  const component = getComponentById(componentId);
+  // Get registry data (fallback)
+  const registryComponent = getComponentById(componentId);
+
+  // Merge CMS data with registry data (CMS takes precedence)
+  const component = cmsData ? {
+    id: cmsData.componentId || componentId,
+    name: cmsData.name || registryComponent?.name || componentId,
+    description: cmsData.description || registryComponent?.description || '',
+    category: cmsData.category || registryComponent?.category,
+    tags: normalizeCMSArray(cmsData.tags) || registryComponent?.tags || [],
+    libraryName: registryComponent?.libraryName || 'Unknown Library',
+    libraryKey: registryComponent?.libraryKey || 'unknown',
+  } : registryComponent;
 
   if (!component) {
     return (
       <div className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container mx-auto px-4 py-6">
           <Button variant="ghost" size="sm" asChild className="mb-4">
-            <a href="/lander/webcn">
+            <a href={backToLibraryUrl}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Library
             </a>
@@ -47,7 +69,7 @@ const ComponentDetailHeader = ({ componentId: propComponentId }: ComponentDetail
     <div className="border-b border-border bg-card/50 backdrop-blur">
       <div className="container mx-auto px-4 py-6">
         <Button variant="ghost" size="sm" asChild className="mb-4">
-          <a href="/lander/webcn">
+          <a href={backToLibraryUrl}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Library
           </a>

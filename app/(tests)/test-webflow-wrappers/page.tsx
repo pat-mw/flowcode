@@ -28,11 +28,6 @@ import { VideoSectionWrapper } from "@/src/libraries/webcn/components/VideoSecti
 import { StorySectionWrapper } from "@/src/libraries/webcn/components/StorySection.webflow";
 import { BlogCTAWrapper } from "@/src/libraries/webcn/components/BlogCTA.webflow";
 import { FooterWrapper } from "@/src/libraries/webcn/components/Footer.webflow";
-import { ComponentDetailHeaderWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailHeader.webflow";
-import { ComponentDetailPreviewWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailPreview.webflow";
-import { ComponentDetailPropsWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailProps.webflow";
-import { ComponentDetailUsageWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailUsage.webflow";
-import { ComponentDetailSidebarWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailSidebar.webflow";
 
 export default function TestWebflowWrappersPage() {
   return (
@@ -110,52 +105,6 @@ export default function TestWebflowWrappersPage() {
           <div className="border rounded-lg p-4">
             <h3 className="text-lg font-medium mb-2">Component Grid Wrapper</h3>
             <ComponentGridWrapper />
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-2">Component Detail Header Wrapper</h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              Testing with componentId=&quot;core-login-form&quot;
-            </p>
-            <ComponentDetailHeaderWrapper componentId="core-login-form" />
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-2">Component Detail Preview Wrapper</h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              Testing with componentId=&quot;core-login-form&quot;
-            </p>
-            <div className="mt-4 p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-800 dark:text-red-200">
-                <strong>Expected:</strong> This wrapper will likely fail because it uses dynamic imports internally.
-                This is a known limitation - component preview only works with raw components in Next.js.
-              </p>
-            </div>
-            <ComponentDetailPreviewWrapper componentId="core-login-form" />
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-2">Component Detail Props Wrapper</h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              Testing with componentId=&quot;core-login-form&quot;
-            </p>
-            <ComponentDetailPropsWrapper componentId="core-login-form" />
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-2">Component Detail Usage Wrapper</h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              Testing with componentId=&quot;core-login-form&quot;
-            </p>
-            <ComponentDetailUsageWrapper componentId="core-login-form" />
-          </div>
-
-          <div className="border rounded-lg p-4">
-            <h3 className="text-lg font-medium mb-2">Component Detail Sidebar Wrapper</h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              Testing with componentId=&quot;core-login-form&quot;
-            </p>
-            <ComponentDetailSidebarWrapper componentId="core-login-form" />
           </div>
         </div>
       </section>

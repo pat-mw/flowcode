@@ -4,14 +4,20 @@ import { FileCode } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getComponentById } from "@/lib/registry-utils";
+import type { WebflowCMSComponent } from "@/lib/webflow-cms-types";
 
 export interface ComponentDetailPropsProps {
   componentId?: string;
+  /** Optional CMS data to override registry data */
+  cmsData?: WebflowCMSComponent;
 }
 
-const ComponentDetailProps = ({ componentId: propComponentId }: ComponentDetailPropsProps) => {
+const ComponentDetailProps = ({
+  componentId: propComponentId,
+  cmsData
+}: ComponentDetailPropsProps) => {
   // Read component ID from URL if not provided as prop
-  const componentId = propComponentId || (typeof window !== 'undefined'
+  const componentId = propComponentId || cmsData?.componentId || (typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
     : null);
 
@@ -19,7 +25,14 @@ const ComponentDetailProps = ({ componentId: propComponentId }: ComponentDetailP
     return null; // Hide if no component ID
   }
 
-  const component = getComponentById(componentId);
+  // Get registry data (fallback)
+  const registryComponent = getComponentById(componentId);
+
+  // Merge CMS data with registry data (CMS takes precedence)
+  // Props come from CMS if provided, otherwise from registry
+  const component = cmsData ? {
+    props: cmsData.props || registryComponent?.props || [],
+  } : registryComponent;
 
   if (!component || !component.props || component.props.length === 0) {
     return null; // Hide if no props to display

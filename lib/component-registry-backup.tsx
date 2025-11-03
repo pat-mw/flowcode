@@ -1,4 +1,7 @@
 /**
+ * CRITICAL! This makes the bundle size absolutely massive, cannot build for Webflow.
+ * Still potentially useful for testing and development, but not yet a production feature
+ * 
  * Component Registry for Live Previews
  * Maps component IDs to their actual RAW React components (NOT Webflow wrappers)
  *
@@ -14,6 +17,9 @@
  * 3. Smaller bundle size (no wrapper overhead)
  * 4. Faster loading (lazy loaded on demand)
  * 5. Better development experience (direct access to implementations)
+ * 
+ * CRITICAL! This makes the bundle size absolutely massive, cannot build for Webflow.
+ * Still potentially useful for testing and development, but not yet a production feature
  */
 
 import dynamic from "next/dynamic";
@@ -122,26 +128,6 @@ const ComponentGrid = dynamic(
   () => import("@/components/registry-dashboard/ComponentGrid"),
   { ssr: false }
 );
-const ComponentDetailHeader = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailHeader"),
-  { ssr: false }
-);
-const ComponentDetailPreview = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailPreview"),
-  { ssr: false }
-);
-const ComponentDetailProps = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailProps"),
-  { ssr: false }
-);
-const ComponentDetailUsage = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailUsage"),
-  { ssr: false }
-);
-const ComponentDetailSidebar = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailSidebar"),
-  { ssr: false }
-);
 
 // ============================================================================
 // COMPONENT REGISTRY
@@ -188,11 +174,6 @@ export const componentRegistry: Record<string, ComponentType<Record<string, unkn
 
   // Registry Dashboard
   "registry-component-grid": ComponentGrid,
-  "registry-detail-header": ComponentDetailHeader,
-  "registry-detail-preview": ComponentDetailPreview,
-  "registry-detail-props": ComponentDetailProps,
-  "registry-detail-usage": ComponentDetailUsage,
-  "registry-detail-sidebar": ComponentDetailSidebar,
 };
 
 /**

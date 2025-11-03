@@ -3,20 +3,55 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import { getComponentsByLibraryGrouped } from "@/lib/registry-utils";
+import type { WebflowCMSLibrary, WebflowCMSComponent } from "@/lib/webflow-cms-types";
+import { normalizeCMSArray } from "@/lib/webflow-cms-types";
 
 export interface ComponentGridProps {
   sectionTitle?: string;
   sectionSubtitle?: string;
   viewAllButtonText?: string;
+  basePath?: string;
+  /** Use path-based URLs (e.g., /path/component-id) instead of query params (e.g., /path?id=component-id) */
+  usePaths?: boolean;
+  /** Optional CMS libraries data to override registry data */
+  cmsLibraries?: WebflowCMSLibrary[];
+  /** Optional CMS components data to override registry data */
+  cmsComponents?: WebflowCMSComponent[];
 }
 
 const ComponentGrid = ({
   sectionTitle = "Component Library",
   sectionSubtitle = "Explore our growing collection of production-ready components",
   viewAllButtonText = "View All Components",
+  basePath = "/lander/webcn/component",
+  usePaths = false,
+  cmsLibraries,
+  cmsComponents,
 }: ComponentGridProps) => {
-  // Get all components grouped by library from registry
-  const libraryGroups = getComponentsByLibraryGrouped();
+  // Get all components grouped by library from registry (fallback)
+  const registryGroups = getComponentsByLibraryGrouped();
+
+  // If CMS data is provided, use it to override registry data
+  const libraryGroups = cmsLibraries && cmsLibraries.length > 0 ? cmsLibraries.map((cmsLib) => {
+    // Find matching registry group for fallback data
+    const registryGroup = registryGroups.find(g => g.libraryKey === cmsLib.libraryId);
+
+    // Get components for this library
+    const libComponents = cmsComponents?.filter(c => c.libraryId === cmsLib.libraryId) || [];
+
+    return {
+      libraryKey: cmsLib.libraryId || cmsLib.slug || 'unknown',
+      libraryName: cmsLib.name || registryGroup?.libraryName || 'Unknown Library',
+      libraryDescription: cmsLib.description || registryGroup?.libraryDescription || '',
+      components: libComponents.map(cmsComp => ({
+        id: cmsComp.componentId || cmsComp.slug || 'unknown',
+        name: cmsComp.name || cmsComp.componentId || 'Unknown Component',
+        description: cmsComp.description || '',
+        category: cmsComp.category,
+        tags: normalizeCMSArray(cmsComp.tags),
+      })),
+    };
+  }).filter(group => group.components.length > 0) : registryGroups;
 
   return (
     <section id="components" className="py-24 px-4 bg-background">
@@ -44,10 +79,16 @@ const ComponentGrid = ({
 
               {/* Component Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {group.components.map((component, index) => (
+                {group.components.map((component, index) => {
+                  // Generate URL based on usePaths setting
+                  const componentUrl = usePaths
+                    ? `${basePath}/${component.id}`
+                    : `${basePath}?id=${component.id}`;
+
+                  return (
                   <a
                     key={component.id}
-                    href={`/lander/webcn/component?id=${component.id}`}
+                    href={componentUrl}
                     className="block"
                   >
                     <Card className="group relative overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full">
@@ -106,7 +147,8 @@ const ComponentGrid = ({
                       </div>
                     </Card>
                   </a>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}

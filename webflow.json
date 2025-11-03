@@ -1,12 +1,12 @@
 {
   "library": {
-    "name": "blogflow-interactive",
+    "name": "blogflow-registry-dashboard",
     "components": [
-      "./src/libraries/interactive/**/*.webflow.@(ts|tsx)"
+      "./src/libraries/registry-dashboard/**/*.webflow.@(ts|tsx)"
     ],
     "bundleConfig": "./webpack.webflow.js",
-    "description": "3D models and interactive experiences",
-    "id": "blogflow-interactive"
+    "description": "Component library viewer and documentation interface",
+    "id": "blogflow-registry-dashboard"
   },
   "telemetry": {
     "global": {
