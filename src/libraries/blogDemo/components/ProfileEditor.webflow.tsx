@@ -15,7 +15,7 @@ export interface ProfileEditorWebflowProps {
 }
 
 export function ProfileEditorWrapper({
-  showCancelButton,
+  showCancelButton: _showCancelButton,
 }: ProfileEditorWebflowProps) {
   return (
     <WebflowProvidersWrapper>

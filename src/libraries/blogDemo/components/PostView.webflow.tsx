@@ -17,7 +17,7 @@ export interface PostViewWebflowProps {
 
 export function PostViewWrapper({
   postId,
-  showBackButton,
+  showBackButton: _showBackButton,
 }: PostViewWebflowProps) {
   return (
     <WebflowProvidersWrapper>

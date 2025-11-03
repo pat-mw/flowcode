@@ -12,6 +12,30 @@ interface PostViewProps {
   postId: string;
 }
 
+// TipTap JSON content types
+interface TipTapTextContent {
+  text: string;
+  type?: string;
+}
+
+interface TipTapNode {
+  type: string;
+  content?: TipTapNode[] | TipTapTextContent[];
+  attrs?: Record<string, unknown>;
+}
+
+interface TipTapDocument {
+  type: string;
+  content: TipTapNode[];
+}
+
+interface PostAuthor {
+  userId: string;
+  displayName: string;
+  avatarUrl?: string;
+  bio?: string;
+}
+
 export default function PostView({ postId }: PostViewProps) {
   const { user } = useAuthStore();
 
@@ -47,10 +71,10 @@ export default function PostView({ postId }: PostViewProps) {
   };
 
   // Check if current user is the author
-  const isAuthor = post && user && (post.author as any)?.userId === user.id;
+  const isAuthor = post && user && (post.author as PostAuthor)?.userId === user.id;
 
   // Render content from Tiptap JSON
-  const renderContent = (content: any) => {
+  const renderContent = (content: TipTapDocument | string) => {
     if (!content) return null;
 
     // Basic Tiptap JSON to HTML rendering
@@ -63,14 +87,14 @@ export default function PostView({ postId }: PostViewProps) {
     if (content.type === 'doc' && content.content) {
       return (
         <div className="prose prose-lg max-w-none">
-          {content.content.map((node: any, index: number) => {
+          {content.content.map((node: TipTapNode, index: number) => {
             if (node.type === 'paragraph') {
-              const text = node.content?.map((c: any) => c.text).join('') || '';
+              const text = node.content?.map((c) => ('text' in c ? c.text : '')).join('') || '';
               return <p key={index}>{text}</p>;
             }
             if (node.type === 'heading') {
-              const text = node.content?.map((c: any) => c.text).join('') || '';
-              const level = node.attrs?.level || 1;
+              const text = node.content?.map((c) => ('text' in c ? c.text : '')).join('') || '';
+              const level = (node.attrs?.level as number) || 1;
               switch (level) {
                 case 1:
                   return <h1 key={index}>{text}</h1>;
@@ -89,12 +113,13 @@ export default function PostView({ postId }: PostViewProps) {
               }
             }
             if (node.type === 'bulletList') {
+              const listItems = node.content as TipTapNode[] | undefined;
               return (
                 <ul key={index}>
-                  {node.content?.map((item: any, i: number) => (
+                  {listItems?.map((item, i: number) => (
                     <li key={i}>
-                      {item.content?.map((p: any) =>
-                        p.content?.map((c: any) => c.text).join('')
+                      {(item.content as TipTapNode[] | undefined)?.map((p) =>
+                        (p.content as TipTapTextContent[] | undefined)?.map((c) => c.text).join('')
                       )}
                     </li>
                   ))}
@@ -102,12 +127,13 @@ export default function PostView({ postId }: PostViewProps) {
               );
             }
             if (node.type === 'orderedList') {
+              const listItems = node.content as TipTapNode[] | undefined;
               return (
                 <ol key={index}>
-                  {node.content?.map((item: any, i: number) => (
+                  {listItems?.map((item, i: number) => (
                     <li key={i}>
-                      {item.content?.map((p: any) =>
-                        p.content?.map((c: any) => c.text).join('')
+                      {(item.content as TipTapNode[] | undefined)?.map((p) =>
+                        (p.content as TipTapTextContent[] | undefined)?.map((c) => c.text).join('')
                       )}
                     </li>
                   ))}
@@ -207,10 +233,10 @@ export default function PostView({ postId }: PostViewProps) {
               {/* Author */}
               {post.author && (
                 <div className="flex items-center gap-2">
-                  {(post.author as any).avatar && (
+                  {(post.author as PostAuthor).avatarUrl && (
                     <img
-                      src={(post.author as any).avatar}
-                      alt={(post.author as any).displayName || 'Author'}
+                      src={(post.author as PostAuthor).avatarUrl}
+                      alt={(post.author as PostAuthor).displayName || 'Author'}
                       className="w-10 h-10 rounded-full object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
@@ -221,12 +247,12 @@ export default function PostView({ postId }: PostViewProps) {
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4" />
                       <span className="font-medium">
-                        {(post.author as any).displayName || 'Unknown author'}
+                        {(post.author as PostAuthor).displayName || 'Unknown author'}
                       </span>
                     </div>
-                    {(post.author as any).bio && (
+                    {(post.author as PostAuthor).bio && (
                       <p className="text-sm text-gray-500">
-                        {(post.author as any).bio}
+                        {(post.author as PostAuthor).bio}
                       </p>
                     )}
                   </div>
@@ -243,7 +269,7 @@ export default function PostView({ postId }: PostViewProps) {
 
           {/* Content */}
           <div className="mb-8">
-            {renderContent(post.content)}
+            {renderContent(post.content as TipTapDocument | string)}
           </div>
 
           {/* Footer */}

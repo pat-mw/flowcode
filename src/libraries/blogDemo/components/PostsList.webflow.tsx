@@ -16,8 +16,8 @@ export interface PostsListWebflowProps {
 }
 
 export function PostsListWrapper({
-  defaultFilter,
-  showCreateButton,
+  defaultFilter: _defaultFilter,
+  showCreateButton: _showCreateButton,
 }: PostsListWebflowProps) {
   return (
     <WebflowProvidersWrapper>

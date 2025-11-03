@@ -89,8 +89,8 @@ export default function TestBlogDemoPage() {
                   <ul className="list-disc list-inside">
                     <li>pageSize: 9 (posts per page)</li>
                     <li>enableSearch: true</li>
-                    <li>title: "Blog"</li>
-                    <li>subtitle: "Latest published posts"</li>
+                    <li>title: &quot;Blog&quot;</li>
+                    <li>subtitle: &quot;Latest published posts&quot;</li>
                   </ul>
                   <p className="text-gray-600 mt-2">
                     This component displays published posts with search and pagination.
@@ -101,11 +101,11 @@ export default function TestBlogDemoPage() {
                 <div className="space-y-2 text-sm">
                   <p><strong>Props:</strong></p>
                   <ul className="list-disc list-inside">
-                    <li>defaultFilter: "all"</li>
+                    <li>defaultFilter: &quot;all&quot;</li>
                     <li>showCreateButton: true</li>
                   </ul>
                   <p className="text-gray-600 mt-2">
-                    This component shows the authenticated user's posts with filtering and management capabilities.
+                    This component shows the authenticated user&apos;s posts with filtering and management capabilities.
                     <strong> Requires authentication.</strong>
                   </p>
                 </div>

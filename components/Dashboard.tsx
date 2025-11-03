@@ -52,11 +52,6 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
     });
   }, [isAuthenticated, user, postsLoading, postsError, posts]);
 
-  // Calculate stats
-  const publishedCount = posts?.filter((p) => p.status === 'published').length || 0;
-  const draftCount = posts?.filter((p) => p.status === 'draft').length || 0;
-  const totalPosts = posts?.length || 0;
-
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
