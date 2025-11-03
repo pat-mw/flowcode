@@ -89,10 +89,10 @@ export default function TestRegistryPreviewPage() {
             <div>
               <h4 className="font-medium text-foreground mb-2">Setting up the Slot Version:</h4>
               <ol className="list-decimal list-inside space-y-2 ml-2">
-                <li>Drag "Component Detail Preview (Slot)" onto your page</li>
-                <li>Set the Component ID (e.g., "core-login-form")</li>
+                <li>Drag &quot;Component Detail Preview (Slot)&quot; onto your page</li>
+                <li>Set the Component ID (e.g., &quot;core-login-form&quot;)</li>
                 <li>Set the Preview Base URL (your site URL)</li>
-                <li>Click the "Preview Image" slot in the properties panel</li>
+                <li>Click the &quot;Preview Image&quot; slot in the properties panel</li>
                 <li>Drop an image element into the highlighted slot area</li>
                 <li>The image will appear in the preview card</li>
                 <li>Hover over the preview to see the overlay message</li>

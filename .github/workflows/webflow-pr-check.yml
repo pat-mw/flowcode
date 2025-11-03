@@ -2,7 +2,7 @@ name: Webflow Multi-Library PR Check
 
 on:
   pull_request:
-    branches: [main]
+    # Run for all PRs regardless of target branch
     paths:
       - 'src/libraries/**/*.tsx'
       - 'src/libraries/**/*.ts'
