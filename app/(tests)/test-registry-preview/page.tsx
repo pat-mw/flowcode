@@ -1,7 +1,6 @@
 'use client';
 
-import { ComponentDetailPreviewWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailPreview.webflow";
-import { ComponentDetailPreviewSlotWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailPreviewSlot.webflow";
+import { ComponentDetailPreviewSlotWrapper } from "@/src/libraries/registryDashboard/components/ComponentDetailPreviewSlot.webflow";
 
 export default function TestRegistryPreviewPage() {
   return (
@@ -15,20 +14,6 @@ export default function TestRegistryPreviewPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Original Version */}
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-2xl font-semibold mb-1">Original Version</h2>
-              <p className="text-sm text-muted-foreground">
-                Standard preview card with placeholder text
-              </p>
-            </div>
-            <ComponentDetailPreviewWrapper
-              componentId="core-login-form"
-              previewBaseUrl="https://blogflow-three.vercel.app"
-            />
-          </div>
-
           {/* New Slot Version */}
           <div className="space-y-4">
             <div>

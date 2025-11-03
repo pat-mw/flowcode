@@ -2,7 +2,7 @@
   "library": {
     "name": "blogflow-registry-dashboard",
     "components": [
-      "./src/libraries/registry-dashboard/**/*.webflow.@(ts|tsx)"
+      "./src/libraries/registryDashboard/**/*.webflow.@(ts|tsx)"
     ],
     "bundleConfig": "./webpack.webflow.js",
     "description": "Component library viewer and documentation interface",

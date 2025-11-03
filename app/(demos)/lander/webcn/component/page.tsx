@@ -3,13 +3,13 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ComponentDetailHeader from "@/components/registry-dashboard/ComponentDetailHeader";
-import ComponentDetailPreview from "@/components/registry-dashboard/ComponentDetailPreview";
 import ComponentDetailProps from "@/components/registry-dashboard/ComponentDetailProps";
 import ComponentDetailUsage from "@/components/registry-dashboard/ComponentDetailUsage";
 import ComponentDetailSidebar from "@/components/registry-dashboard/ComponentDetailSidebar";
 import { getComponentById } from "@/lib/registry-utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import ComponentPreviewRaw from "@/components/registry-dashboard/ComponentPreviewRaw";
 
 function ComponentDetailContent() {
   const searchParams = useSearchParams();
@@ -48,7 +48,8 @@ function ComponentDetailContent() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Component Preview */}
-            <ComponentDetailPreview componentId={id} />
+            {/* <ComponentDetailPreview componentId={id} /> */}
+            <ComponentPreviewRaw componentId={id} />
 
             {/* Usage Example */}
             <ComponentDetailUsage componentId={id} />
