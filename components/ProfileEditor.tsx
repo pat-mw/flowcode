@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Save } from 'lucide-react';
-import { toast } from 'sonner';
 
 export default function ProfileEditor() {
   const queryClient = useQueryClient();
@@ -40,10 +39,6 @@ export default function ProfileEditor() {
     orpc.people.update.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: orpc.people.getMe.queryKey() });
-        toast.success('Profile updated successfully');
-      },
-      onError: (error) => {
-        toast.error(`Failed to update profile: ${error.message}`);
       },
     })
   );
@@ -53,18 +48,15 @@ export default function ProfileEditor() {
 
     // Validate required fields
     if (!displayName.trim()) {
-      toast.error('Display name is required');
       return;
     }
 
     // Validate URL fields
     if (avatar && !isValidUrl(avatar)) {
-      toast.error('Avatar must be a valid URL');
       return;
     }
 
     if (website && !isValidUrl(website)) {
-      toast.error('Website must be a valid URL');
       return;
     }
 
@@ -195,7 +187,6 @@ export default function ProfileEditor() {
                       className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
-                        toast.error('Failed to load avatar image');
                       }}
                     />
                     <p className="text-sm text-gray-500">

@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Search, Edit, Trash2, Send } from 'lucide-react';
-import { toast } from 'sonner';
 
 export default function PostsList() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
@@ -32,10 +31,6 @@ export default function PostsList() {
     orpc.posts.delete.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: orpc.posts.key()});
-        toast.success('Post deleted successfully');
-      },
-      onError: (error) => {
-        toast.error(`Failed to delete post: ${error.message}`);
       },
     })
   );
@@ -45,10 +40,6 @@ export default function PostsList() {
     orpc.posts.publish.mutationOptions({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: orpc.posts.key() });
-        toast.success('Post published successfully');
-      },
-      onError: (error) => {
-        toast.error(`Failed to publish post: ${error.message}`);
       },
     })
   );
