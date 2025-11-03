@@ -71,8 +71,22 @@ export default function PostView({ postId }: PostViewProps) {
             if (node.type === 'heading') {
               const text = node.content?.map((c: any) => c.text).join('') || '';
               const level = node.attrs?.level || 1;
-              const Tag = `h${level}` as keyof JSX.IntrinsicElements;
-              return <Tag key={index}>{text}</Tag>;
+              switch (level) {
+                case 1:
+                  return <h1 key={index}>{text}</h1>;
+                case 2:
+                  return <h2 key={index}>{text}</h2>;
+                case 3:
+                  return <h3 key={index}>{text}</h3>;
+                case 4:
+                  return <h4 key={index}>{text}</h4>;
+                case 5:
+                  return <h5 key={index}>{text}</h5>;
+                case 6:
+                  return <h6 key={index}>{text}</h6>;
+                default:
+                  return <h2 key={index}>{text}</h2>;
+              }
             }
             if (node.type === 'bulletList') {
               return (

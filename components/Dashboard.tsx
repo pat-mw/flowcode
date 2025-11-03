@@ -177,7 +177,7 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
       </Card>
 
       {/* Quick Stats Card */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Quick Stats</CardTitle>
           <CardDescription>Your activity summary</CardDescription>
@@ -203,7 +203,7 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
             <a href="/dashboard/posts">View All Posts</a>
           </Button>
         </CardFooter>
-      </Card>
+      </Card> */}
 
       {/* Actions Card */}
       <Card>

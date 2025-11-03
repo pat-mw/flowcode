@@ -1,0 +1,16 @@
+{
+  "library": {
+    "name": "blogflow-demo",
+    "components": [
+      "./src/libraries/blogDemo/**/*.webflow.@(ts|tsx)"
+    ],
+    "bundleConfig": "./webpack.webflow.js",
+    "description": "Complete blog platform components including posts management, profiles, and public blog views",
+    "id": "blogflow-demo"
+  },
+  "telemetry": {
+    "global": {
+      "allowTelemetry": true
+    }
+  }
+}

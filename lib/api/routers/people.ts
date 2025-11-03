@@ -34,7 +34,7 @@ const getMe = protectedProcedure
     console.log('[people.getMe] Starting handler');
     console.log('[people.getMe] Context:', {
       userId: ctx.userId,
-      hasSession: ctx.hasSession,
+      session: ctx.session,
     });
 
     if (!ctx.userId) {
