@@ -81,7 +81,7 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
             Please log in to access your dashboard.
           </p>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex justify-center">
           <Button asChild>
             <a href="/auth/login">Go to Login</a>
           </Button>
