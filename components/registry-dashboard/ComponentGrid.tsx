@@ -34,6 +34,8 @@ const ComponentGrid = ({
 }: ComponentGridProps) => {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
+  // Tag filter state
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   // Get all components grouped by library from registry (fallback)
   const registryGroups = getComponentsByLibraryGrouped();
@@ -61,9 +63,24 @@ const ComponentGrid = ({
     };
   }).filter(group => group.components.length > 0) : registryGroups;
 
-  // Filter components based on search query
+  // Extract all unique tags from all components
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    allLibraryGroups.forEach((group) => {
+      group.components.forEach((component) => {
+        component.tags?.forEach((tag) => tagSet.add(tag));
+      });
+    });
+    return Array.from(tagSet).sort();
+  }, [allLibraryGroups]);
+
+  // Filter components based on search query and selected tags
   const filteredLibraryGroups = useMemo(() => {
-    if (!searchQuery.trim()) return allLibraryGroups;
+    const hasSearch = searchQuery.trim() !== '';
+    const hasTags = selectedTags.length > 0;
+
+    // If no filters, return all
+    if (!hasSearch && !hasTags) return allLibraryGroups;
 
     const lowerQuery = searchQuery.toLowerCase();
 
@@ -71,19 +88,32 @@ const ComponentGrid = ({
       .map((group) => ({
         ...group,
         components: group.components.filter((component) => {
-          const matchesName = component.name.toLowerCase().includes(lowerQuery);
-          const matchesDescription = component.description?.toLowerCase().includes(lowerQuery);
-          const matchesId = component.id.toLowerCase().includes(lowerQuery);
-          const matchesCategory = component.category?.toLowerCase().includes(lowerQuery);
-          const matchesTags = component.tags?.some((tag) =>
-            tag.toLowerCase().includes(lowerQuery)
-          );
+          // Search query matching
+          let matchesSearch = true;
+          if (hasSearch) {
+            const matchesName = component.name.toLowerCase().includes(lowerQuery);
+            const matchesDescription = component.description?.toLowerCase().includes(lowerQuery) ?? false;
+            const matchesId = component.id.toLowerCase().includes(lowerQuery);
+            const matchesCategory = component.category?.toLowerCase().includes(lowerQuery) ?? false;
+            const matchesTags = component.tags?.some((tag) =>
+              tag.toLowerCase().includes(lowerQuery)
+            ) ?? false;
+            matchesSearch = matchesName || matchesDescription || matchesId || matchesCategory || matchesTags;
+          }
 
-          return matchesName || matchesDescription || matchesId || matchesCategory || matchesTags;
+          // Tag filter matching (component must have ALL selected tags)
+          let matchesTags = true;
+          if (hasTags) {
+            matchesTags = selectedTags.every((selectedTag) =>
+              component.tags?.includes(selectedTag)
+            );
+          }
+
+          return matchesSearch && matchesTags;
         }),
       }))
       .filter((group) => group.components.length > 0);
-  }, [allLibraryGroups, searchQuery]);
+  }, [allLibraryGroups, searchQuery, selectedTags]);
 
   // Calculate total components count
   const totalComponents = filteredLibraryGroups.reduce(
@@ -102,29 +132,76 @@ const ComponentGrid = ({
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+        <div className="max-w-3xl mx-auto mb-12 space-y-6">
+          <div className="flex items-center gap-3">
+            <Search className="w-5 h-5 text-muted-foreground shrink-0" />
             <Input
               type="text"
               placeholder="Search components by name, description, category, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-10 h-12 text-base"
+              className="h-12 text-base flex-1"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors shrink-0"
                 aria-label="Clear search"
               >
                 <X className="w-5 h-5" />
               </button>
             )}
           </div>
-          {searchQuery && (
-            <p className="text-sm text-muted-foreground mt-2 text-center">
+
+          {/* Tag Filter */}
+          {allTags.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-sm font-medium text-foreground">Filter by tags:</p>
+                {selectedTags.length > 0 && (
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {allTags.map((tag) => {
+                  const isSelected = selectedTags.includes(tag);
+                  return (
+                    <Badge
+                      key={tag}
+                      variant={isSelected ? "default" : "outline"}
+                      className={`cursor-pointer transition-all ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                          : "hover:bg-muted"
+                      }`}
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedTags(selectedTags.filter((t) => t !== tag));
+                        } else {
+                          setSelectedTags([...selectedTags, tag]);
+                        }
+                      }}
+                    >
+                      {tag}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Results count */}
+          {(searchQuery || selectedTags.length > 0) && (
+            <p className="text-sm text-muted-foreground text-center">
               Found {totalComponents} component{totalComponents !== 1 ? 's' : ''}
+              {selectedTags.length > 0 && (
+                <span> with tag{selectedTags.length !== 1 ? 's' : ''}: {selectedTags.join(', ')}</span>
+              )}
             </p>
           )}
         </div>
@@ -133,15 +210,30 @@ const ComponentGrid = ({
         {filteredLibraryGroups.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              No components found matching &quot;{searchQuery}&quot;
+              No components found
+              {searchQuery && <> matching &quot;{searchQuery}&quot;</>}
+              {selectedTags.length > 0 && (
+                <> with tag{selectedTags.length !== 1 ? 's' : ''}: {selectedTags.join(', ')}</>
+              )}
             </p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => setSearchQuery("")}
-            >
-              Clear Search
-            </Button>
+            <div className="flex gap-2 justify-center mt-4">
+              {searchQuery && (
+                <Button
+                  variant="outline"
+                  onClick={() => setSearchQuery("")}
+                >
+                  Clear Search
+                </Button>
+              )}
+              {selectedTags.length > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedTags([])}
+                >
+                  Clear Tags
+                </Button>
+              )}
+            </div>
           </div>
         ) : (
           <div className="space-y-16 max-w-7xl mx-auto">
