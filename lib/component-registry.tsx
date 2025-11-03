@@ -122,26 +122,6 @@ const ComponentGrid = dynamic(
   () => import("@/components/registry-dashboard/ComponentGrid"),
   { ssr: false }
 );
-const ComponentDetailHeader = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailHeader"),
-  { ssr: false }
-);
-const ComponentDetailPreview = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailPreview"),
-  { ssr: false }
-);
-const ComponentDetailProps = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailProps"),
-  { ssr: false }
-);
-const ComponentDetailUsage = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailUsage"),
-  { ssr: false }
-);
-const ComponentDetailSidebar = dynamic(
-  () => import("@/components/registry-dashboard/ComponentDetailSidebar"),
-  { ssr: false }
-);
 
 // ============================================================================
 // COMPONENT REGISTRY
@@ -188,11 +168,6 @@ export const componentRegistry: Record<string, ComponentType<Record<string, unkn
 
   // Registry Dashboard
   "registry-component-grid": ComponentGrid,
-  "registry-detail-header": ComponentDetailHeader,
-  "registry-detail-preview": ComponentDetailPreview,
-  "registry-detail-props": ComponentDetailProps,
-  "registry-detail-usage": ComponentDetailUsage,
-  "registry-detail-sidebar": ComponentDetailSidebar,
 };
 
 /**
