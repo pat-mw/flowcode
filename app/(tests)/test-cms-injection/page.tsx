@@ -85,18 +85,22 @@ export default function Page() {
                 <Badge variant="outline">Registry Only</Badge>
                 <span className="text-sm text-muted-foreground">No CMS data injected</span>
               </div>
-              <ComponentDetailHeader componentId="core-login-form" />
+              <ComponentDetailHeader
+                componentId="core-login-form"
+                backToLibraryUrl="/test-cms-injection"
+              />
             </Card>
 
             {/* CMS Injected */}
             <Card className="p-6 space-y-3">
               <div className="flex items-center gap-2">
                 <Badge className="bg-green-500">CMS Injected</Badge>
-                <span className="text-sm text-muted-foreground">Using mock CMS data</span>
+                <span className="text-sm text-muted-foreground">Using mock CMS data + custom back URL</span>
               </div>
               <ComponentDetailHeader
                 componentId="core-login-form"
                 cmsData={mockCMSComponentData}
+                backToLibraryUrl="/test-cms-injection"
               />
             </Card>
           </div>
@@ -191,6 +195,9 @@ export default function Page() {
             <ol className="list-decimal list-inside ml-4 space-y-2">
               <li>
                 <strong>Add component to page:</strong> Drag the component from the Components panel
+              </li>
+              <li>
+                <strong>Configure navigation:</strong> Set &quot;Back to Library URL&quot; to your component library page (e.g., &quot;/components&quot;)
               </li>
               <li>
                 <strong>Bind to CMS Collection:</strong> Select the component and choose &quot;Get data from...&quot; → Components collection

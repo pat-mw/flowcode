@@ -22,6 +22,7 @@ interface WrapperProps extends ComponentDetailHeaderProps {
 
 export function ComponentDetailHeaderWrapper({
   componentId,
+  backToLibraryUrl,
   cmsName,
   cmsComponentId,
   cmsDescription,
@@ -41,7 +42,11 @@ export function ComponentDetailHeaderWrapper({
 
   return (
     <WebflowProvidersWrapper>
-      <ComponentDetailHeader componentId={componentId} cmsData={cmsData} />
+      <ComponentDetailHeader
+        componentId={componentId}
+        cmsData={cmsData}
+        backToLibraryUrl={backToLibraryUrl}
+      />
     </WebflowProvidersWrapper>
   );
 }
@@ -55,6 +60,11 @@ export default declareComponent(ComponentDetailHeaderWrapper, {
       name: 'Component ID',
       defaultValue: '',
       tooltip: 'Component ID to display (e.g., "core-login-form"). If empty, reads from URL query parameter ?id=',
+    }),
+    backToLibraryUrl: props.Text({
+      name: 'Back to Library URL',
+      defaultValue: '/lander/webcn',
+      tooltip: 'URL for the "Back to Library" button. Defaults to "/lander/webcn".',
     }),
     cmsName: props.Text({
       name: 'CMS: Name',

@@ -11,11 +11,14 @@ export interface ComponentDetailHeaderProps {
   componentId?: string;
   /** Optional CMS data to override registry data */
   cmsData?: WebflowCMSComponent;
+  /** URL for the "Back to Library" button */
+  backToLibraryUrl?: string;
 }
 
 const ComponentDetailHeader = ({
   componentId: propComponentId,
-  cmsData
+  cmsData,
+  backToLibraryUrl = '/lander/webcn',
 }: ComponentDetailHeaderProps) => {
   // Read component ID from URL if not provided as prop
   const componentId = propComponentId || cmsData?.componentId || (typeof window !== 'undefined'
@@ -51,7 +54,7 @@ const ComponentDetailHeader = ({
       <div className="border-b border-border bg-card/50 backdrop-blur">
         <div className="container mx-auto px-4 py-6">
           <Button variant="ghost" size="sm" asChild className="mb-4">
-            <a href="/lander/webcn">
+            <a href={backToLibraryUrl}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Library
             </a>
@@ -66,7 +69,7 @@ const ComponentDetailHeader = ({
     <div className="border-b border-border bg-card/50 backdrop-blur">
       <div className="container mx-auto px-4 py-6">
         <Button variant="ghost" size="sm" asChild className="mb-4">
-          <a href="/lander/webcn">
+          <a href={backToLibraryUrl}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Library
           </a>
