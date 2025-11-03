@@ -3,7 +3,7 @@
  */
 export interface ComponentProp {
   name: string;
-  type: "Text" | "Number" | "Boolean" | "Variant" | "JSON";
+  type: "Text" | "Number" | "Boolean" | "Variant" | "JSON" | "Image" | "Link" | "RichText" | "Slot";
   description: string;
   defaultValue?: unknown;
   required?: boolean;
@@ -43,6 +43,9 @@ export interface ComponentMetadata {
 
   /** Path to component file (auto-generated) */
   filePath?: string;
+
+  /** Preview image URL for component showcase */
+  previewImage?: string;
 }
 
 export interface LibraryConfig {

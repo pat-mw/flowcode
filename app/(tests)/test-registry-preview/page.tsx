@@ -1,7 +1,6 @@
 'use client';
 
-import { ComponentDetailPreviewWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailPreview.webflow";
-import { ComponentDetailPreviewSlotWrapper } from "@/src/libraries/registry-dashboard/components/ComponentDetailPreviewSlot.webflow";
+import { ComponentDetailPreviewSlotWrapper } from "@/src/libraries/registryDashboard/components/ComponentDetailPreviewSlot.webflow";
 
 export default function TestRegistryPreviewPage() {
   return (
@@ -15,20 +14,6 @@ export default function TestRegistryPreviewPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Original Version */}
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-2xl font-semibold mb-1">Original Version</h2>
-              <p className="text-sm text-muted-foreground">
-                Standard preview card with placeholder text
-              </p>
-            </div>
-            <ComponentDetailPreviewWrapper
-              componentId="core-login-form"
-              previewBaseUrl="https://blogflow-three.vercel.app"
-            />
-          </div>
-
           {/* New Slot Version */}
           <div className="space-y-4">
             <div>
@@ -89,10 +74,10 @@ export default function TestRegistryPreviewPage() {
             <div>
               <h4 className="font-medium text-foreground mb-2">Setting up the Slot Version:</h4>
               <ol className="list-decimal list-inside space-y-2 ml-2">
-                <li>Drag "Component Detail Preview (Slot)" onto your page</li>
-                <li>Set the Component ID (e.g., "core-login-form")</li>
+                <li>Drag &quot;Component Detail Preview (Slot)&quot; onto your page</li>
+                <li>Set the Component ID (e.g., &quot;core-login-form&quot;)</li>
                 <li>Set the Preview Base URL (your site URL)</li>
-                <li>Click the "Preview Image" slot in the properties panel</li>
+                <li>Click the &quot;Preview Image&quot; slot in the properties panel</li>
                 <li>Drop an image element into the highlighted slot area</li>
                 <li>The image will appear in the preview card</li>
                 <li>Hover over the preview to see the overlay message</li>

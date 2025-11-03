@@ -41,6 +41,9 @@ export interface WebflowCMSComponent {
   /** File path to component (PlainText) */
   filePath?: string;
 
+  /** Preview image URL (Image or PlainText) */
+  previewImage?: string;
+
   /** Component props metadata (if available) */
   props?: Array<{
     name: string;
@@ -98,7 +101,7 @@ export function normalizeCMSArray(value: string | string[] | undefined): string[
  * Helper function to merge CMS data with registry data
  * CMS data takes precedence, registry data is fallback
  */
-export function mergeCMSWithRegistry<T extends Record<string, any>>(
+export function mergeCMSWithRegistry<T extends Record<string, unknown>>(
   cmsData: Partial<T> | undefined,
   registryData: T | undefined
 ): T | undefined {
@@ -109,7 +112,7 @@ export function mergeCMSWithRegistry<T extends Record<string, any>>(
   return {
     ...registryData,
     ...Object.fromEntries(
-      Object.entries(cmsData).filter(([_, value]) => value !== undefined)
+      Object.entries(cmsData).filter(([, value]) => value !== undefined)
     ),
   } as T;
 }

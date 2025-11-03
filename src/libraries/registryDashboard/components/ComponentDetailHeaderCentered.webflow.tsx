@@ -1,17 +1,17 @@
 /**
- * ComponentDetailHeader Webflow Component Wrapper
- * Header section showing component name, description, and tags
+ * ComponentDetailHeaderCentered Webflow Component Wrapper
+ * Centered variant of header section showing component name, description, and tags
  */
 
 'use client';
 
 import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
-import ComponentDetailHeader, { type ComponentDetailHeaderProps } from '@/components/registry-dashboard/ComponentDetailHeader';
+import ComponentDetailHeaderCentered, { type ComponentDetailHeaderCenteredProps } from '@/components/registry-dashboard/ComponentDetailHeaderCentered';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import type { WebflowCMSComponent } from '@/lib/webflow-cms-types';
 
-interface WrapperProps extends ComponentDetailHeaderProps {
+interface WrapperProps extends ComponentDetailHeaderCenteredProps {
   // CMS fields from Webflow CMS Components Collection
   cmsName?: string;
   cmsComponentId?: string;
@@ -20,7 +20,7 @@ interface WrapperProps extends ComponentDetailHeaderProps {
   cmsTags?: string; // Comma-separated tags
 }
 
-export function ComponentDetailHeaderWrapper({
+export function ComponentDetailHeaderCenteredWrapper({
   componentId,
   backToLibraryUrl,
   cmsName,
@@ -42,7 +42,7 @@ export function ComponentDetailHeaderWrapper({
 
   return (
     <WebflowProvidersWrapper>
-      <ComponentDetailHeader
+      <ComponentDetailHeaderCentered
         componentId={componentId}
         cmsData={cmsData}
         backToLibraryUrl={backToLibraryUrl}
@@ -51,9 +51,9 @@ export function ComponentDetailHeaderWrapper({
   );
 }
 
-export default declareComponent(ComponentDetailHeaderWrapper, {
-  name: 'Component Detail Header',
-  description: 'Header section showing component name, description, library badge, and tags. Supports CMS data injection.',
+export default declareComponent(ComponentDetailHeaderCenteredWrapper, {
+  name: 'Component Detail Header (Centered)',
+  description: 'Centered variant of header section showing component name, description, library badge, and tags. Supports CMS data injection.',
   group: 'Registry Dashboard',
   props: {
     componentId: props.Text({
