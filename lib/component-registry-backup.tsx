@@ -1,4 +1,7 @@
 /**
+ * CRITICAL! This makes the bundle size absolutely massive, cannot build for Webflow.
+ * Still potentially useful for testing and development, but not yet a production feature
+ * 
  * Component Registry for Live Previews
  * Maps component IDs to their actual RAW React components (NOT Webflow wrappers)
  *
@@ -14,6 +17,9 @@
  * 3. Smaller bundle size (no wrapper overhead)
  * 4. Faster loading (lazy loaded on demand)
  * 5. Better development experience (direct access to implementations)
+ * 
+ * CRITICAL! This makes the bundle size absolutely massive, cannot build for Webflow.
+ * Still potentially useful for testing and development, but not yet a production feature
  */
 
 import dynamic from "next/dynamic";
