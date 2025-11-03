@@ -10,6 +10,7 @@ export interface DemoSectionProps {
   demoTitle?: string;
   demoDescription?: string;
   ctaButtonText?: string;
+  ctaLink?: { href: string; target?: string } | string;
   showBadge?: boolean;
   tagline?: string;
 }
@@ -21,9 +22,13 @@ const DemoSection = ({
   demoTitle = "blogflow",
   demoDescription = "A fully functional blogging platform showcasing the power of webcn. Users can register, authenticate, create posts, and collaborate — all running natively within Webflow using code components.",
   ctaButtonText = "Try blogflow Demo",
+  ctaLink = "/demo",
   showBadge = true,
   tagline = "No external services. No API keys. No deployment hassles. Just pure Webflow.",
 }: DemoSectionProps) => {
+  // Extract href and target from ctaLink (could be string or Link object)
+  const linkHref = typeof ctaLink === 'string' ? ctaLink : ctaLink?.href || '/demo';
+  const linkTarget = typeof ctaLink === 'string' ? '_self' : ctaLink?.target || '_self';
   return (
     <section id="demo" className="py-24 px-4 relative overflow-hidden">
       {/* Background decoration */}
@@ -114,9 +119,12 @@ const DemoSection = ({
                   <Button
                     size="lg"
                     className="bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-glow transition-all duration-300 hover:scale-105"
+                    asChild
                   >
-                    {ctaButtonText}
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <a href={linkHref} target={linkTarget} rel={linkTarget === '_blank' ? 'noopener noreferrer' : undefined}>
+                      {ctaButtonText}
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </a>
                   </Button>
                 </div>
               </div>

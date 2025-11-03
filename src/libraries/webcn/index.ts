@@ -188,6 +188,13 @@ export const webcnLibrary: LibraryConfig = {
           required: false,
         },
         {
+          name: "ctaLink",
+          type: "Link",
+          description: "Link for the call-to-action button",
+          defaultValue: { href: "/demo", target: "_self" },
+          required: false,
+        },
+        {
           name: "showBadge",
           type: "Boolean",
           description: "Toggle visibility of the badge",
@@ -195,7 +202,7 @@ export const webcnLibrary: LibraryConfig = {
           required: false,
         },
       ],
-      usageExample: `<DemoSectionWrapper badgeText="Live Demo" sectionTitle="See It In Action" demoTitle="blogflow" showBadge={true} />`,
+      usageExample: `<DemoSectionWrapper badgeText="Live Demo" sectionTitle="See It In Action" demoTitle="blogflow" ctaLink={{ href: "/demo", target: "_self" }} showBadge={true} />`,
       tags: ["demo", "landing", "showcase"],
       filePath: "src/libraries/webcn/components/DemoSection.webflow.tsx",
     },

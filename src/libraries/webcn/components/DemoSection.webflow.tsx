@@ -18,6 +18,7 @@ export function DemoSectionWrapper({
   demoTitle,
   demoDescription,
   ctaButtonText,
+  ctaLink,
   showBadge,
   tagline,
 }: DemoSectionProps) {
@@ -30,6 +31,7 @@ export function DemoSectionWrapper({
         demoTitle={demoTitle}
         demoDescription={demoDescription}
         ctaButtonText={ctaButtonText}
+        ctaLink={ctaLink}
         showBadge={showBadge}
         tagline={tagline}
       />
@@ -71,6 +73,11 @@ export default declareComponent(DemoSectionWrapper, {
       name: 'CTA Button Text',
       defaultValue: 'Try blogflow Demo',
       tooltip: 'Text for the call-to-action button',
+    }),
+    ctaLink: props.Link({
+      name: 'CTA Button Link',
+      defaultValue: { href: '/demo', target: '_self' },
+      tooltip: 'Link for the call-to-action button',
     }),
     showBadge: props.Boolean({
       name: 'Show Badge',
