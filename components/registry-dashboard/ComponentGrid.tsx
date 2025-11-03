@@ -18,6 +18,8 @@ export interface ComponentGridProps {
   basePath?: string;
   /** Use path-based URLs (e.g., /path/component-id) instead of query params (e.g., /path?id=component-id) */
   usePaths?: boolean;
+  /** Show the filter by tags section */
+  showFilterByTags?: boolean;
   /** Optional CMS libraries data to override registry data */
   cmsLibraries?: WebflowCMSLibrary[];
   /** Optional CMS components data to override registry data */
@@ -29,6 +31,7 @@ const ComponentGrid = ({
   sectionSubtitle = "Explore our growing collection of production-ready components",
   basePath = "/lander/webcn/component",
   usePaths = false,
+  showFilterByTags = false,
   cmsLibraries,
   cmsComponents,
 }: ComponentGridProps) => {
@@ -154,7 +157,7 @@ const ComponentGrid = ({
           </div>
 
           {/* Tag Filter */}
-          {allTags.length > 0 && (
+          {showFilterByTags && allTags.length > 0 && (
             <div className="space-y-3">
               <div className="flex items-center justify-center gap-2">
                 <p className="text-sm font-medium text-foreground">Filter by tags:</p>

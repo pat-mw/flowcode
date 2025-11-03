@@ -21,6 +21,7 @@ export function ComponentGridWrapper({
   viewAllButtonText,
   basePath,
   usePaths,
+  showFilterByTags,
 }: ComponentGridProps) {
   return (
     <WebflowProvidersWrapper>
@@ -30,6 +31,7 @@ export function ComponentGridWrapper({
         viewAllButtonText={viewAllButtonText}
         basePath={basePath}
         usePaths={usePaths}
+        showFilterByTags={showFilterByTags}
       />
     </WebflowProvidersWrapper>
   );
@@ -64,6 +66,13 @@ export default declareComponent(ComponentGridWrapper, {
       name: 'Use Paths',
       defaultValue: false,
       tooltip: 'If true, uses path-based URLs (e.g., /path/component-id). If false, uses query parameters (e.g., /path?id=component-id).',
+    }),
+    showFilterByTags: props.Boolean({
+      name: 'Show Filter by Tags',
+      defaultValue: false,
+      trueLabel: 'Show Tag Filter',
+      falseLabel: 'Hide Tag Filter',
+      tooltip: 'Enable or disable the tag filter section below the search bar',
     }),
   },
 });
