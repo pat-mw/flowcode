@@ -3,7 +3,7 @@
  */
 export interface ComponentProp {
   name: string;
-  type: "Text" | "Number" | "Boolean" | "Variant" | "JSON";
+  type: "Text" | "Number" | "Boolean" | "Variant" | "JSON" | "Image" | "Link" | "RichText" | "Slot";
   description: string;
   defaultValue?: unknown;
   required?: boolean;

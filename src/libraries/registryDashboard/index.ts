@@ -115,49 +115,113 @@ export const registryDashboardLibrary: LibraryConfig = {
       filePath: "src/libraries/registry-dashboard/components/ComponentGrid.webflow.tsx",
     },
     {
-      id: "registry-detail-header",
-      name: "Component Detail Header",
-      description: "Header section showing component name, description, library badge, and tags",
-      category: "Registry",
+      id: "registry-component-detail-header-centered",
+      name: "Component Detail Header (Centered)",
+      description:
+        "Centered variant of header section showing component name, description, library badge, and tags. Supports CMS data injection.",
+      category: "Registry Dashboard",
       dependencies: [],
       props: [
         {
           name: "componentId",
           type: "Text",
-          description: "Component ID to display (e.g., 'core-login-form'). If empty, reads from URL query parameter ?id=",
+          description:
+            'Component ID to display (e.g., "core-login-form"). If empty, reads from URL query parameter ?id=',
+          defaultValue: "",
+          required: false,
+        },
+        {
+          name: "backToLibraryUrl",
+          type: "Text",
+          description:
+            'URL for the "Back to Library" button. Defaults to "/lander/webcn".',
+          defaultValue: "/lander/webcn",
+          required: false,
+        },
+        {
+          name: "cmsName",
+          type: "Text",
+          description:
+            'Optional: Component name from Webflow CMS. Bind to CMS field "name".',
+          defaultValue: "",
+          required: false,
+        },
+        {
+          name: "cmsComponentId",
+          type: "Text",
+          description:
+            'Optional: Component ID from Webflow CMS. Bind to CMS field "component-id".',
+          defaultValue: "",
+          required: false,
+        },
+        {
+          name: "cmsDescription",
+          type: "Text",
+          description:
+            'Optional: Component description from Webflow CMS. Bind to CMS field "description".',
+          defaultValue: "",
+          required: false,
+        },
+        {
+          name: "cmsCategory",
+          type: "Text",
+          description:
+            'Optional: Component category from Webflow CMS. Bind to CMS field "category".',
+          defaultValue: "",
+          required: false,
+        },
+        {
+          name: "cmsTags",
+          type: "Text",
+          description:
+            'Optional: Comma-separated tags from Webflow CMS. Bind to CMS field "tags".',
           defaultValue: "",
           required: false,
         },
       ],
-      usageExample: `<ComponentDetailHeaderWrapper componentId="core-login-form" />`,
-      tags: ["registry", "header", "detail", "component"],
-      filePath: "src/libraries/registry-dashboard/components/ComponentDetailHeader.webflow.tsx",
+      usageExample: `<ComponentDetailHeaderCentered componentId="core-login-form" backToLibraryUrl="/lander/webcn" />`,
+      tags: ["header", "centered", "documentation", "cms"],
+      filePath:
+        "src/libraries/registryDashboard/components/ComponentDetailHeaderCentered.webflow.tsx",
     },
     {
-      id: "registry-detail-preview",
-      name: "Component Detail Preview",
-      description: "Link to live component preview on production site",
-      category: "Registry",
+      id: "registry-component-detail-preview-slot",
+      name: "Component Detail Preview (Slot)",
+      description:
+        "Component preview card with slot for custom images. Includes hover overlay and footer button.",
+      category: "Registry Dashboard",
       dependencies: [],
       props: [
         {
           name: "componentId",
           type: "Text",
-          description: "Component ID to preview (e.g., 'core-login-form'). If empty, reads from URL query parameter ?id=",
+          description:
+            'Component ID to preview (e.g., "core-login-form"). If empty, reads from URL query parameter ?id=',
           defaultValue: "",
           required: false,
         },
         {
           name: "previewBaseUrl",
           type: "Text",
-          description: "Base URL for the preview site (e.g., 'https://yoursite.com'). Path /lander/webcn/component will be appended.",
-          defaultValue: process.env.NEXT_PUBLIC_API_URL || "",
+          description:
+            'Base URL for the preview site (e.g., "https://yoursite.com"). Path /lander/webcn/component will be appended.',
+          defaultValue: "",
           required: false,
         },
+        // Note: Slot type is not supported in component metadata
+        // {
+        //   name: "children",
+        //   type: "Slot",
+        //   description:
+        //     "Slot for component preview image. Drop an image or any element here.",
+        //   defaultValue: null,
+        //   required: false,
+        // },
       ],
-      usageExample: `<ComponentDetailPreviewWrapper componentId="core-login-form" previewBaseUrl="https://yoursite.com" />`,
-      tags: ["registry", "preview", "detail", "component"],
-      filePath: "src/libraries/registry-dashboard/components/ComponentDetailPreview.webflow.tsx",
+      usageExample: `<ComponentDetailPreviewSlot componentId="core-login-form" previewBaseUrl="https://yoursite.com" />`,
+      tags: ["preview", "slot", "image", "documentation"],
+      filePath:
+        "src/libraries/registryDashboard/components/ComponentDetailPreviewSlot.webflow.tsx",
     },
     {
       id: "registry-detail-props",
