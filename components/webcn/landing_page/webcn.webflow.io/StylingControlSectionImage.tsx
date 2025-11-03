@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Palette, Sparkles, Code2 } from "lucide-react";
 
 export interface StylingControlSectionImageProps {
-  // Image prop
-  imageUrl?: string; // URL to GIF or static image
+  // Image prop (using Webflow's Image type structure)
+  imageSrc?: string; // URL to GIF or static image
+  imageAlt?: string; // Alt text for accessibility
 
   // Existing text props (unchanged)
   badgeText?: string;
@@ -22,7 +23,8 @@ export interface StylingControlSectionImageProps {
 }
 
 const StylingControlSectionImage = ({
-  imageUrl,
+  imageSrc,
+  imageAlt,
   badgeText = "Design System",
   sectionTitle = "Complete Styling Control",
   sectionSubtitle = "Full design system integration with shadcn/ui core tokens and libraries like tweakcn",
@@ -60,10 +62,10 @@ const StylingControlSectionImage = ({
             {/* Left: Image Display */}
             <div className="order-2 lg:order-1">
               <Card className="relative overflow-hidden bg-gradient-card border-border/50 shadow-card p-8">
-                {imageUrl ? (
+                {imageSrc ? (
                   <img
-                    src={imageUrl}
-                    alt="Styling demo"
+                    src={imageSrc}
+                    alt={imageAlt || "Styling demo"}
                     className="w-full h-auto rounded-lg"
                   />
                 ) : (
