@@ -43,6 +43,9 @@ export interface ComponentMetadata {
 
   /** Path to component file (auto-generated) */
   filePath?: string;
+
+  /** Preview image URL for component showcase */
+  previewImage?: string;
 }
 
 export interface LibraryConfig {

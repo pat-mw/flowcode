@@ -41,6 +41,9 @@ export interface WebflowCMSComponent {
   /** File path to component (PlainText) */
   filePath?: string;
 
+  /** Preview image URL (Image or PlainText) */
+  previewImage?: string;
+
   /** Component props metadata (if available) */
   props?: Array<{
     name: string;
