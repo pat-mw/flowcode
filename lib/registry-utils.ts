@@ -1,5 +1,5 @@
-import { libraries } from "@/src/libraries/registry.config";
-import type { ComponentMetadata, LibraryKey } from "@/src/libraries/types";
+import { libraries, type LibraryKey } from "@/src/libraries/registry.config";
+import type { ComponentMetadata } from "@/src/libraries/types";
 
 /**
  * Extended component metadata with library information

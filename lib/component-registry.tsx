@@ -155,7 +155,7 @@ const ComponentDetailSidebar = dynamic(
  * 1. Webflow deployment (via .webflow.tsx files)
  * 2. app/(tests)/test-webflow-wrappers page (for testing)
  */
-export const componentRegistry: Record<string, ComponentType<any>> = {
+export const componentRegistry: Record<string, ComponentType<Record<string, unknown>>> = {
   // Core
   "core-login-form": LoginForm,
   "core-registration-form": RegistrationForm,
@@ -199,6 +199,6 @@ export const componentRegistry: Record<string, ComponentType<any>> = {
  * Get component by ID
  * Returns raw React component (NOT Webflow wrapper)
  */
-export function getComponentWrapper(id: string): ComponentType<any> | null {
+export function getComponentWrapper(id: string): ComponentType<Record<string, unknown>> | null {
   return componentRegistry[id] || null;
 }

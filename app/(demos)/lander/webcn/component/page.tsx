@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ComponentDetailHeader from "@/components/registry-dashboard/ComponentDetailHeader";
 import ComponentDetailPreview from "@/components/registry-dashboard/ComponentDetailPreview";
@@ -10,9 +11,9 @@ import { getComponentById } from "@/lib/registry-utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
-export default function ComponentDetailPage() {
+function ComponentDetailContent() {
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const id = searchParams.get("id") ?? undefined;
 
   const component = id ? getComponentById(id) : null;
 
@@ -24,7 +25,7 @@ export default function ComponentDetailPage() {
             Component Not Found
           </h1>
           <p className="text-muted-foreground">
-            The component you're looking for doesn't exist.
+            The component you&apos;re looking for doesn&apos;t exist.
           </p>
           <Button asChild>
             <a href="/lander/webcn">
@@ -63,5 +64,13 @@ export default function ComponentDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ComponentDetailPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center">Loading...</div>}>
+      <ComponentDetailContent />
+    </Suspense>
   );
 }

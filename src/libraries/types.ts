@@ -5,7 +5,7 @@ export interface ComponentProp {
   name: string;
   type: "Text" | "Number" | "Boolean" | "Variant" | "JSON";
   description: string;
-  defaultValue?: any;
+  defaultValue?: unknown;
   required?: boolean;
   options?: Array<{ label: string; value: string }>; // For Variant type
 }
