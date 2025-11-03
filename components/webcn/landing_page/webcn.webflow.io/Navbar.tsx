@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 
 export interface NavbarProps {
   logoText?: string;
+  logoLink?: {
+    href: string;
+    target?: "_self" | "_blank" | string;
+    preload?: "prerender" | "prefetch" | "none" | string;
+  };
   githubUrl?: string;
   ctaButtonText?: string;
   ctaButtonUrl?: string;
@@ -24,6 +29,7 @@ export interface NavbarProps {
 
 const Navbar = ({
   logoText = "webcn",
+  logoLink,
   githubUrl = "https://github.com",
   ctaButtonText = "Get Started",
   ctaButtonUrl = "#get-started",
@@ -55,14 +61,19 @@ const Navbar = ({
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <a
+            href={logoLink?.href || "/"}
+            target={logoLink?.target}
+            rel={logoLink?.target === "_blank" ? "noopener noreferrer" : undefined}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
             <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center">
               <Code2 className="w-5 h-5 text-foreground" />
             </div>
             <span className="text-xl font-bold text-primary">
               {logoText}
             </span>
-          </div>
+          </a>
 
           {/* Navigation */}
           <div className="hidden md:flex items-center gap-8">
