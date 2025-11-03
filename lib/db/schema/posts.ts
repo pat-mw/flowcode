@@ -4,6 +4,7 @@
  */
 
 import { pgTable, text, timestamp, index, jsonb } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 import { people } from './people';
 
 export const posts = pgTable(
@@ -40,6 +41,14 @@ export const posts = pgTable(
     webflowItemIdIdx: index('posts_webflow_item_id_idx').on(table.webflowItemId),
   })
 );
+
+// Define relations
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(people, {
+    fields: [posts.authorId],
+    references: [people.id],
+  }),
+}));
 
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
