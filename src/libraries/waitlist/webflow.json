@@ -1,12 +1,12 @@
 {
   "library": {
-    "name": "blogflow-waitlist",
+    "name": "flowcode-waitlist",
     "components": [
       "./src/libraries/waitlist/**/*.webflow.@(ts|tsx)"
     ],
     "bundleConfig": "./webpack.webflow.js",
     "description": "Email waitlist capture and admin management components",
-    "id": "blogflow-waitlist"
+    "id": "flowcode-waitlist"
   },
   "telemetry": {
     "global": {

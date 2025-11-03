@@ -1,12 +1,12 @@
 {
   "library": {
-    "name": "blogflow-interactive",
+    "name": "flowcode-interactive",
     "components": [
       "./src/libraries/interactive/**/*.webflow.@(ts|tsx)"
     ],
     "bundleConfig": "./webpack.webflow.js",
     "description": "3D models and interactive experiences",
-    "id": "blogflow-interactive"
+    "id": "flowcode-interactive"
   },
   "telemetry": {
     "global": {

@@ -1,15 +1,14 @@
 /**
  * ComponentGrid Webflow Component Wrapper
- * Grid of available components for webcn landing page
+ * Grid of all available components organized by library
  */
 
 'use client';
 
 import { declareComponent } from '@webflow/react';
 import { props } from '@webflow/data-types';
-import ComponentGrid, { type ComponentGridProps } from '@/components/webcn/landing_page/webcn.webflow.io/ComponentGrid';
+import ComponentGrid, { type ComponentGridProps } from '@/components/registry-dashboard/ComponentGrid';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
-import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 
 export function ComponentGridWrapper({
   sectionTitle,
@@ -28,9 +27,9 @@ export function ComponentGridWrapper({
 }
 
 export default declareComponent(ComponentGridWrapper, {
-  name: 'webcn Component Grid',
-  description: 'Grid showcasing available components with categories and previews',
-  group: 'webcn Landing',
+  name: 'Component Grid',
+  description: 'Grid showcasing all available components organized by library',
+  group: 'Registry Dashboard',
   props: {
     sectionTitle: props.Text({
       name: 'Section Title',
@@ -45,7 +44,7 @@ export default declareComponent(ComponentGridWrapper, {
     viewAllButtonText: props.Text({
       name: 'View All Button Text',
       defaultValue: 'View All Components',
-      tooltip: 'Text for the view all components button',
+      tooltip: 'Text for the view all components button (currently unused)',
     }),
   },
 });
