@@ -345,6 +345,29 @@ const publicList = publicProcedure
     return postsList;
   });
 
+// Public get post by ID (for published posts only)
+const publicGetById = publicProcedure
+  .input(z.object({
+    id: z.string(),
+  }))
+  .handler(async ({ input }) => {
+    const post = await db.query.posts.findFirst({
+      where: and(
+        eq(posts.id, input.id),
+        eq(posts.status, 'published')
+      ),
+      with: {
+        author: true,
+      },
+    });
+
+    if (!post) {
+      throw new Error('Post not found or not published');
+    }
+
+    return post;
+  });
+
 export const postsRouter = os.router({
   list,
   getById,
@@ -353,4 +376,5 @@ export const postsRouter = os.router({
   delete: deleteProcedure,
   publish,
   publicList,
+  publicGetById,
 });

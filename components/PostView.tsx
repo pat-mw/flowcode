@@ -44,19 +44,15 @@ export default function PostView({ postId: postIdProp }: PostViewProps) {
   // This allows using ?post=123 in the URL or passing postId as a prop
   const postId = useParamOrProp('post', postIdProp) as string;
 
-  // Fetch post by ID - use publicList for public posts, getById for owned posts
-  // For now, we'll create a public endpoint query
-  const { data: posts, isLoading, error } = useQuery(
-    orpc.posts.publicList.queryOptions({
+  // Fetch single post by ID using efficient publicGetById endpoint
+  const { data: post, isLoading, error } = useQuery({
+    ...orpc.posts.publicGetById.queryOptions({
       input: {
-        limit: 100,
-        offset: 0,
+        id: postId,
       },
-    })
-  );
-
-  // Find the specific post
-  const post = posts?.find(p => p.id === postId);
+    }),
+    enabled: !!postId, // Only fetch if postId is available
+  });
 
   // Handle missing postId
   if (!postId) {

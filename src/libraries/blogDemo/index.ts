@@ -238,7 +238,7 @@ export const blogDemoLibrary: LibraryConfig = {
       description: "Individual post view with full content, author info, and edit capability. Reads post ID from URL ?post=123 (preferred) or from prop.",
       category: "Public Blog",
       dependencies: ["@tanstack/react-query", "lucide-react"],
-      backendDependencies: ["posts.publicList"],
+      backendDependencies: ["posts.publicGetById"],
       props: [
         {
           name: "postId",
