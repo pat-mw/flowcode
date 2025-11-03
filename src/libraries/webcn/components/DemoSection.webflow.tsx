@@ -76,7 +76,6 @@ export default declareComponent(DemoSectionWrapper, {
     }),
     ctaLink: props.Link({
       name: 'CTA Button Link',
-      defaultValue: { href: '/demo', target: '_self' },
       tooltip: 'Link for the call-to-action button',
     }),
     showBadge: props.Boolean({
