@@ -42,7 +42,7 @@ export default declareComponent(ComponentDetailUsageWrapper, {
       defaultValue: '',
       tooltip: 'Component ID to show usage for (e.g., "core-login-form"). If empty, reads from URL query parameter ?id=',
     }),
-    cmsUsageExample: props.Text({
+    cmsUsageExample: props.RichText({
       name: 'CMS: Usage Example',
       defaultValue: '',
       tooltip: 'Optional: Code usage example from Webflow CMS. Bind to CMS field "usage-example".',
