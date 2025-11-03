@@ -9,6 +9,7 @@ import { ExternalLink, Search, X } from "lucide-react";
 import { getComponentsByLibraryGrouped } from "@/lib/registry-utils";
 import type { WebflowCMSLibrary, WebflowCMSComponent } from "@/lib/webflow-cms-types";
 import { normalizeCMSArray } from "@/lib/webflow-cms-types";
+import { HighlightedText } from "@/components/uzo/text/highlighted-text";
 
 export interface ComponentGridProps {
   sectionTitle?: string;
@@ -26,7 +27,6 @@ export interface ComponentGridProps {
 const ComponentGrid = ({
   sectionTitle = "Component Library",
   sectionSubtitle = "Explore our growing collection of production-ready components",
-  viewAllButtonText = "View All Components",
   basePath = "/lander/webcn/component",
   usePaths = false,
   cmsLibraries,
@@ -133,7 +133,7 @@ const ComponentGrid = ({
         {filteredLibraryGroups.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground text-lg">
-              No components found matching "{searchQuery}"
+              No components found matching &quot;{searchQuery}&quot;
             </p>
             <Button
               variant="outline"
@@ -159,7 +159,7 @@ const ComponentGrid = ({
 
               {/* Component Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {group.components.map((component, index) => {
+                {group.components.map((component) => {
                   // Generate URL based on usePaths setting
                   const componentUrl = usePaths
                     ? `${basePath}/${component.id}`
@@ -193,7 +193,7 @@ const ComponentGrid = ({
                           <h4 className={`font-semibold text-foreground group-hover:text-primary transition-colors ${
                             hasPreviewImage ? "text-xl" : "text-lg"
                           }`}>
-                            {component.name}
+                            <HighlightedText text={component.name} highlight={searchQuery} />
                           </h4>
                           <Badge
                             variant="secondary"
@@ -204,7 +204,7 @@ const ComponentGrid = ({
                         </div>
 
                         <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
-                          {component.description}
+                          <HighlightedText text={component.description || ""} highlight={searchQuery} />
                         </p>
 
                         {/* Tags */}
@@ -215,7 +215,7 @@ const ComponentGrid = ({
                                 key={tag}
                                 className="text-xs bg-muted px-2 py-0.5 rounded"
                               >
-                                {tag}
+                                <HighlightedText text={tag} highlight={searchQuery} />
                               </span>
                             ))}
                           </div>
