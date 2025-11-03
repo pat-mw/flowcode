@@ -5,16 +5,22 @@ import { Code, Copy, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getComponentById } from "@/lib/registry-utils";
+import type { WebflowCMSComponent } from "@/lib/webflow-cms-types";
 
 export interface ComponentDetailUsageProps {
   componentId?: string;
+  /** Optional CMS data to override registry data */
+  cmsData?: WebflowCMSComponent;
 }
 
-const ComponentDetailUsage = ({ componentId: propComponentId }: ComponentDetailUsageProps) => {
+const ComponentDetailUsage = ({
+  componentId: propComponentId,
+  cmsData
+}: ComponentDetailUsageProps) => {
   const [copied, setCopied] = useState(false);
 
   // Read component ID from URL if not provided as prop
-  const componentId = propComponentId || (typeof window !== 'undefined'
+  const componentId = propComponentId || cmsData?.componentId || (typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
     : null);
 
@@ -28,7 +34,13 @@ const ComponentDetailUsage = ({ componentId: propComponentId }: ComponentDetailU
     return null; // Hide if no component ID
   }
 
-  const component = getComponentById(componentId);
+  // Get registry data (fallback)
+  const registryComponent = getComponentById(componentId);
+
+  // Merge CMS data with registry data (CMS takes precedence)
+  const component = cmsData ? {
+    usageExample: cmsData.usageExample || registryComponent?.usageExample,
+  } : registryComponent;
 
   if (!component || !component.usageExample) {
     return null; // Hide if no usage example

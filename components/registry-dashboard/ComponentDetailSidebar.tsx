@@ -4,14 +4,21 @@ import { Package, ExternalLink } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getComponentById } from "@/lib/registry-utils";
+import type { WebflowCMSComponent } from "@/lib/webflow-cms-types";
+import { normalizeCMSArray } from "@/lib/webflow-cms-types";
 
 export interface ComponentDetailSidebarProps {
   componentId?: string;
+  /** Optional CMS data to override registry data */
+  cmsData?: WebflowCMSComponent;
 }
 
-const ComponentDetailSidebar = ({ componentId: propComponentId }: ComponentDetailSidebarProps) => {
+const ComponentDetailSidebar = ({
+  componentId: propComponentId,
+  cmsData
+}: ComponentDetailSidebarProps) => {
   // Read component ID from URL if not provided as prop
-  const componentId = propComponentId || (typeof window !== 'undefined'
+  const componentId = propComponentId || cmsData?.componentId || (typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
     : null);
 
@@ -19,7 +26,18 @@ const ComponentDetailSidebar = ({ componentId: propComponentId }: ComponentDetai
     return null; // Hide if no component ID
   }
 
-  const component = getComponentById(componentId);
+  // Get registry data (fallback)
+  const registryComponent = getComponentById(componentId);
+
+  // Merge CMS data with registry data (CMS takes precedence)
+  const component = cmsData ? {
+    category: cmsData.category || registryComponent?.category,
+    libraryName: registryComponent?.libraryName || 'Unknown Library',
+    libraryKey: registryComponent?.libraryKey || 'unknown',
+    dependencies: normalizeCMSArray(cmsData.dependencies) || registryComponent?.dependencies || [],
+    backendDependencies: normalizeCMSArray(cmsData.backendDependencies) || registryComponent?.backendDependencies || [],
+    filePath: cmsData.filePath || registryComponent?.filePath,
+  } : registryComponent;
 
   if (!component) {
     return null; // Hide if component not found

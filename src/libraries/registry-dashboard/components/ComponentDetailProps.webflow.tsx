@@ -1,6 +1,9 @@
 /**
  * ComponentDetailProps Webflow Component Wrapper
  * Documentation table showing all component props
+ *
+ * Note: Props metadata is complex (array of objects), so CMS data injection
+ * is not supported for this component. Use registry data only.
  */
 
 'use client';
@@ -20,7 +23,7 @@ export function ComponentDetailPropsWrapper({ componentId }: ComponentDetailProp
 
 export default declareComponent(ComponentDetailPropsWrapper, {
   name: 'Component Detail Props',
-  description: 'Documentation table showing component props with types, descriptions, and default values',
+  description: 'Documentation table showing component props with types, descriptions, and default values. Uses registry data only.',
   group: 'Registry Dashboard',
   props: {
     componentId: props.Text({

@@ -4,14 +4,21 @@ import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getComponentById } from "@/lib/registry-utils";
+import type { WebflowCMSComponent } from "@/lib/webflow-cms-types";
+import { normalizeCMSArray } from "@/lib/webflow-cms-types";
 
 export interface ComponentDetailHeaderProps {
   componentId?: string;
+  /** Optional CMS data to override registry data */
+  cmsData?: WebflowCMSComponent;
 }
 
-const ComponentDetailHeader = ({ componentId: propComponentId }: ComponentDetailHeaderProps) => {
+const ComponentDetailHeader = ({
+  componentId: propComponentId,
+  cmsData
+}: ComponentDetailHeaderProps) => {
   // Read component ID from URL if not provided as prop
-  const componentId = propComponentId || (typeof window !== 'undefined'
+  const componentId = propComponentId || cmsData?.componentId || (typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
     : null);
 
@@ -25,7 +32,19 @@ const ComponentDetailHeader = ({ componentId: propComponentId }: ComponentDetail
     );
   }
 
-  const component = getComponentById(componentId);
+  // Get registry data (fallback)
+  const registryComponent = getComponentById(componentId);
+
+  // Merge CMS data with registry data (CMS takes precedence)
+  const component = cmsData ? {
+    id: cmsData.componentId || componentId,
+    name: cmsData.name || registryComponent?.name || componentId,
+    description: cmsData.description || registryComponent?.description || '',
+    category: cmsData.category || registryComponent?.category,
+    tags: normalizeCMSArray(cmsData.tags) || registryComponent?.tags || [],
+    libraryName: registryComponent?.libraryName || 'Unknown Library',
+    libraryKey: registryComponent?.libraryKey || 'unknown',
+  } : registryComponent;
 
   if (!component) {
     return (

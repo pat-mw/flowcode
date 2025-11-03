@@ -1,6 +1,11 @@
 /**
  * ComponentGrid Webflow Component Wrapper
  * Grid of all available components organized by library
+ *
+ * Note: This component displays ALL libraries and components from the registry.
+ * CMS data injection is not supported due to the complexity of arrays of objects.
+ * For CMS-driven component display, use Webflow Collection Lists with individual
+ * component detail cards instead of this grid component.
  */
 
 'use client';
@@ -15,6 +20,7 @@ export function ComponentGridWrapper({
   sectionSubtitle,
   viewAllButtonText,
   basePath,
+  usePaths,
 }: ComponentGridProps) {
   return (
     <WebflowProvidersWrapper>
@@ -23,6 +29,7 @@ export function ComponentGridWrapper({
         sectionSubtitle={sectionSubtitle}
         viewAllButtonText={viewAllButtonText}
         basePath={basePath}
+        usePaths={usePaths}
       />
     </WebflowProvidersWrapper>
   );
@@ -51,7 +58,12 @@ export default declareComponent(ComponentGridWrapper, {
     basePath: props.Text({
       name: 'Component Detail Base Path',
       defaultValue: '/lander/webcn/component',
-      tooltip: 'Base URL path for component detail pages. Component ID will be appended as ?id=',
+      tooltip: 'Base URL path for component detail pages. Component ID will be appended based on "Use Paths" setting.',
+    }),
+    usePaths: props.Boolean({
+      name: 'Use Paths',
+      defaultValue: false,
+      tooltip: 'If true, uses path-based URLs (e.g., /path/component-id). If false, uses query parameters (e.g., /path?id=component-id).',
     }),
   },
 });
