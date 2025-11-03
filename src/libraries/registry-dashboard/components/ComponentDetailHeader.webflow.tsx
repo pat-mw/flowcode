@@ -76,7 +76,7 @@ export default declareComponent(ComponentDetailHeaderWrapper, {
       defaultValue: '',
       tooltip: 'Optional: Component ID from Webflow CMS. Bind to CMS field "component-id".',
     }),
-    cmsDescription: props.Text({
+    cmsDescription: props.RichText({
       name: 'CMS: Description',
       defaultValue: '',
       tooltip: 'Optional: Component description from Webflow CMS. Bind to CMS field "description".',

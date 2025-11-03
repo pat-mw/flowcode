@@ -55,7 +55,7 @@ export default declareComponent(ComponentCardWrapper, {
       defaultValue: 'UI',
       tooltip: 'Category tag (e.g., UI, Full-Stack, Interactive)',
     }),
-    description: props.Text({
+    description: props.RichText({
       name: 'Description',
       defaultValue: 'Component description',
       tooltip: 'Brief description of what the component does',
