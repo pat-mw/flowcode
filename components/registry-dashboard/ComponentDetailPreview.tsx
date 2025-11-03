@@ -6,9 +6,13 @@ import { Button } from "@/components/ui/button";
 
 export interface ComponentDetailPreviewProps {
   componentId?: string;
+  previewBaseUrl?: string;
 }
 
-const ComponentDetailPreview = ({ componentId: propComponentId }: ComponentDetailPreviewProps) => {
+const ComponentDetailPreview = ({
+  componentId: propComponentId,
+  previewBaseUrl = process.env.NEXT_PUBLIC_API_URL,
+}: ComponentDetailPreviewProps) => {
   // Read component ID from URL if not provided as prop
   const componentId = propComponentId || (typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
@@ -30,8 +34,8 @@ const ComponentDetailPreview = ({ componentId: propComponentId }: ComponentDetai
     );
   }
 
-  // Build the preview URL using the environment variable
-  const previewUrl = `${process.env.NEXT_PUBLIC_API_URL}/lander/webcn/component?id=${componentId}`;
+  // Build the preview URL using the provided base URL or environment variable
+  const previewUrl = `${previewBaseUrl}/lander/webcn/component?id=${componentId}`;
 
   return (
     <Card className="p-6">

@@ -14,6 +14,7 @@ export function ComponentGridWrapper({
   sectionTitle,
   sectionSubtitle,
   viewAllButtonText,
+  basePath,
 }: ComponentGridProps) {
   return (
     <WebflowProvidersWrapper>
@@ -21,6 +22,7 @@ export function ComponentGridWrapper({
         sectionTitle={sectionTitle}
         sectionSubtitle={sectionSubtitle}
         viewAllButtonText={viewAllButtonText}
+        basePath={basePath}
       />
     </WebflowProvidersWrapper>
   );
@@ -45,6 +47,11 @@ export default declareComponent(ComponentGridWrapper, {
       name: 'View All Button Text',
       defaultValue: 'View All Components',
       tooltip: 'Text for the view all components button (currently unused)',
+    }),
+    basePath: props.Text({
+      name: 'Component Detail Base Path',
+      defaultValue: '/lander/webcn/component',
+      tooltip: 'Base URL path for component detail pages. Component ID will be appended as ?id=',
     }),
   },
 });

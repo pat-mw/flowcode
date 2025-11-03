@@ -8,12 +8,14 @@ export interface ComponentGridProps {
   sectionTitle?: string;
   sectionSubtitle?: string;
   viewAllButtonText?: string;
+  basePath?: string;
 }
 
 const ComponentGrid = ({
   sectionTitle = "Component Library",
   sectionSubtitle = "Explore our growing collection of production-ready components",
   viewAllButtonText = "View All Components",
+  basePath = "/lander/webcn/component",
 }: ComponentGridProps) => {
   // Get all components grouped by library from registry
   const libraryGroups = getComponentsByLibraryGrouped();
@@ -47,7 +49,7 @@ const ComponentGrid = ({
                 {group.components.map((component, index) => (
                   <a
                     key={component.id}
-                    href={`/lander/webcn/component?id=${component.id}`}
+                    href={`${basePath}?id=${component.id}`}
                     className="block"
                   >
                     <Card className="group relative overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full">
