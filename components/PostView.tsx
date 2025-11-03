@@ -7,9 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, Calendar, User, ArrowLeft, Edit } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores/authStore';
+import { useParamOrProp } from '@/hooks/useParamOrProp';
 
 interface PostViewProps {
-  postId: string;
+  postId?: string;
 }
 
 // TipTap JSON content types
@@ -36,8 +37,12 @@ interface PostAuthor {
   bio?: string;
 }
 
-export default function PostView({ postId }: PostViewProps) {
+export default function PostView({ postId: postIdProp }: PostViewProps) {
   const { user } = useAuthStore();
+
+  // URL search param takes precedence over prop
+  // This allows using ?post=123 in the URL or passing postId as a prop
+  const postId = useParamOrProp('post', postIdProp) as string;
 
   // Fetch post by ID - use publicList for public posts, getById for owned posts
   // For now, we'll create a public endpoint query
@@ -52,6 +57,27 @@ export default function PostView({ postId }: PostViewProps) {
 
   // Find the specific post
   const post = posts?.find(p => p.id === postId);
+
+  // Handle missing postId
+  if (!postId) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <Card>
+          <CardContent className="py-12">
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl font-bold">No Post Selected</h2>
+              <p className="text-muted-foreground">
+                Please provide a post ID via URL parameter (?post=ID) or component prop
+              </p>
+              <Button onClick={() => window.location.href = '/blog'}>
+                View All Posts
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const formatDate = (date: Date | null) => {
     if (!date) return 'Unknown date';

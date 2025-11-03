@@ -235,7 +235,7 @@ export const blogDemoLibrary: LibraryConfig = {
     {
       id: "blog-post-view",
       name: "Post View",
-      description: "Individual post view with full content, author info, and edit capability",
+      description: "Individual post view with full content, author info, and edit capability. Reads post ID from URL ?post=123 (preferred) or from prop.",
       category: "Public Blog",
       dependencies: ["@tanstack/react-query", "lucide-react"],
       backendDependencies: ["posts.publicList"],
@@ -243,9 +243,9 @@ export const blogDemoLibrary: LibraryConfig = {
         {
           name: "postId",
           type: "Text",
-          description: "Post ID to display (required)",
+          description: "Post ID to display. URL param ?post=ID takes precedence.",
           defaultValue: "",
-          required: true,
+          required: false,
         },
         {
           name: "showBackButton",
