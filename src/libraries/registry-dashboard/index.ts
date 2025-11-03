@@ -7,6 +7,74 @@ export const registryDashboardLibrary: LibraryConfig = {
 
   componentMetadata: [
     {
+      id: "registry-component-card",
+      name: "Component Card",
+      description: "Individual component card for showcasing components in collection lists - displays component preview, name, category, and description",
+      category: "Registry",
+      dependencies: [],
+      props: [
+        {
+          name: "previewImage",
+          type: "Text",
+          description: "URL to preview image (leave empty for placeholder)",
+          defaultValue: "",
+          required: false,
+        },
+        {
+          name: "componentName",
+          type: "Text",
+          description: "Name of the component",
+          defaultValue: "Component Name",
+          required: false,
+        },
+        {
+          name: "category",
+          type: "Text",
+          description: "Category tag (e.g., UI, Full-Stack, Interactive)",
+          defaultValue: "UI",
+          required: false,
+        },
+        {
+          name: "description",
+          type: "Text",
+          description: "Brief description of what the component does",
+          defaultValue: "Component description",
+          required: false,
+        },
+        {
+          name: "link",
+          type: "JSON",
+          description: "Link to component details or demo (includes URL, target, and preload options)",
+          defaultValue: { href: "#", target: "_self" },
+          required: false,
+        },
+        {
+          name: "buttonText",
+          type: "Text",
+          description: "Text displayed on the action button",
+          defaultValue: "View Component",
+          required: false,
+        },
+        {
+          name: "isFullStack",
+          type: "Boolean",
+          description: "If true, uses primary badge color; if false, uses secondary",
+          defaultValue: false,
+          required: false,
+        },
+      ],
+      usageExample: `<ComponentCardWrapper
+  componentName="Login Form"
+  category="Authentication"
+  description="Secure login form with OAuth integration"
+  link={{ href: "/components/login-form", target: "_self" }}
+  buttonText="View Details"
+  isFullStack={true}
+/>`,
+      tags: ["registry", "card", "component", "preview", "grid-item"],
+      filePath: "src/libraries/registry-dashboard/components/ComponentCard.webflow.tsx",
+    },
+    {
       id: "registry-component-grid",
       name: "Component Grid",
       description: "Grid view of all components organized by library",

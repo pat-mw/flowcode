@@ -7,8 +7,12 @@ export interface ComponentCardProps {
   previewImage?: string;
   componentName?: string;
   category?: string;
-  description?: string;
-  link?: string;
+  description?: React.ReactNode;
+  link?: {
+    href: string;
+    target?: "_self" | "_blank" | string;
+    preload?: "prerender" | "prefetch" | "none" | string;
+  };
   buttonText?: string;
   isFullStack?: boolean;
 }
@@ -17,8 +21,8 @@ const ComponentCard = ({
   previewImage = "",
   componentName = "Component Name",
   category = "UI",
-  description = "Component description",
-  link = "#",
+  description,
+  link,
   buttonText = "View Component",
   isFullStack = false,
 }: ComponentCardProps) => {
@@ -59,16 +63,20 @@ const ComponentCard = ({
             {category}
           </Badge>
         </div>
-        <p className="text-muted-foreground text-sm leading-relaxed">
+        <div className="text-muted-foreground text-sm leading-relaxed">
           {description}
-        </p>
+        </div>
         <Button
           asChild
           variant="secondary"
           size="sm"
           className="w-full justify-between hover:bg-primary hover:text-primary-foreground transition-all"
         >
-          <a href={link}>
+          <a
+            href={link?.href || "#"}
+            target={link?.target}
+            rel={link?.target === "_blank" ? "noopener noreferrer" : undefined}
+          >
             {buttonText}
             <ExternalLink className="w-4 h-4" />
           </a>

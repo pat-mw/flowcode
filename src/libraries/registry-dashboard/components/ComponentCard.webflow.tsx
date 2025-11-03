@@ -43,7 +43,7 @@ export function ComponentCardWrapper({
 export default declareComponent(ComponentCardWrapper, {
   name: 'Component Card',
   description: 'Individual component card for collection lists - displays component preview, name, category, and description',
-  group: 'Webcn Landing',
+  group: 'Registry Dashboard',
   props: {
     previewImage: props.Text({
       name: 'Preview Image URL',
