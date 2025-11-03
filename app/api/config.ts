@@ -4,6 +4,7 @@ export const ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://blogflow-three.vercel.app',
     'https://webcn-v1.webflow.io',
+    'https://flowcode-v1.webflow.io',
 ];
 
 export function isOriginAllowed(origin: string | null): boolean {
