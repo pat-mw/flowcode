@@ -187,7 +187,7 @@ export const blogDemoLibrary: LibraryConfig = {
 
   // Deployment configuration
   deploy: {
-    enabled: false, // Enable when ready for deployment
+    enabled: true, // Enable when ready for deployment
     workspaceToken: process.env.WEBFLOW_WORKSPACE_API_TOKEN,
   },
 };
