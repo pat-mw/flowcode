@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Users, FileText, Lock, Database } from "lucide-react";
+import { ArrowRight, Users, FileText, Lock } from "lucide-react";
 
 export interface DemoSectionProps {
   badgeText?: string;
@@ -13,6 +13,18 @@ export interface DemoSectionProps {
   ctaLink?: { href: string; target?: string } | string;
   showBadge?: boolean;
   tagline?: string;
+
+  // Feature 1: User Authentication
+  feature1Title?: string;
+  feature1Description?: string;
+
+  // Feature 2: Blog Post Management
+  feature2Title?: string;
+  feature2Description?: string;
+
+  // Feature 3: Secure & Private
+  feature3Title?: string;
+  feature3Description?: string;
 }
 
 const DemoSection = ({
@@ -25,6 +37,14 @@ const DemoSection = ({
   ctaLink = "/demo",
   showBadge = true,
   tagline = "No external services. No API keys. No deployment hassles. Just pure Webflow.",
+
+  // Feature props with defaults
+  feature1Title = "User Authentication",
+  feature1Description = "Complete auth flow with registration, login, and session management",
+  feature2Title = "Blog Post Management",
+  feature2Description = "Create, edit, and publish posts with rich text editing",
+  feature3Title = "Secure & Private",
+  feature3Description = "Row-level security and user permissions built-in",
 }: DemoSectionProps) => {
   // Extract href and target from ctaLink (could be string or Link object)
   const linkHref = typeof ctaLink === 'string' ? ctaLink : ctaLink?.href || '/demo';
@@ -70,9 +90,9 @@ const DemoSection = ({
                       <Users className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">User Authentication</h4>
+                      <h4 className="font-semibold mb-1">{feature1Title}</h4>
                       <p className="text-sm text-muted-foreground">
-                        Complete auth flow with registration, login, and session management
+                        {feature1Description}
                       </p>
                     </div>
                   </div>
@@ -82,21 +102,9 @@ const DemoSection = ({
                       <FileText className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Blog Post Management</h4>
+                      <h4 className="font-semibold mb-1">{feature2Title}</h4>
                       <p className="text-sm text-muted-foreground">
-                        Create, edit, and publish posts with rich text editing
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Database className="w-4 h-4 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold mb-1">Real-time Database</h4>
-                      <p className="text-sm text-muted-foreground">
-                        All data persisted and synced in real-time
+                        {feature2Description}
                       </p>
                     </div>
                   </div>
@@ -106,9 +114,9 @@ const DemoSection = ({
                       <Lock className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-semibold mb-1">Secure & Private</h4>
+                      <h4 className="font-semibold mb-1">{feature3Title}</h4>
                       <p className="text-sm text-muted-foreground">
-                        Row-level security and user permissions built-in
+                        {feature3Description}
                       </p>
                     </div>
                   </div>
