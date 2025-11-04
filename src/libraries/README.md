@@ -17,11 +17,15 @@ A multi-library system for managing Webflow Code Components with independent bun
 
 Components are organized into independent libraries by purpose:
 
-| Library | Purpose | Components | Status |
-|---------|---------|------------|--------|
-| **core** | Authentication, posts, navigation | LoginForm, PostEditor, Navigation, Dashboard | ✅ 12MB / 15MB |
-| **analytics** | Charts and metrics | ChartTest (~2.2MB with recharts) | 🟡 Enabled |
-| **interactive** | 3D models and experiences | Lanyard (~13MB with Three.js) | ⚪ Optional |
+| Library | Purpose | Key Components | Status |
+|---------|---------|----------------|--------|
+| **core** | Authentication, posts, navigation | LoginForm, RegistrationForm, PostEditor, Navigation, Dashboard | ✅ Deployed |
+| **analytics** | Charts and metrics | ChartTest, PieChart, BarChart | ✅ Deployed |
+| **interactive** | 3D models and experiences | Lanyard, RedSlider, BlueSlider | ✅ Deployed |
+| **webcn** | Landing page components | Navbar, Hero, Features, Footer | ✅ Deployed |
+| **waitlist** | Waitlist capture and admin | WaitlistCapture, WaitlistAdmin | ✅ Deployed |
+| **registryDashboard** | Component registry viewer | LibraryViewer, ComponentGrid | ✅ Deployed |
+| **blogDemo** | Blog demo components | PublicPostsList, ProfileEditor | ✅ Deployed |
 
 Each library:
 - Has its own bundle with independent size limit
@@ -216,10 +220,10 @@ All building and deployment happens automatically via GitHub Actions. **You don'
    - ❌ **PR check fails** if any library exceeds size limit
 
 **On merge to main:**
-- **Auto-Deployment** (coming soon):
+- **Auto-Deployment** (`.github/workflows/webflow-deploy-all.yml`):
   - Detects which libraries have `deploy.enabled: true`
-  - Deploys only those libraries to Webflow
-  - Runs in parallel for faster deployments
+  - Deploys all enabled libraries to Webflow
+  - Runs in parallel (up to 3 concurrent deployments) for faster delivery
 
 ### Current Status
 
@@ -227,11 +231,12 @@ All building and deployment happens automatically via GitHub Actions. **You don'
 - Automatic PR validation
 - Bundle size enforcement
 - Build error detection
-
-🚧 **Coming Soon (TODO):**
-- Parallel library builds (faster CI)
 - Automatic deployment on merge to main
+- Parallel library deployments (up to 3 concurrent)
+
+🚧 **Future Improvements:**
 - Per-library change detection (build only what changed)
+- Smarter deployment (only deploy changed libraries)
 
 ### Configuration
 

@@ -181,13 +181,15 @@ flowcode/
 │   ├── api/orpc/            # oRPC API routes
 │   ├── globals.css          # Global styles (imported by Webflow components)
 │   └── page.tsx             # Home page
-├── src/libraries/           # Multi-library architecture (see below)
+├── src/libraries/           # Multi-library architecture
+│   ├── README.md           # 📚 Library system documentation (START HERE)
 │   ├── core/               # Flowcode Core library
 │   ├── analytics/          # Flowcode Analytics library
 │   ├── blogDemo/           # BlogFlow Demo library
-│   ├── registry/           # Component Registry Dashboard
+│   ├── registryDashboard/  # Component Registry Dashboard
 │   ├── webcn/              # webcn Landing Page library
-│   └── index.ts            # Library registry and deployment config
+│   ├── waitlist/           # Waitlist capture library
+│   └── registry.config.ts  # Library registry and deployment config
 ├── components/              # Shared React components
 │   └── ui/                 # shadcn/ui component library
 ├── lib/
@@ -212,6 +214,8 @@ flowcode/
 
 ### src/libraries/ Structure
 
+**📚 For detailed documentation on the multi-library system, see [src/libraries/README.md](./src/libraries/README.md)**
+
 Each library is a self-contained Code Components package:
 
 ```
@@ -219,16 +223,23 @@ src/libraries/<library-key>/
 ├── components/              # Library-specific components
 │   ├── *.tsx               # Component implementations
 │   └── *.webflow.tsx       # Webflow wrappers
-├── index.ts                # Library exports and metadata
+├── index.ts                # Library configuration (LibraryConfig)
 ├── webflow.json            # Generated manifest (auto-created)
-└── README.md              # Library documentation
+└── README.md              # Library-specific documentation (optional)
 ```
 
-**Library Registry** (`src/libraries/index.ts`):
+**Library Registry** (`src/libraries/registry.config.ts`):
 - Central configuration for all libraries
 - Controls deployment via `deploy.enabled` flag
-- Defines library metadata (name, ID, description, icon, etc.)
+- Defines library metadata (name, ID, description, etc.)
 - Used by CI/CD to detect deployable libraries
+
+**Key Features:**
+- ✅ Independent bundle size limits (~15MB per library)
+- ✅ Automated CI/CD deployment on merge to main
+- ✅ Parallel library builds and deployments
+- ✅ Convention-based component discovery
+- ✅ Type-safe configuration with TypeScript
 
 ## CI/CD Pipeline
 
@@ -276,9 +287,11 @@ Automatically deploys all enabled libraries in parallel when changes are pushed 
 
 ## Library Management
 
+**📚 See [src/libraries/README.md](./src/libraries/README.md) for complete library system documentation.**
+
 ### Enable/Disable Library Deployment
 
-Edit `src/libraries/index.ts`:
+Edit `src/libraries/registry.config.ts`:
 
 ```typescript
 export const libraries = {
@@ -529,13 +542,13 @@ pnpm library:build <library-key>
 
 ## Documentation
 
-Comprehensive documentation is available in the `./docs` folder:
+Comprehensive documentation is coming soon. Current documentation includes:
 
-- **[Architecture Guide](./docs/webflow-nextjs-architecture.md)** - Full system design
-- **[Sitemap](./docs/sitemap.md)** - All pages, routes, and components
-- **[oRPC React Query Guide](./docs/orpc-react-query-correct.md)** - API patterns
-- **[Webflow Routing Guide](./docs/webflow-routing-guide.md)** - Navigation strategies
-- **[Local Development](./docs/webflow-local-development.md)** - Bundling and debugging
+- **[QUICKSTART.md](./QUICKSTART.md)** - Detailed setup guide
+- **[CLAUDE.md](./CLAUDE.md)** - Development guidelines for AI assistants
+- **env.example** - Environment variable reference
+
+For questions about specific features, check the code comments or open a GitHub issue.
 
 ## License
 
@@ -543,7 +556,7 @@ MIT
 
 ## Support
 
-- **Documentation:** Check `./docs` for detailed guides
+- **Documentation:** See [QUICKSTART.md](./QUICKSTART.md) for setup guide
 - **Issues:** Open an issue on GitHub
 - **Discussions:** Use GitHub Discussions for questions
 
