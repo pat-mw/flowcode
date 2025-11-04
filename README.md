@@ -2,6 +2,14 @@
 
 A **multi-library Webflow Code Components system** with a **Next.js backend** for authenticated workflows, component registry management, and real-time CMS synchronization.
 
+### Quick Links
+
+Both of the following sites are built using components from this repo:
+
+- [Flowcode](https://flowcode-v1.webflow.io)
+- [BlogFlow](https://blogflow-v1.webflow.io)
+
+
 ## Overview
 
 Flowcode demonstrates a modern approach to building reusable, production-ready Webflow Code Components across multiple libraries. The project combines Webflow's visual design capabilities with a powerful server-side infrastructure for authentication, data management, and automated deployments.
