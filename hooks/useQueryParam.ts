@@ -2,11 +2,14 @@
  * useQueryParam Hook
  * Read query parameters from URL
  * Essential for Webflow routing (uses query params instead of dynamic segments)
+ *
+ * IMPORTANT: Uses browser-native URLSearchParams for Shadow DOM compatibility
+ * Works in both Next.js and Webflow Code Components
  */
 
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
 
 /**
  * Get a query parameter value from the URL
@@ -18,8 +21,13 @@ import { useSearchParams } from 'next/navigation';
  * const postId = useQueryParam('post'); // Returns '123'
  */
 export function useQueryParam(key: string): string | null {
-  const searchParams = useSearchParams();
-  return searchParams.get(key);
+  return useMemo(() => {
+    // Use browser-native URLSearchParams for Shadow DOM compatibility
+    if (typeof window === 'undefined') return null;
+
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  }, [key]);
 }
 
 /**
@@ -31,12 +39,17 @@ export function useQueryParam(key: string): string | null {
  * const params = useQueryParams(); // Returns { status: 'draft', search: 'hello' }
  */
 export function useQueryParams(): Record<string, string> {
-  const searchParams = useSearchParams();
-  const params: Record<string, string> = {};
+  return useMemo(() => {
+    // Use browser-native URLSearchParams for Shadow DOM compatibility
+    if (typeof window === 'undefined') return {};
 
-  searchParams.forEach((value, key) => {
-    params[key] = value;
-  });
+    const searchParams = new URLSearchParams(window.location.search);
+    const params: Record<string, string> = {};
 
-  return params;
+    searchParams.forEach((value, key) => {
+      params[key] = value;
+    });
+
+    return params;
+  }, []);
 }

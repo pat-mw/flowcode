@@ -5,6 +5,7 @@ import { interactiveLibrary } from "./interactive";
 import { webcnLibrary } from "./webcn";
 import { waitlistLibrary } from "./waitlist/config";
 import { registryDashboardLibrary } from "./registryDashboard";
+import { blogDemoLibrary } from "./blogDemo";
 
 export const libraries = defineLibraries({
   core: coreLibrary,
@@ -13,6 +14,7 @@ export const libraries = defineLibraries({
   webcn: webcnLibrary,
   waitlist: waitlistLibrary,
   registryDashboard: registryDashboardLibrary,
+  blogDemo: blogDemoLibrary,
 });
 
 // Export type for use in scripts

@@ -269,7 +269,7 @@ const ComponentGrid = ({
                     href={componentUrl}
                     className="block"
                   >
-                    <Card className="group relative overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full">
+                    <Card className="group relative overflow-hidden bg-card border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full flex flex-col">
                       {/* Preview Area - Only show if image exists */}
                       {hasPreviewImage && (
                         <div className="aspect-video bg-muted/30 border-b border-border flex items-center justify-center relative overflow-hidden">
@@ -283,40 +283,42 @@ const ComponentGrid = ({
                       )}
 
                       {/* Content */}
-                      <div className={hasPreviewImage ? "p-6 space-y-3" : "p-5 space-y-2.5"}>
-                        <div className="flex items-start justify-between gap-2">
-                          <h4 className={`font-semibold text-foreground group-hover:text-primary transition-colors ${
-                            hasPreviewImage ? "text-xl" : "text-lg"
-                          }`}>
-                            <HighlightedText text={component.name} highlight={searchQuery} />
-                          </h4>
-                          <Badge
-                            variant="secondary"
-                            className="bg-secondary text-secondary-foreground shrink-0 text-xs"
-                          >
-                            {component.category || group.libraryKey}
-                          </Badge>
+                      <div className={`flex flex-col flex-1 ${hasPreviewImage ? "p-6" : "p-5"}`}>
+                        <div className="flex-1 space-y-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className={`font-semibold text-foreground group-hover:text-primary transition-colors ${
+                              hasPreviewImage ? "text-xl" : "text-lg"
+                            }`}>
+                              <HighlightedText text={component.name} highlight={searchQuery} />
+                            </h4>
+                            <Badge
+                              variant="secondary"
+                              className="bg-secondary text-secondary-foreground shrink-0 text-xs"
+                            >
+                              {component.category || group.libraryKey}
+                            </Badge>
+                          </div>
+
+                          <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+                            <HighlightedText text={component.description || ""} highlight={searchQuery} />
+                          </p>
+
+                          {/* Tags */}
+                          {component.tags && component.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 pt-1">
+                              {component.tags.slice(0, 3).map((tag) => (
+                                <span
+                                  key={tag}
+                                  className="text-xs bg-muted px-2 py-0.5 rounded"
+                                >
+                                  <HighlightedText text={tag} highlight={searchQuery} />
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
 
-                        <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
-                          <HighlightedText text={component.description || ""} highlight={searchQuery} />
-                        </p>
-
-                        {/* Tags */}
-                        {component.tags && component.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 pt-1">
-                            {component.tags.slice(0, 3).map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-xs bg-muted px-2 py-0.5 rounded"
-                              >
-                                <HighlightedText text={tag} highlight={searchQuery} />
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <div className="pt-2">
+                        <div className="mt-4">
                           <Button
                             variant="secondary"
                             size="sm"

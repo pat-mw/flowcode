@@ -9,35 +9,45 @@ import { publicProcedure, protectedProcedure } from '../procedures';
 import { db, people } from '@/lib/db';
 import { eq } from 'drizzle-orm';
 import type { Context } from '../context';
+import { getOrCreatePerson } from '../helpers/getOrCreatePerson';
 
 const getByUserId = publicProcedure
   .input(z.object({
     userId: z.string(),
   }))
   .handler(async ({ input }) => {
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, input.userId),
-    });
-
-    if (!person) {
-      throw new Error('Person profile not found');
-    }
-
+    // Get or create person (handles new users gracefully)
+    const person = await getOrCreatePerson(input.userId);
     return person;
   });
 
 const getMe = protectedProcedure
   .handler(async ({ context }) => {
     const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
+
+    console.log('[people.getMe] Starting handler');
+    console.log('[people.getMe] Context:', {
+      userId: ctx.userId,
+      session: ctx.session,
     });
 
-    if (!person) {
-      throw new Error('Person profile not found');
+    if (!ctx.userId) {
+      console.log('[people.getMe] ERROR: No userId in context');
+      throw new Error('User ID not found in context');
     }
 
-    return person;
+    console.log('[people.getMe] Using shared getOrCreatePerson helper');
+
+    try {
+      // Use shared helper that implements "get or create" logic
+      const person = await getOrCreatePerson(ctx.userId);
+
+      console.log('[people.getMe] Success - returning person');
+      return person;
+    } catch (error) {
+      console.log('[people.getMe] Database error:', error);
+      throw error;
+    }
   });
 
 const updateProcedure = protectedProcedure
@@ -49,13 +59,9 @@ const updateProcedure = protectedProcedure
   }))
   .handler(async ({ input, context }) => {
     const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
-    });
 
-    if (!person) {
-      throw new Error('Person profile not found');
-    }
+    // Get or create person (handles new users gracefully)
+    const person = await getOrCreatePerson(ctx.userId!);
 
     const updateData: Record<string, unknown> = {
       updatedAt: new Date(),

@@ -32,7 +32,7 @@ const client = postgres(connectionString, {
   prepare: false, // Disable prepared statements for transaction pooling mode
 });
 
-// Initialize Drizzle ORM
+// Initialize Drizzle ORM with schema including relations
 export const db = drizzle(client, {
   schema: {
     ...usersSchema,

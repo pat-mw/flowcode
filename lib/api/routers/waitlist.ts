@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { os } from '@orpc/server';
 import { publicProcedure, protectedProcedure } from '../procedures';
 import { db, waitlist } from '@/lib/db';
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 /**

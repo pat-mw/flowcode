@@ -8,6 +8,8 @@
 import * as React from 'react';
 import { useAuthStore } from '@/lib/stores/authStore';
 import { signOut } from '@/lib/auth/client';
+import { useQuery } from '@tanstack/react-query';
+import { orpc } from '@/lib/orpc-client';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -26,6 +28,29 @@ interface DashboardProps {
 export default function Dashboard({ showLogout = true }: DashboardProps) {
   const { user, person, isAuthenticated, clearAuth } = useAuthStore();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+
+  // Fetch user's posts to calculate stats - only when authenticated
+  const { data: posts, isLoading: postsLoading, error: postsError } = useQuery({
+    ...orpc.posts.list.queryOptions({
+      input: {
+        limit: 1000, // Get all posts for stats
+        offset: 0,
+      },
+    }),
+    enabled: isAuthenticated && !!user, // Only fetch when authenticated
+  });
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('[Dashboard] Posts query state:', {
+      isAuthenticated,
+      hasUser: !!user,
+      postsLoading,
+      postsError: postsError?.message,
+      postsCount: posts?.length,
+      posts: posts,
+    });
+  }, [isAuthenticated, user, postsLoading, postsError, posts]);
 
   const handleLogout = async () => {
     try {
@@ -56,7 +81,7 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
             Please log in to access your dashboard.
           </p>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex justify-center">
           <Button asChild>
             <a href="/auth/login">Go to Login</a>
           </Button>
@@ -147,7 +172,7 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
       </Card>
 
       {/* Quick Stats Card */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Quick Stats</CardTitle>
           <CardDescription>Your activity summary</CardDescription>
@@ -155,16 +180,16 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground">Posts</div>
+              <div className="text-2xl font-bold">{publishedCount}</div>
+              <div className="text-sm text-muted-foreground">Published</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{draftCount}</div>
               <div className="text-sm text-muted-foreground">Drafts</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold">0</div>
-              <div className="text-sm text-muted-foreground">Views</div>
+              <div className="text-2xl font-bold">{totalPosts}</div>
+              <div className="text-sm text-muted-foreground">Total Posts</div>
             </div>
           </div>
         </CardContent>
@@ -173,7 +198,7 @@ export default function Dashboard({ showLogout = true }: DashboardProps) {
             <a href="/dashboard/posts">View All Posts</a>
           </Button>
         </CardFooter>
-      </Card>
+      </Card> */}
 
       {/* Actions Card */}
       <Card>

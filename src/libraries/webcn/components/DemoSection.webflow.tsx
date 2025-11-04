@@ -18,7 +18,9 @@ export function DemoSectionWrapper({
   demoTitle,
   demoDescription,
   ctaButtonText,
+  ctaLink,
   showBadge,
+  tagline,
 }: DemoSectionProps) {
   return (
     <WebflowProvidersWrapper>
@@ -29,7 +31,9 @@ export function DemoSectionWrapper({
         demoTitle={demoTitle}
         demoDescription={demoDescription}
         ctaButtonText={ctaButtonText}
+        ctaLink={ctaLink}
         showBadge={showBadge}
+        tagline={tagline}
       />
     </WebflowProvidersWrapper>
   );
@@ -70,10 +74,19 @@ export default declareComponent(DemoSectionWrapper, {
       defaultValue: 'Try blogflow Demo',
       tooltip: 'Text for the call-to-action button',
     }),
+    ctaLink: props.Link({
+      name: 'CTA Button Link',
+      tooltip: 'Link for the call-to-action button',
+    }),
     showBadge: props.Boolean({
       name: 'Show Badge',
       defaultValue: true,
       tooltip: 'Toggle visibility of the badge',
+    }),
+    tagline: props.Text({
+      name: 'Tagline',
+      defaultValue: 'No external services. No API keys. No deployment hassles. Just pure Webflow.',
+      tooltip: 'Bottom tagline text displayed below the demo card',
     }),
   },
 });
