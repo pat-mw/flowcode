@@ -21,6 +21,12 @@ export function DemoSectionWrapper({
   ctaLink,
   showBadge,
   tagline,
+  feature1Title,
+  feature1Description,
+  feature2Title,
+  feature2Description,
+  feature3Title,
+  feature3Description,
 }: DemoSectionProps) {
   return (
     <WebflowProvidersWrapper>
@@ -34,6 +40,12 @@ export function DemoSectionWrapper({
         ctaLink={ctaLink}
         showBadge={showBadge}
         tagline={tagline}
+        feature1Title={feature1Title}
+        feature1Description={feature1Description}
+        feature2Title={feature2Title}
+        feature2Description={feature2Description}
+        feature3Title={feature3Title}
+        feature3Description={feature3Description}
       />
     </WebflowProvidersWrapper>
   );
@@ -87,6 +99,42 @@ export default declareComponent(DemoSectionWrapper, {
       name: 'Tagline',
       defaultValue: 'No external services. No API keys. No deployment hassles. Just pure Webflow.',
       tooltip: 'Bottom tagline text displayed below the demo card',
+    }),
+
+    // Feature 1 props
+    feature1Title: props.Text({
+      name: 'Feature 1 Title',
+      defaultValue: 'User Authentication',
+      tooltip: 'Title for the first feature (with Users icon)',
+    }),
+    feature1Description: props.Text({
+      name: 'Feature 1 Description',
+      defaultValue: 'Complete auth flow with registration, login, and session management',
+      tooltip: 'Description for the first feature',
+    }),
+
+    // Feature 2 props
+    feature2Title: props.Text({
+      name: 'Feature 2 Title',
+      defaultValue: 'Blog Post Management',
+      tooltip: 'Title for the second feature (with FileText icon)',
+    }),
+    feature2Description: props.Text({
+      name: 'Feature 2 Description',
+      defaultValue: 'Create, edit, and publish posts with rich text editing',
+      tooltip: 'Description for the second feature',
+    }),
+
+    // Feature 3 props
+    feature3Title: props.Text({
+      name: 'Feature 3 Title',
+      defaultValue: 'Secure & Private',
+      tooltip: 'Title for the third feature (with Lock icon)',
+    }),
+    feature3Description: props.Text({
+      name: 'Feature 3 Description',
+      defaultValue: 'Row-level security and user permissions built-in',
+      tooltip: 'Description for the third feature',
     }),
   },
 });
