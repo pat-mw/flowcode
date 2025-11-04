@@ -6,10 +6,11 @@
 import { z } from 'zod';
 import { os } from '@orpc/server';
 import { publicProcedure, protectedProcedure } from '../procedures';
-import { db, posts, people } from '@/lib/db';
+import { db, posts } from '@/lib/db';
 import { eq, and, desc, or, ilike } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 import type { Context } from '../context';
+import { getOrCreatePerson } from '../helpers/getOrCreatePerson';
 
 // Helper function to generate URL-safe slug
 function generateSlug(title: string): string {
@@ -50,13 +51,18 @@ const list = protectedProcedure
   }))
   .handler(async ({ input, context }) => {
     const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
-    });
 
-    if (!person) {
-      throw new Error('Person profile not found');
-    }
+    console.log('[posts.list] Starting handler');
+    console.log('[posts.list] Input:', input);
+    console.log('[posts.list] UserId:', ctx.userId);
+
+    // Get or create person (handles new users gracefully)
+    const person = await getOrCreatePerson(ctx.userId!);
+
+    console.log('[posts.list] Person found:', {
+      personId: person.id,
+      displayName: person.displayName,
+    });
 
     const conditions = [eq(posts.authorId, person.id)];
 
@@ -74,11 +80,18 @@ const list = protectedProcedure
       }
     }
 
+    console.log('[posts.list] Querying posts with authorId:', person.id);
+
     const postsList = await db.query.posts.findMany({
       where: and(...conditions),
       orderBy: [desc(posts.updatedAt)],
       limit: input.limit,
       offset: input.offset,
+    });
+
+    console.log('[posts.list] Found posts:', {
+      count: postsList.length,
+      posts: postsList.map(p => ({ id: p.id, title: p.title, status: p.status })),
     });
 
     return postsList;
@@ -91,13 +104,9 @@ const getById = protectedProcedure
   }))
   .handler(async ({ input, context }) => {
     const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
-    });
 
-    if (!person) {
-      throw new Error('Person profile not found');
-    }
+    // Get or create person (handles new users gracefully)
+    const person = await getOrCreatePerson(ctx.userId!);
 
     const post = await db.query.posts.findFirst({
       where: and(
@@ -134,16 +143,10 @@ const create = protectedProcedure
       const ctx = context as Context;
       console.log('[posts.create] Context:', { userId: ctx.userId, hasSession: !!ctx.session });
 
-      const person = await db.query.people.findFirst({
-        where: eq(people.userId, ctx.userId!),
-      });
+      // Get or create person (handles new users gracefully)
+      const person = await getOrCreatePerson(ctx.userId!);
 
       console.log('[posts.create] Person lookup:', { found: !!person, personId: person?.id });
-
-      if (!person) {
-        console.error('[posts.create] ERROR: Person profile not found for userId:', ctx.userId);
-        throw new Error('Person profile not found');
-      }
 
       const slug = await generateUniqueSlug(input.title);
       const id = nanoid();
@@ -186,13 +189,9 @@ const update = protectedProcedure
   }))
   .handler(async ({ input, context }) => {
     const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
-    });
 
-    if (!person) {
-      throw new Error('Person profile not found');
-    }
+    // Get or create person (handles new users gracefully)
+    const person = await getOrCreatePerson(ctx.userId!);
 
     const existingPost = await db.query.posts.findFirst({
       where: and(
@@ -232,13 +231,9 @@ const deleteProcedure = protectedProcedure
   }))
   .handler(async ({ input, context }) => {
     const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
-    });
 
-    if (!person) {
-      throw new Error('Person profile not found');
-    }
+    // Get or create person (handles new users gracefully)
+    const person = await getOrCreatePerson(ctx.userId!);
 
     const existingPost = await db.query.posts.findFirst({
       where: and(
@@ -263,13 +258,9 @@ const publish = protectedProcedure
   }))
   .handler(async ({ input, context }) => {
     const ctx = context as Context;
-    const person = await db.query.people.findFirst({
-      where: eq(people.userId, ctx.userId!),
-    });
 
-    if (!person) {
-      throw new Error('Person profile not found');
-    }
+    // Get or create person (handles new users gracefully)
+    const person = await getOrCreatePerson(ctx.userId!);
 
     const post = await db.query.posts.findFirst({
       where: and(
@@ -327,6 +318,29 @@ const publicList = publicProcedure
     return postsList;
   });
 
+// Public get post by ID (for published posts only)
+const publicGetById = publicProcedure
+  .input(z.object({
+    id: z.string(),
+  }))
+  .handler(async ({ input }) => {
+    const post = await db.query.posts.findFirst({
+      where: and(
+        eq(posts.id, input.id),
+        eq(posts.status, 'published')
+      ),
+      with: {
+        author: true,
+      },
+    });
+
+    if (!post) {
+      throw new Error('Post not found or not published');
+    }
+
+    return post;
+  });
+
 export const postsRouter = os.router({
   list,
   getById,
@@ -335,4 +349,5 @@ export const postsRouter = os.router({
   delete: deleteProcedure,
   publish,
   publicList,
+  publicGetById,
 });

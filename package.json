@@ -12,11 +12,11 @@
     "theme:generate": "node lib/styles/scripts/generate-theme-webflow.js",
     "theme:generate:light": "node lib/styles/scripts/generate-theme-webflow.js --light",
     "theme:generate:dark": "node lib/styles/scripts/generate-theme-webflow.js --dark",
-    "webflow:share": "NEXT_PUBLIC_API_URL=https://blogflow-three.vercel.app NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false npx webflow library share --no-input",
-    "webflow:bundle": "NEXT_PUBLIC_API_URL=https://blogflow-three.vercel.app NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false npx webflow library bundle --public-path http://localhost:4000/ --dev && npx serve dist -p 4000",
+    "webflow:share": "npx webflow library share --no-input",
+    "webflow:bundle": "npx webflow library bundle --public-path http://localhost:4000/ --dev",
     "webflow:bundle:ci": "npx webflow library bundle --public-path http://localhost:4000/",
-    "webflow:bundle:debug": "NEXT_PUBLIC_API_URL=https://blogflow-three.vercel.app NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false npx webflow library bundle --public-path http://localhost:4000/ --dev --debug-bundler && npx serve dist -p 4000",
-    "webflow:bundle:size": "du -sh dist/ && echo '\nDetailed sizes:' && du -h dist/Client/ | sort -h",
+    "webflow:bundle:debug": "npx webflow library bundle --public-path http://localhost:4000/ --dev --debug-bundler",
+    "webflow:bundle:size": "du -sh dist/ && echo '\nDetailed sizes:' && du -h dist/ | sort -h",
     "library:manifests": "tsx scripts/generate-manifests.ts",
     "library:build": "tsx scripts/build-library.ts",
     "library:build:all": "tsx scripts/build-all-libraries.ts",
@@ -117,6 +117,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "tw-animate-css": "^1.4.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "webpack": "^5.102.1"
   }
 }

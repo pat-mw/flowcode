@@ -1,22 +1,22 @@
-# BlogFlow
+# Flowcode
 
-A full-stack blog platform combining **Webflow Code Components** with a **Next.js backend** for authenticated blog post management and real-time CMS synchronization.
+A **multi-library Webflow Code Components system** with a **Next.js backend** for authenticated workflows, component registry management, and real-time CMS synchronization.
 
 ## Overview
 
-BlogFlow demonstrates a modern approach to building interactive web applications using Webflow's visual design capabilities alongside a powerful server-side infrastructure. Authors can create and manage blog posts through a rich editing interface, while readers enjoy a beautifully designed, CMS-powered blog experience.
+Flowcode demonstrates a modern approach to building reusable, production-ready Webflow Code Components across multiple libraries. The project combines Webflow's visual design capabilities with a powerful server-side infrastructure for authentication, data management, and automated deployments.
 
 ### Key Features
 
+- ✅ **Multi-Library Architecture** - Organized component libraries (Core, Analytics, BlogFlow Demo, Component Registry)
+- ✅ **Automated CI/CD** - Parallel library deployments via GitHub Actions
 - ✅ **User Authentication** - Secure login and registration with Better Auth
-- ✅ **Rich Text Editor** - Tiptap/Lexical editor with full formatting support
-- ✅ **Blog Post Management** - Create, edit, delete, and publish posts
-- ✅ **Draft System** - Save drafts and publish when ready
-- ✅ **CMS Synchronization** - Automatic publishing to Webflow CMS
-- ✅ **Interactive Map** - Global map showing post locations
-- ✅ **Responsive Design** - Works seamlessly across all devices
 - ✅ **Type-Safe API** - End-to-end type safety with oRPC
+- ✅ **Component Registry** - Browse, preview, and deploy components
+- ✅ **Rich Text Editor** - Tiptap editor with full formatting support
+- ✅ **CMS Synchronization** - Automatic publishing to Webflow CMS
 - ✅ **Real-Time Updates** - React Query for optimistic UI updates
+- ✅ **Responsive Design** - Works seamlessly across all devices
 
 ## Tech Stack
 
@@ -27,46 +27,52 @@ BlogFlow demonstrates a modern approach to building interactive web applications
 - **Tiptap** - Rich text editing
 - **Tailwind CSS v4** - Styling with shadcn/ui components
 - **oRPC Client** - Type-safe API calls
+- **React Three Fiber** - 3D graphics and animations
 
 ### Backend (Next.js)
 - **Next.js 15** with App Router and Turbopack
 - **oRPC** - Type-safe API layer with OpenAPI support
 - **Better Auth** - Authentication with session management
 - **Drizzle ORM** - Type-safe database queries
-- **PostgreSQL** - Primary database
+- **PostgreSQL** - Primary database (Neon/Vercel Postgres)
 - **Webflow API SDK** - CMS synchronization
 - **Zod** - Schema validation
 
 ### DevOps
 - **Vercel** - Next.js backend deployment
 - **Webflow CLI** - Code Components deployment
+- **GitHub Actions** - Automated library deployments
 - **pnpm** - Fast, disk-efficient package manager
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    WEBFLOW SITE                              │
+│                  WEBFLOW SITE                                │
 │  ┌────────────────────────────────────────────────────┐    │
-│  │  Code Components (Shadow DOM)                       │    │
-│  │  - LoginForm, PostEditor, PostsList, Dashboard      │    │
-│  │  - Zustand stores (cross-component state)           │    │
-│  │  - TanStack Query (data fetching)                   │    │
+│  │  Multi-Library Code Components (Shadow DOM)         │    │
+│  │  - Flowcode Core (Auth, Navigation, etc.)          │    │
+│  │  - Flowcode Analytics (Charts, Metrics)            │    │
+│  │  - BlogFlow Demo (Posts, Editor)                   │    │
+│  │  - Component Registry Dashboard                    │    │
+│  │  - webcn Landing Page                              │    │
 │  └─────────────────────┬──────────────────────────────┘    │
 └────────────────────────┼─────────────────────────────────────┘
                          │ HTTPS (oRPC)
                          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                  NEXT.JS API (Vercel)                        │
+│              NEXT.JS API (Vercel)                            │
 │  ┌────────────────────────────────────────────────────┐    │
 │  │  oRPC Router                                        │    │
 │  │  - Auth procedures (login, register, session)      │    │
 │  │  - Posts procedures (CRUD, publish)                │    │
+│  │  - People procedures (profile management)          │    │
+│  │  - Waitlist procedures (email collection)         │    │
 │  └─────────────────────┬──────────────────────────────┘    │
 │                        │                                     │
 │  ┌─────────────────────▼──────────────────────────────┐    │
 │  │  Better Auth + Drizzle ORM + PostgreSQL            │    │
-│  │  Tables: users, sessions, posts, people            │    │
+│  │  Tables: users, sessions, posts, people, waitlist  │    │
 │  └─────────────────────┬──────────────────────────────┘    │
 └────────────────────────┼─────────────────────────────────────┘
                          │ Publish
@@ -77,11 +83,11 @@ BlogFlow demonstrates a modern approach to building interactive web applications
                 └─────────────────────┘
 ```
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - pnpm 8+
 - PostgreSQL database (Neon or Vercel Postgres)
 - Webflow account with Code Components access
@@ -90,8 +96,8 @@ BlogFlow demonstrates a modern approach to building interactive web applications
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/blogflow.git
-   cd blogflow
+   git clone https://github.com/yourusername/flowcode.git
+   cd flowcode
    ```
 
 2. **Install dependencies**
@@ -107,7 +113,7 @@ BlogFlow demonstrates a modern approach to building interactive web applications
    ```
 
    Required variables:
-   ```
+   ```env
    # Webflow
    WEBFLOW_WORKSPACE_API_TOKEN=ws-xxxxx...
 
@@ -124,17 +130,12 @@ BlogFlow demonstrates a modern approach to building interactive web applications
 
 4. **Set up the database**
    ```bash
-   pnpm drizzle-kit push
+   pnpm db:push
    ```
 
 5. **Start development server**
    ```bash
    pnpm dev
-   ```
-
-6. **Deploy Webflow components** (optional)
-   ```bash
-   pnpm webflow:share
    ```
 
 Visit [http://localhost:3000](http://localhost:3000) to see the application.
@@ -150,58 +151,196 @@ pnpm start            # Start production server
 # Code Quality
 pnpm lint             # Run ESLint
 
-# Webflow
-pnpm webflow:share    # Deploy Code Components to Webflow
+# Webflow Libraries
+pnpm library:list           # List all libraries and their deployment status
+pnpm library:manifests      # Generate webflow.json manifests for all libraries
+pnpm library:build <key>    # Build a specific library
+pnpm library:build:all      # Build all deployable libraries
+
+# Webflow CLI (Legacy - prefer GitHub Actions for deployment)
+pnpm webflow:share          # Deploy components to Webflow
+pnpm webflow:bundle         # Bundle components locally for testing
 
 # Database
-pnpm drizzle-kit push      # Push schema changes to database
-pnpm drizzle-kit studio    # Open Drizzle Studio (database GUI)
+pnpm db:generate      # Generate Drizzle migrations
+pnpm db:migrate       # Run migrations
+pnpm db:push          # Push schema changes to database
+pnpm db:studio        # Open Drizzle Studio (database GUI)
 ```
 
 ## Project Structure
 
 ```
-blogflow/
-├── app/                    # Next.js app router pages
-│   ├── api/orpc/          # oRPC API routes
-│   ├── globals.css        # Global styles (imported by Webflow components)
-│   └── page.tsx           # Home page
-├── src/
-│   └── components/        # Webflow Code Components
-│       ├── *.tsx          # Component implementations
-│       └── *.webflow.tsx  # Webflow wrappers
-├── components/            # Shared React components
-│   └── ui/               # shadcn/ui component library
+flowcode/
+├── .github/
+│   └── workflows/            # CI/CD pipelines
+│       ├── webflow-deploy-all.yml      # ✅ Production: Deploy all libraries
+│       ├── webflow-pr-check.yml        # 🚧 In Progress: PR validation
+│       └── webflow-deploy.yml          # 🚧 Legacy: Single library deploy
+├── app/                      # Next.js app router pages
+│   ├── api/orpc/            # oRPC API routes
+│   ├── globals.css          # Global styles (imported by Webflow components)
+│   └── page.tsx             # Home page
+├── src/libraries/           # Multi-library architecture (see below)
+│   ├── core/               # Flowcode Core library
+│   ├── analytics/          # Flowcode Analytics library
+│   ├── blogDemo/           # BlogFlow Demo library
+│   ├── registry/           # Component Registry Dashboard
+│   ├── webcn/              # webcn Landing Page library
+│   └── index.ts            # Library registry and deployment config
+├── components/              # Shared React components
+│   └── ui/                 # shadcn/ui component library
 ├── lib/
-│   ├── stores/           # Zustand state stores
-│   ├── orpc-client.ts    # oRPC client setup
-│   └── utils.ts          # Utility functions
+│   ├── api/                # oRPC backend
+│   │   ├── routers/       # API routers (auth, posts, people, waitlist)
+│   │   ├── procedures.ts  # Procedure definitions
+│   │   └── context.ts     # Request context
+│   ├── db/                # Database schema and migrations
+│   ├── stores/            # Zustand state stores
+│   ├── orpc-client.ts     # oRPC client setup
+│   └── utils.ts           # Utility functions
+├── scripts/               # Build and deployment scripts
+│   ├── generate-manifests.ts   # Generate webflow.json files
+│   ├── build-library.ts        # Build single library
+│   └── build-all-libraries.ts  # Build all libraries
 ├── hooks/                # Custom React hooks
 ├── docs/                 # Architecture documentation
-├── progress/             # Feature implementation progress
-├── .claude/
-│   └── agents/           # Custom Claude Code agents
 ├── CLAUDE.md            # Project guidance for Claude Code
-├── webflow.json         # Webflow CLI configuration
+├── webflow.json         # Root Webflow CLI configuration (unused in multi-lib)
 └── webpack.webflow.js   # Webpack config for Webflow bundling
 ```
 
-## Webflow Components
+### src/libraries/ Structure
 
-### Authentication
-- **LoginForm** - User login with email/password
-- **RegisterForm** - New user registration
+Each library is a self-contained Code Components package:
 
-### Blog Management
-- **PostEditor** - Rich text editor for creating/editing posts
-- **PostsList** - Filterable list of user's posts (drafts + published)
-- **Dashboard** - User dashboard overview
+```
+src/libraries/<library-key>/
+├── components/              # Library-specific components
+│   ├── *.tsx               # Component implementations
+│   └── *.webflow.tsx       # Webflow wrappers
+├── index.ts                # Library exports and metadata
+├── webflow.json            # Generated manifest (auto-created)
+└── README.md              # Library documentation
+```
 
-### Public Display
-- **FeaturedPosts** - Homepage featured posts grid
-- **GlobalMap** - Interactive map showing post locations
+**Library Registry** (`src/libraries/index.ts`):
+- Central configuration for all libraries
+- Controls deployment via `deploy.enabled` flag
+- Defines library metadata (name, ID, description, icon, etc.)
+- Used by CI/CD to detect deployable libraries
 
-## Key Patterns
+## CI/CD Pipeline
+
+### Production Workflow: Deploy All Libraries
+
+**File:** `.github/workflows/webflow-deploy-all.yml`
+
+Automatically deploys all enabled libraries in parallel when changes are pushed to `main`:
+
+**Triggers:**
+- Push to `main` branch with changes to `src/libraries/**/*`, `components/**/*`, or `scripts/**/*`
+- Manual trigger via `workflow_dispatch`
+
+**Process:**
+1. **Detect Deployable Libraries** - Scans `src/libraries/index.ts` for libraries with `deploy.enabled: true`
+2. **Parallel Deployment** - Deploys up to 3 libraries concurrently to avoid rate limits
+3. **Per-Library Steps:**
+   - Generate `webflow.json` manifest
+   - Build library with production environment variables
+   - Verify bundle contains production API URLs (not localhost)
+   - Deploy to Webflow via CLI
+4. **Deployment Summary** - Reports overall success/failure
+
+**Environment Variables:**
+- `WEBFLOW_WORKSPACE_API_TOKEN` - Required for deployment (stored in GitHub secrets)
+- `NEXT_PUBLIC_API_URL` - Production API endpoint (e.g., `https://flowcode-api.vercel.app`)
+- `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED` - OAuth configuration
+- `WEBFLOW_BUNDLE_SIZE_LIMIT_MB` - Bundle size limit (default: 15MB)
+
+**Example Output:**
+```
+✅ Detect Deployable Libraries (25s)
+✅ Deploy Flowcode Core (1m23s)
+✅ Deploy Flowcode Analytics (1m23s)
+✅ Deploy BlogFlow Demo (2m8s)
+✅ Deploy webcn Landing Page (1m38s)
+✅ Deploy Component Registry Dashboard (4m13s)
+✅ Deployment Summary
+```
+
+### Other Workflows (In Progress)
+
+- **webflow-pr-check.yml** - 🚧 Validates PR changes, checks bundle sizes, runs tests
+- **webflow-deploy.yml** - 🚧 Legacy single-library deployment (being phased out)
+
+## Library Management
+
+### Enable/Disable Library Deployment
+
+Edit `src/libraries/index.ts`:
+
+```typescript
+export const libraries = {
+  core: {
+    name: 'Flowcode Core',
+    id: 'flowcode-core',
+    deploy: {
+      enabled: true,  // ✅ Deploy this library
+    },
+    // ...
+  },
+  experimental: {
+    name: 'Experimental Features',
+    id: 'flowcode-experimental',
+    deploy: {
+      enabled: false,  // ❌ Skip this library
+    },
+    // ...
+  },
+};
+```
+
+### Create a New Library
+
+1. **Create library directory:**
+   ```bash
+   mkdir -p src/libraries/mylib/components
+   ```
+
+2. **Add library to registry** (`src/libraries/index.ts`):
+   ```typescript
+   export const libraries = {
+     // ... existing libraries
+     mylib: {
+       name: 'My Library',
+       id: 'my-library-unique-id',
+       description: 'Description of my library',
+       icon: '🚀',
+       deploy: {
+         enabled: true,
+       },
+       components: [],
+     },
+   };
+   ```
+
+3. **Create components:**
+   - Implementation: `src/libraries/mylib/components/MyComponent.tsx`
+   - Webflow wrapper: `src/libraries/mylib/components/MyComponent.webflow.tsx`
+
+4. **Generate manifest:**
+   ```bash
+   pnpm library:manifests
+   ```
+
+5. **Build and deploy:**
+   ```bash
+   pnpm library:build mylib
+   # Or push to main to trigger CI/CD
+   ```
+
+## Key Development Patterns
 
 ### Webflow Component Structure
 
@@ -274,48 +413,129 @@ function PostsList() {
 }
 ```
 
+### Shadow DOM Compatibility
+
+Webflow Code Components run in isolated Shadow DOM environments. **Avoid:**
+
+- ❌ `next/navigation` hooks (`useRouter`, `usePathname`)
+- ❌ `next/link` component (use `<a>` tags)
+- ❌ `next/image` component (use `<img>`)
+- ❌ React Context for cross-component state (use Zustand)
+- ❌ Direct `process.env` access (use webpack DefinePlugin)
+
+**Use:**
+
+- ✅ Browser-native navigation: `window.location.href = '/path'`
+- ✅ Standard HTML: `<a>`, `<img>`, `<button>`
+- ✅ Zustand stores for state
+- ✅ `fetch()` for API calls
+
+## Contributing
+
+### Fork and Pull Request Workflow
+
+1. **Fork the repository** on GitHub
+
+2. **Clone your fork:**
+   ```bash
+   git clone https://github.com/yourusername/flowcode.git
+   cd flowcode
+   ```
+
+3. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+
+4. **Make your changes:**
+   - Follow the `src/libraries/` structure for new components
+   - Add components to the appropriate library or create a new one
+   - Update library metadata in `src/libraries/index.ts`
+   - Ensure all TypeScript types are correct
+   - Test locally before committing
+
+5. **Commit with descriptive messages:**
+   ```bash
+   git add .
+   git commit -m "feat: add MyComponent to core library"
+   ```
+
+6. **Push to your fork:**
+   ```bash
+   git push origin feature/my-feature
+   ```
+
+7. **Open a Pull Request:**
+   - Describe your changes clearly
+   - Reference any related issues
+   - Wait for CI/CD checks to pass
+   - Request review
+
+### Contribution Guidelines
+
+#### Library Structure
+- **Keep libraries focused** - Each library should have a clear purpose
+- **Reuse components** - Share components via `components/` directory when appropriate
+- **Document thoroughly** - Add JSDoc comments and update library README
+- **Test in Webflow** - Verify components work in Webflow's Shadow DOM environment
+
+#### Code Quality
+- **TypeScript strict mode** - All code must pass type checking
+- **ESLint compliance** - Fix all linting errors before committing
+- **Consistent naming** - Follow existing naming conventions
+- **Component props** - Use `@webflow/data-types` for Webflow props
+
+#### Deployment
+- **Set `deploy.enabled: false`** for experimental libraries
+- **Test builds locally** - Run `pnpm library:build <key>` before pushing
+- **Bundle size** - Keep bundles under 15MB per library
+- **Environment variables** - Use production URLs in deployments
+
+#### Git Workflow
+- **One feature per PR** - Keep PRs focused and reviewable
+- **Descriptive commits** - Use conventional commit format (`feat:`, `fix:`, `docs:`, etc.)
+- **Clean history** - Squash commits before merging if needed
+- **Up-to-date branches** - Rebase on main before submitting PR
+
+### Code Review Process
+
+PRs will be reviewed for:
+- ✅ Functionality and correctness
+- ✅ TypeScript type safety
+- ✅ Shadow DOM compatibility
+- ✅ Library structure adherence
+- ✅ Documentation completeness
+- ✅ CI/CD pipeline success
+
 ## Deployment
 
 ### Backend (Vercel)
 
 1. Connect repository to Vercel
-2. Configure environment variables
-3. Deploy:
-   ```bash
-   vercel --prod
-   ```
+2. Configure environment variables (same as `.env`)
+3. Deploy automatically on push to `main`
 
 ### Frontend (Webflow)
 
-1. Build components locally
-2. Deploy with Webflow CLI:
-   ```bash
-   pnpm webflow:share
-   ```
-3. Add components to Webflow pages
-4. Publish Webflow site
+**Automatic (Recommended):**
+- Push changes to `main` branch
+- GitHub Actions will deploy all enabled libraries
+
+**Manual:**
+```bash
+pnpm library:build <library-key>
+# Then manually deploy via Webflow CLI or dashboard
+```
 
 ## Documentation
 
 Comprehensive documentation is available in the `./docs` folder:
 
-- **[Architecture Guide](./docs/webflow-nextjs-architecture.md)** - Full system design and technical decisions
+- **[Architecture Guide](./docs/webflow-nextjs-architecture.md)** - Full system design
 - **[Sitemap](./docs/sitemap.md)** - All pages, routes, and components
-- **[Quick Start Guide](./docs/quick-start-guide.md)** - Step-by-step setup instructions
-- **[oRPC React Query Guide](./docs/orpc-react-query-correct.md)** - API integration patterns
-- **[Webflow Routing Guide](./docs/webflow-routing-guide.md)** - Query parameter navigation
-- **[Advanced Patterns](./docs/advanced-patterns.md)** - Production best practices
-- **[Configuration Reference](./docs/configuration-reference.md)** - All config files explained
-
-## Contributing
-
-We use specialized Claude Code agents for feature development:
-
-- **feature-delivery-coordinator** - Plans and orchestrates feature delivery
-- **feature-implementer** - Implements specific features/phases
-- **documentation-agent** - Maintains documentation and progress tracking
-
-See `.claude/agents/` for agent definitions.
+- **[oRPC React Query Guide](./docs/orpc-react-query-correct.md)** - API patterns
+- **[Webflow Routing Guide](./docs/webflow-routing-guide.md)** - Navigation strategies
+- **[Local Development](./docs/webflow-local-development.md)** - Bundling and debugging
 
 ## License
 
@@ -323,11 +543,9 @@ MIT
 
 ## Support
 
-For questions or issues, please check the documentation in `./docs` or open an issue on GitHub.
-
-## Bundle Size
-
-Current Webflow bundle: **18.56MB** (3.56MB over 15MB limit)
+- **Documentation:** Check `./docs` for detailed guides
+- **Issues:** Open an issue on GitHub
+- **Discussions:** Use GitHub Discussions for questions
 
 ---
 

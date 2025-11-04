@@ -13,14 +13,24 @@ import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 export interface LoginFormWebflowProps {
   redirectTo: string;
   showGoogleAuth: boolean;
+  title: string;
+  description: string;
 }
 
-export function LoginFormWrapper({ redirectTo }: LoginFormWebflowProps) {
-  // Note: showGoogleAuth prop is available in the component definition
-  // but currently Google OAuth visibility is controlled by NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED env var
+export function LoginFormWrapper({
+  redirectTo,
+  showGoogleAuth,
+  title,
+  description
+}: LoginFormWebflowProps) {
   return (
     <WebflowProvidersWrapper>
-      <LoginForm redirectTo={redirectTo} />
+      <LoginForm
+        redirectTo={redirectTo}
+        showGoogleAuth={showGoogleAuth}
+        title={title}
+        description={description}
+      />
     </WebflowProvidersWrapper>
   );
 }
@@ -30,6 +40,16 @@ export default declareComponent(LoginFormWrapper, {
   description: 'User authentication login form with Better Auth integration',
   group: 'Authentication',
   props: {
+    title: props.Text({
+      name: 'Title',
+      defaultValue: 'Login to BlogFlow',
+      tooltip: 'Form title text',
+    }),
+    description: props.Text({
+      name: 'Description',
+      defaultValue: 'Enter your credentials to access your account',
+      tooltip: 'Form description text',
+    }),
     redirectTo: props.Text({
       name: 'Redirect To',
       defaultValue: '/dashboard',
@@ -38,7 +58,7 @@ export default declareComponent(LoginFormWrapper, {
     showGoogleAuth: props.Boolean({
       name: 'Show Google Auth',
       defaultValue: true,
-      tooltip: 'Display Google OAuth sign-in button (requires NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED environment variable)',
+      tooltip: 'Display Google OAuth sign-in button and divider',
     }),
   },
 });

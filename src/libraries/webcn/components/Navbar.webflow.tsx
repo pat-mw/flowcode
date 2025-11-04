@@ -6,15 +6,22 @@
 'use client';
 
 import { declareComponent } from '@webflow/react';
-import { props } from '@webflow/data-types';
+import { props, PropType, PropValues } from '@webflow/data-types';
 import Navbar, { type NavbarProps } from '@/components/webcn/landing_page/webcn.webflow.io/Navbar';
 import { WebflowProvidersWrapper } from '@/lib/webflow/providers';
 import '@/components/webcn/landing_page/webcn.webflow.io/webcn-landing.css';
 
+// Webflow props type with Link instead of string for logoLink
+type WebflowNavbarProps = {
+  logoLink?: PropValues[PropType.Link];
+} & Omit<NavbarProps, 'logoLink'>;
+
 export function NavbarWrapper({
   logoText,
+  logoLink,
   githubUrl,
   ctaButtonText,
+  ctaButtonUrl,
   showGithubLink,
   link1Label,
   link1Url,
@@ -28,13 +35,15 @@ export function NavbarWrapper({
   link4Label,
   link4Url,
   showLink4,
-}: NavbarProps) {
+}: WebflowNavbarProps) {
   return (
     <WebflowProvidersWrapper>
       <Navbar
         logoText={logoText}
+        logoLink={logoLink}
         githubUrl={githubUrl}
         ctaButtonText={ctaButtonText}
+        ctaButtonUrl={ctaButtonUrl}
         showGithubLink={showGithubLink}
         link1Label={link1Label}
         link1Url={link1Url}
@@ -63,6 +72,10 @@ export default declareComponent(NavbarWrapper, {
       defaultValue: 'webcn',
       tooltip: 'Text displayed in the logo',
     }),
+    logoLink: props.Link({
+      name: 'Logo Link',
+      tooltip: 'Link for the logo (includes URL, target, and preload options). Defaults to "/".',
+    }),
     githubUrl: props.Text({
       name: 'GitHub URL',
       defaultValue: 'https://github.com',
@@ -72,6 +85,11 @@ export default declareComponent(NavbarWrapper, {
       name: 'CTA Button Text',
       defaultValue: 'Get Started',
       tooltip: 'Text for the call-to-action button',
+    }),
+    ctaButtonUrl: props.Text({
+      name: 'CTA Button URL',
+      defaultValue: '#get-started',
+      tooltip: 'URL for the call-to-action button',
     }),
     showGithubLink: props.Boolean({
       name: 'Show GitHub Link',

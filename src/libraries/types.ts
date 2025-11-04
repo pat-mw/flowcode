@@ -1,3 +1,53 @@
+/**
+ * Component prop documentation
+ */
+export interface ComponentProp {
+  name: string;
+  type: "Text" | "Number" | "Boolean" | "Variant" | "JSON" | "Image" | "Link" | "RichText" | "Slot";
+  description: string;
+  defaultValue?: unknown;
+  required?: boolean;
+  options?: Array<{ label: string; value: string }>; // For Variant type
+}
+
+/**
+ * Rich metadata for individual components
+ */
+export interface ComponentMetadata {
+  /** Unique identifier (e.g., "core-login-form") */
+  id: string;
+
+  /** Display name (e.g., "Login Form") */
+  name: string;
+
+  /** Brief description */
+  description: string;
+
+  /** Optional category within library */
+  category?: string;
+
+  /** npm packages this component depends on */
+  dependencies?: string[];
+
+  /** Backend endpoints this component uses */
+  backendDependencies?: string[];
+
+  /** Component props documentation */
+  props?: ComponentProp[];
+
+  /** Code usage example */
+  usageExample?: string;
+
+  /** Searchable tags */
+  tags?: string[];
+
+  /** Path to component file (auto-generated) */
+  filePath?: string;
+
+  /** Preview image URL for component showcase */
+  previewImage?: string;
+}
+
 export interface LibraryConfig {
   /** Human-readable library name */
   name: string;
@@ -13,6 +63,9 @@ export interface LibraryConfig {
    * If not provided, defaults to: ./src/libraries/{key}/**\/*.webflow.@(ts|tsx)
    */
   components?: string | string[];
+
+  /** Rich component metadata (optional, for component library viewer) */
+  componentMetadata?: ComponentMetadata[];
 
   /** Path to webpack bundle configuration */
   bundleConfig?: string;

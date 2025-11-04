@@ -7,10 +7,8 @@
 
 import { os } from '@orpc/server';
 import { publicProcedure } from '../procedures';
-import { db, people } from '@/lib/db';
-import { eq } from 'drizzle-orm';
-
 import type { Context } from '../context';
+import { getOrCreatePerson } from '../helpers/getOrCreatePerson';
 
 const getSession = publicProcedure.handler(async ({ context }) => {
   const ctx = context as Context;
@@ -18,10 +16,8 @@ const getSession = publicProcedure.handler(async ({ context }) => {
     return null;
   }
 
-  // Get user's person profile
-  const person = await db.query.people.findFirst({
-    where: eq(people.userId, ctx.userId),
-  });
+  // Get or create user's person profile (handles new users gracefully)
+  const person = await getOrCreatePerson(ctx.userId);
 
   return {
     user: ctx.session.user,

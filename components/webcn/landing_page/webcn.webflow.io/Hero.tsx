@@ -36,20 +36,20 @@ const Hero = ({
   secondaryCtaUrl = "#demo",
   showBadge = true,
   showTechStack = true,
-  showBackground = true,
+  // showBackground = true,
   // DarkVeil background defaults
-  hueShift = 100,
-  noiseIntensity = 0.2,
-  scanlineIntensity = 0.4,
-  speed = 1.2,
-  scanlineFrequency = 0.6,
-  warpAmount = 0.4,
-  resolutionScale = 1,
+  // hueShift = 100,
+  // noiseIntensity = 0.2,
+  // scanlineIntensity = 0.4,
+  // speed = 1.2,
+  // scanlineFrequency = 0.6,
+  // warpAmount = 0.4,
+  // resolutionScale = 1,
 }: HeroProps) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-16">
       {/* DarkVeil animated background */}
-      {showBackground && (
+      {/* {showBackground && (
         <div className="absolute inset-0">
           <DarkVeil
             hueShift={hueShift}
@@ -61,7 +61,7 @@ const Hero = ({
             resolutionScale={resolutionScale}
           />
         </div>
-      )}
+      )} */}
 
       <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="max-w-5xl mx-auto text-center space-y-8 animate-fade-up">
@@ -119,7 +119,7 @@ const Hero = ({
             <div className="pt-12 flex flex-wrap justify-center gap-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                React 18
+                Next.js
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
@@ -132,6 +132,14 @@ const Hero = ({
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
                 Webflow Code Components
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                oRPC
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                Drizzle ORM
               </div>
             </div>
           )}

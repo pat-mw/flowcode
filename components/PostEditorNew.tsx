@@ -42,7 +42,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
 
 type SaveStatus = 'saved' | 'saving' | 'error' | null;
 
@@ -154,8 +153,6 @@ export default function PostEditorNew() {
   const createPostMutation = useMutation(
     orpc.posts.create.mutationOptions({
       onSuccess: (newPost) => {
-        toast.success('Post created successfully!');
-
         // Switch to edit mode
         setPostId(newPost.id);
         setIsEditMode(true);
@@ -168,9 +165,6 @@ export default function PostEditorNew() {
 
         // Invalidate posts list
         queryClient.invalidateQueries({ queryKey: orpc.posts.list.key() });
-      },
-      onError: () => {
-        toast.error('Failed to create post');
       },
     })
   );
@@ -189,7 +183,6 @@ export default function PostEditorNew() {
         queryClient.invalidateQueries({ queryKey: orpc.posts.list.key() });
       },
       onError: () => {
-        toast.error('Failed to save post');
         setSaveStatus('error');
       },
     })
@@ -199,16 +192,11 @@ export default function PostEditorNew() {
   const publishPostMutation = useMutation(
     orpc.posts.publish.mutationOptions({
       onSuccess: () => {
-        toast.success('Post published successfully!');
-
         // Invalidate all post queries
         queryClient.invalidateQueries({ queryKey: orpc.posts.key() });
 
         // Navigate back to posts list
         window.location.href = '/dashboard/posts';
-      },
-      onError: () => {
-        toast.error('Failed to publish post');
       },
     })
   );
@@ -217,16 +205,11 @@ export default function PostEditorNew() {
   const deletePostMutation = useMutation(
     orpc.posts.delete.mutationOptions({
       onSuccess: () => {
-        toast.success('Post deleted successfully!');
-
         // Invalidate posts list
         queryClient.invalidateQueries({ queryKey: orpc.posts.list.key() });
 
         // Navigate back to posts list
         window.location.href = '/dashboard/posts';
-      },
-      onError: () => {
-        toast.error('Failed to delete post');
       },
     })
   );
@@ -238,7 +221,6 @@ export default function PostEditorNew() {
   // Manual save handler
   const handleSave = React.useCallback(async () => {
     if (!title.trim()) {
-      toast.error('Title is required');
       return;
     }
 
@@ -320,7 +302,6 @@ export default function PostEditorNew() {
   // Publish handler
   const handlePublish = async () => {
     if (!title.trim()) {
-      toast.error('Title is required');
       return;
     }
 
