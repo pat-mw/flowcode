@@ -1,23 +1,46 @@
-# BlogFlow Quick Start Guide
+# Getting Started with Flowcode
 
-Get BlogFlow up and running in **under 10 minutes**.
+This guide will help you set up Flowcode for local development and deploy your first Webflow Code Component library.
+
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Local Setup](#local-setup)
+3. [Understanding the Architecture](#understanding-the-architecture)
+4. [Creating Your First Component](#creating-your-first-component)
+5. [Testing Locally](#testing-locally)
+6. [Deploying to Webflow](#deploying-to-webflow)
+7. [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
-Before you begin, ensure you have:
+### Required Software
 
-- **Node.js 18+** installed ([download](https://nodejs.org/))
-- **pnpm** installed (`npm install -g pnpm`)
-- **PostgreSQL database** (we recommend [Neon](https://neon.tech) or [Vercel Postgres](https://vercel.com/storage/postgres))
-- **Webflow account** (optional, only needed for deploying Webflow components)
+- **Node.js** 20+ ([Download](https://nodejs.org/))
+- **pnpm** 8+ (Install: `npm install -g pnpm`)
+- **Git** ([Download](https://git-scm.com/))
 
-## Quick Start
+### Required Accounts
+
+- **GitHub account** - For repository access
+- **Webflow account** - With Code Components access
+- **PostgreSQL database** - Neon (recommended) or Vercel Postgres
+- **Vercel account** (optional) - For backend deployment
+
+### Get Your Webflow API Token
+
+1. Go to [Webflow Workspace Settings](https://webflow.com/dashboard/workspace)
+2. Navigate to "Integrations" → "Developer API"
+3. Create a new API token with workspace access
+4. Copy the token (starts with `ws-`)
+
+## Local Setup
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/pat-mw/blogflow.git
-cd blogflow
+git clone https://github.com/yourusername/flowcode.git
+cd flowcode
 ```
 
 ### 2. Install Dependencies
@@ -26,37 +49,70 @@ cd blogflow
 pnpm install
 ```
 
-### 3. Set Up Environment Variables
+This will install all required packages including:
+- Next.js 15
+- React 19
+- Webflow CLI
+- Drizzle ORM
+- And 1300+ other dependencies
 
-Copy the example environment file:
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root:
 
 ```bash
 cp env.example .env
 ```
 
-Now open `.env` and configure the required variables (see [Environment Variables Guide](#environment-variables-guide) below).
+Edit `.env` and fill in the required values:
+
+```env
+# Webflow API Token (required for deploying components)
+WEBFLOW_WORKSPACE_API_TOKEN=ws-xxxxx...
+
+# Database Connection (PostgreSQL)
+DATABASE_URL=postgresql://user:password@host:port/database
+
+# Better Auth Configuration
+BETTER_AUTH_SECRET=your-secret-key-here-min-32-chars
+BETTER_AUTH_URL=http://localhost:3000
+
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/orpc
+NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=false
+
+# Optional: Google OAuth (if enabled above)
+# GOOGLE_CLIENT_ID=your-google-client-id
+# GOOGLE_CLIENT_SECRET=your-google-client-secret
+```
+
+**Generate a secure secret:**
+```bash
+openssl rand -base64 32
+```
 
 ### 4. Set Up the Database
 
-Generate and run migrations to create all required tables:
+**Option A: Neon (Recommended)**
 
-```bash
-pnpm db:generate
-pnpm db:migrate
-```
+1. Sign up at [neon.tech](https://neon.tech)
+2. Create a new project
+3. Copy the connection string
+4. Paste it as `DATABASE_URL` in `.env`
 
-**Quick Demo Alternative** (⚠️ Not recommended):
+**Option B: Vercel Postgres**
+
+1. Create a Vercel project
+2. Add Postgres storage
+3. Copy the connection string from environment variables
+
+**Push the schema:**
 
 ```bash
 pnpm db:push
 ```
 
-> **Warning**: `db:push` directly modifies your database schema without generating migration files. This makes it difficult to:
-> - Track schema changes in version control
-> - Roll back changes if needed
-> - Migrate to proper migrations later (requires manual reconciliation)
->
-> Use `db:push` only for quick prototyping or demos. Always use migrations for real projects.
+This creates all required tables (users, sessions, posts, people, waitlist).
 
 ### 5. Start the Development Server
 
@@ -64,393 +120,349 @@ pnpm db:push
 pnpm dev
 ```
 
-The app will be available at **http://localhost:3000**
+Visit [http://localhost:3000](http://localhost:3000) - you should see the Flowcode homepage.
 
-### 6. (Optional) Test Webflow Components Bundle
+## Understanding the Architecture
 
-Before deploying to Webflow, test the bundle locally to catch any webpack issues:
+### Multi-Library System
 
-```bash
-pnpm webflow:bundle
+Flowcode is organized into **multiple independent libraries** that deploy separately:
+
+```
+src/libraries/
+├── core/         # Authentication, navigation, shared utilities
+├── analytics/    # Charts, metrics, dashboards
+├── blogDemo/     # Blog posts, rich text editor
+├── registry/     # Component browsing and deployment
+└── webcn/        # Landing page components
 ```
 
-This will:
-- Bundle all Webflow Code Components using webpack
-- Output bundled files to `dist/` directory
-- Verify that imports, styles, and environment variables work correctly
-- Catch "process is not defined" and other browser compatibility issues
+Each library is a self-contained package with:
+- Its own components
+- Its own `webflow.json` manifest (auto-generated)
+- Independent deployment lifecycle
+- Deployment toggle (`deploy.enabled` flag)
 
-**When to use this:**
-- ✅ Before deploying to Webflow (catch issues early)
-- ✅ After modifying webpack configuration
-- ✅ After adding new `NEXT_PUBLIC_*` environment variables
-- ✅ When debugging component bundling issues
+### Component Dual-File Pattern
 
-**Debug mode** (shows detailed webpack output):
-```bash
-pnpm webflow:bundle:debug
+Every Webflow component has **two files**:
+
+**1. Implementation** (`Component.tsx`):
+```typescript
+'use client';
+export default function MyComponent({ title }: { title: string }) {
+  return <div className="p-4"><h1>{title}</h1></div>;
+}
 ```
 
-See `docs/webflow-local-development.md` for detailed debugging guide.
+**2. Webflow Wrapper** (`Component.webflow.tsx`):
+```typescript
+import MyComponent from './MyComponent';
+import { declareComponent } from '@webflow/react';
+import { props } from '@webflow/data-types';
+import '@/app/globals.css';  // Import global styles
 
-### 7. (Optional) Deploy Webflow Components
-
-After testing the bundle locally, deploy components to Webflow:
-
-```bash
-pnpm webflow:share
+export default declareComponent(MyComponent, {
+  name: 'My Component',
+  description: 'A simple component',
+  group: 'Flowcode Core',
+  props: {
+    title: props.Text({
+      name: 'Title',
+      defaultValue: 'Hello World',
+    }),
+  },
+});
 ```
 
-**Requirements:**
-- `WEBFLOW_WORKSPACE_API_TOKEN` set in `.env`
-- Webflow account with Code Components access
+### API Communication
 
----
+Components use **oRPC** for type-safe API calls:
 
-## Environment Variables Guide
+```typescript
+import { useQuery } from '@tanstack/react-query';
+import { orpc } from '@/lib/orpc-client';
 
-### Required Variables
+function MyComponent() {
+  const { data: posts } = useQuery(
+    orpc.posts.list.queryOptions({
+      input: { status: 'published' },
+    })
+  );
 
-These are **absolutely required** for the app to function:
-
-#### 1. Database Configuration
-
-```bash
-# Primary database URL for Drizzle ORM (REQUIRED)
-DRIZZLE_DATABASE_URL="postgresql://user:password@host.region.neon.tech:6543/blogflow?sslmode=require"
+  return <div>{posts?.map(post => ...)}</div>;
+}
 ```
 
-**Where to get this:**
+## Creating Your First Component
 
-Option A: **Neon (Recommended)**
-1. Create free account at [https://neon.tech](https://neon.tech)
-2. Create a new project (database will be created automatically)
-3. Go to Dashboard → Connection Details
-4. Copy the **Pooled connection** string (port 6543)
-5. Paste as `DRIZZLE_DATABASE_URL`
+### 1. Choose a Library
 
-Option B: **Vercel Postgres**
-1. Create project on [Vercel](https://vercel.com)
-2. Navigate to Storage tab → Create Database → Postgres
-3. Go to `.env.local` tab in Vercel dashboard
-4. Copy the `POSTGRES_URL` value (the pooled connection)
-5. Paste as `DRIZZLE_DATABASE_URL`
+Decide which library your component belongs to:
+- **core** - Authentication, navigation, utilities
+- **analytics** - Data visualization, metrics
+- **blogDemo** - Content management
+- **registry** - Component browsing
+- **webcn** - Marketing/landing pages
 
-Option C: **Supabase**
-1. Create project at [https://supabase.com](https://supabase.com)
-2. Go to Project Settings → Database
-3. Find "Connection Pooling" section
-4. Copy the connection string in **Transaction mode** (port 6543)
-5. Paste as `DRIZZLE_DATABASE_URL`
+Or create a new library (see README.md).
 
-**Note:** Use the **pooled connection** (port 6543) for serverless compatibility with Vercel/Next.js.
-
-#### 2. Authentication (Better Auth)
+### 2. Create Component Files
 
 ```bash
-# Secret key for JWT signing (REQUIRED)
-BETTER_AUTH_SECRET="your-random-secret-key-here"
+# Create implementation
+touch src/libraries/core/components/MyButton.tsx
 
-# Base URL for your application (REQUIRED)
-BETTER_AUTH_URL="http://localhost:3000"
+# Create Webflow wrapper
+touch src/libraries/core/components/MyButton.webflow.tsx
 ```
 
-**How to generate `BETTER_AUTH_SECRET`:**
+**MyButton.tsx:**
+```typescript
+'use client';
+
+interface MyButtonProps {
+  label: string;
+  variant?: 'primary' | 'secondary';
+  onClick?: () => void;
+}
+
+export default function MyButton({ label, variant = 'primary', onClick }: MyButtonProps) {
+  const baseStyles = 'px-4 py-2 rounded font-medium';
+  const variantStyles = variant === 'primary'
+    ? 'bg-blue-600 text-white hover:bg-blue-700'
+    : 'bg-gray-200 text-gray-800 hover:bg-gray-300';
+
+  return (
+    <button
+      className={`${baseStyles} ${variantStyles}`}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+```
+
+**MyButton.webflow.tsx:**
+```typescript
+import MyButton from './MyButton';
+import { declareComponent } from '@webflow/react';
+import { props } from '@webflow/data-types';
+import '@/app/globals.css';
+
+export default declareComponent(MyButton, {
+  name: 'My Button',
+  description: 'A customizable button component',
+  group: 'Flowcode Core',
+  props: {
+    label: props.Text({
+      name: 'Button Label',
+      defaultValue: 'Click Me',
+    }),
+    variant: props.Variant({
+      name: 'Variant',
+      options: [
+        { label: 'Primary', value: 'primary' },
+        { label: 'Secondary', value: 'secondary' },
+      ],
+      defaultValue: 'primary',
+    }),
+  },
+});
+```
+
+### 3. Register Component in Library
+
+Edit `src/libraries/core/index.ts`:
+
+```typescript
+export const coreComponents = [
+  // ... existing components
+  {
+    name: 'MyButton',
+    path: './components/MyButton.webflow',
+    previewImage: '/previews/my-button.png', // Optional
+  },
+];
+```
+
+## Testing Locally
+
+### 1. Generate Manifests
 
 ```bash
-# Option 1: Using OpenSSL (Mac/Linux)
-openssl rand -base64 32
-
-# Option 2: Using Node.js
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-
-# Option 3: Online generator
-# Visit: https://generate-secret.vercel.app/32
+pnpm library:manifests
 ```
 
-**`BETTER_AUTH_URL` values:**
-- Development: `http://localhost:3000`
-- Production: `https://yourdomain.vercel.app` (or your deployed URL)
+This creates `webflow.json` files for all libraries.
 
-#### 3. Public API URL
+### 2. Build the Library
 
 ```bash
-# API base URL for client-side requests (REQUIRED)
-NEXT_PUBLIC_API_URL="http://localhost:3000"
+pnpm library:build core
 ```
 
-**Values:**
-- Development: `http://localhost:3000`
-- Production: `https://yourdomain.vercel.app`
+Check output in `dist/core/` directory.
 
-#### 4. Webflow Workspace Token
+### 3. Test in Next.js App
+
+Create a test page in `app/test/page.tsx`:
+
+```typescript
+import MyButton from '@/src/libraries/core/components/MyButton';
+
+export default function TestPage() {
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl mb-4">Component Test</h1>
+      <MyButton label="Test Button" variant="primary" />
+    </div>
+  );
+}
+```
+
+Visit [http://localhost:3000/test](http://localhost:3000/test)
+
+## Deploying to Webflow
+
+### Automatic Deployment (Recommended)
+
+1. **Commit your changes:**
+   ```bash
+   git add .
+   git commit -m "feat: add MyButton component"
+   ```
+
+2. **Push to main branch:**
+   ```bash
+   git push origin main
+   ```
+
+3. **GitHub Actions will:**
+   - Detect changes in `src/libraries/`
+   - Build affected libraries
+   - Deploy to Webflow automatically
+   - Report success/failure
+
+4. **Monitor deployment:**
+   - Go to GitHub → Actions tab
+   - Watch "Deploy Webflow Libraries" workflow
+   - Check logs for any errors
+
+### Manual Deployment
+
+**Deploy a single library:**
 
 ```bash
-# Workspace API token for deploying components (REQUIRED)
-WEBFLOW_WORKSPACE_API_TOKEN="ws-xxxxx"
+# Build the library
+pnpm library:build core
+
+# Deploy via Webflow CLI
+cp src/libraries/core/webflow.json ./webflow.json
+npx webflow library share --manifest ./webflow.json --no-input
+rm ./webflow.json
 ```
 
-**How to get this:**
-
-1. Go to [Webflow Dashboard](https://webflow.com/dashboard)
-2. Navigate to Account Settings → Apps
-3. Scroll to "Workspace API"
-4. Click "Generate token"
-5. Copy the `ws-xxxxx` token
-
-This token is required to deploy Webflow Code Components using `pnpm webflow:share` or `pnpm webflow:bundle`.
-
----
-
-### Optional Variables
-
-These variables enable additional features but are **not required** to run the app:
-
-#### 1. Supabase Configuration (Optional)
-
-Only needed if using Supabase for authentication or storage or other features.
-The default set up is already configured with drizzle for querying and mutating the db directly
-so Supabase direct support is not strictly necessary
+**Deploy all libraries:**
 
 ```bash
-SUPABASE_URL="https://xxxxx.supabase.co"
-SUPABASE_ANON_KEY="eyJhbGc..."
-SUPABASE_SERVICE_ROLE_KEY="eyJhbGc..."
-SUPABASE_JWT_SECRET="your-jwt-secret"
-NEXT_PUBLIC_SUPABASE_URL="https://xxxxx.supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGc..."
+pnpm library:build:all
+# Then use GitHub Actions or deploy each library individually
 ```
 
-**Where to get these:**
-1. Go to Supabase project settings
-2. Navigate to API section
-3. Copy URL and keys
+### Using Components in Webflow
 
-#### 2. Google OAuth (Optional)
+1. **Open Webflow Designer**
+2. **Add elements panel** → "Components" tab
+3. **Find your library** (e.g., "Flowcode Core")
+4. **Drag component** onto the canvas
+5. **Configure props** in the right panel
+6. **Publish your site**
 
-Enables "Sign in with Google" functionality:
+## Troubleshooting
 
+### "Cannot find module 'webpack'" Error
+
+**Symptom:** CI/CD fails with webpack module not found
+
+**Solution:** Webpack is now included as a devDependency. If error persists:
 ```bash
-GOOGLE_CLIENT_ID="xxxxx.apps.googleusercontent.com"
-GOOGLE_CLIENT_SECRET="GOCSPX-xxxxx"
-NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED="true"
+pnpm add -D webpack
 ```
 
-**How to set up Google OAuth:**
+### "Person profile not found" Error
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project (or select existing)
-3. Navigate to "APIs & Services" → "Credentials"
-4. Click "Create Credentials" → "OAuth 2.0 Client ID"
-5. Select "Web application"
-6. Add authorized redirect URIs:
-   - Development: `http://localhost:3000/api/auth/callback/google`
-   - Production: `https://yourdomain.com/api/auth/callback/google`
-7. Copy Client ID and Client Secret
-8. Set `NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED="true"` to show the Google sign-in button
+**Symptom:** New users get errors after registration
 
-#### 3. Webflow CMS Sync (Optional)
+**Solution:** This is fixed via `getOrCreatePerson` helper. If you see this error:
+1. Check `lib/api/helpers/getOrCreatePerson.ts` exists
+2. Verify all procedures use `getOrCreatePerson(userId)` instead of direct queries
 
-Only needed if you want to sync blog posts to Webflow CMS collections:
+### Toast Notifications Not Working
 
-```bash
-# Site-specific API token for CMS operations
-WEBFLOW_API_TOKEN="xxxxx"
+**Symptom:** Sonner toasts don't appear in Webflow
 
-# CMS Collection IDs (get after creating collections in Webflow)
-WEBFLOW_POSTS_COLLECTION_ID="xxxxx"
-WEBFLOW_PEOPLE_COLLECTION_ID="xxxxx"
-```
+**Solution:** Toasts don't work in Shadow DOM. Use alternative patterns:
+- Save status indicators (Saving.../Saved)
+- Browser-native alerts (`window.confirm`, `window.alert`)
+- Silent error handling
 
-**How to get these:**
+### Database Connection Issues
 
-1. **Site API Token** (for CMS sync):
-   - Open your Webflow site in the Designer
-   - Go to Site Settings → Integrations → API Access
-   - Generate new token with CMS permissions
-   - Copy the token
+**Symptom:** "Connection refused" or "Invalid credentials"
 
-2. **Collection IDs**:
-   - In Webflow Designer, navigate to CMS Collections
-   - Click on a collection (e.g., "Posts") → Settings
-   - Copy Collection ID from the URL or settings panel
-   - Repeat for each collection you need to sync
+**Solution:**
+1. Verify `DATABASE_URL` in `.env` is correct
+2. Check database is accessible (not behind firewall)
+3. For Neon: Enable "Pooler" connection string for serverless
+4. Test connection: `pnpm db:push`
 
-**Note:** These are only needed if you're implementing CMS synchronization to publish posts from BlogFlow to your Webflow site's CMS.
+### Build Fails - Bundle Too Large
 
----
+**Symptom:** "Bundle exceeds 15MB limit"
 
-## Minimal `.env` for Development
+**Solution:**
+1. Split components across multiple libraries
+2. Remove unused dependencies
+3. Use dynamic imports for large components
+4. Check for duplicate dependencies in bundle
 
-Here's the **absolute minimum** to get started:
+### Components Not Appearing in Webflow
 
-```bash
-# Database (use Neon free tier - pooled connection on port 6543)
-DRIZZLE_DATABASE_URL="postgresql://user:pass@host.neon.tech:6543/blogflow?sslmode=require"
+**Symptom:** Library deployed but components missing
 
-# Authentication
-BETTER_AUTH_SECRET="<generate with: openssl rand -base64 32>"
-BETTER_AUTH_URL="http://localhost:3000"
+**Solution:**
+1. Verify `deploy.enabled: true` in `src/libraries/index.ts`
+2. Check `webflow.json` was generated correctly
+3. Refresh Webflow Designer (Ctrl/Cmd + R)
+4. Check library is enabled in Webflow workspace settings
 
-# API
-NEXT_PUBLIC_API_URL="http://localhost:3000"
+### Environment Variables Not Working
 
-# Webflow (get from https://webflow.com/dashboard/account/apps)
-WEBFLOW_WORKSPACE_API_TOKEN="ws-xxxxx"
-```
+**Symptom:** API calls fail with 404 or wrong URL
 
-With just these **5 variables**, you can:
-- Run the full Next.js app locally
-- Create users and authenticate
-- Create, edit, and manage blog posts
-- Bundle and deploy Webflow Code Components
-- Test all core functionality
-
----
-
-## Database Setup Explained
-
-### Option 1: Generate Migrations (Recommended)
-
-```bash
-# Generate migration files from your Drizzle schema
-pnpm db:generate
-
-# Apply migrations to your database
-pnpm db:migrate
-```
-
-**Benefits:**
-- ✅ Migration files are version controlled (`lib/db/migrations/`)
-- ✅ Track all schema changes over time
-- ✅ Easy to roll back changes if needed
-- ✅ Safe for production deployments
-- ✅ Team members can sync schema changes
-
-**How it works:**
-1. `pnpm db:generate` compares your Drizzle schema with the current database and generates SQL migration files
-2. `pnpm db:migrate` executes those migrations against your database
-
-### Option 2: Push Schema (Quick Demo Only)
-
-```bash
-pnpm db:push
-```
-
-**⚠️ Warning**: This directly modifies your database schema without generating migration files.
-
-**Use cases:**
-- Quick prototyping
-- One-off demos
-- Local experimentation
-
-**Drawbacks:**
-- ❌ No migration history
-- ❌ Can't roll back changes
-- ❌ Difficult to migrate to proper migrations later
-- ❌ Not suitable for production or team development
-
-### View Your Database
-
-Open Drizzle Studio to browse your database:
-
-```bash
-pnpm db:studio
-```
-
-Opens a web UI at `https://local.drizzle.studio` where you can view and edit data.
-
----
-
-## Common Issues
-
-### "process is not defined" error in browser
-
-This means environment variables aren't properly configured in `webpack.webflow.js`. Check that all `NEXT_PUBLIC_*` variables are included in the DefinePlugin.
-
-### "Connection refused" database errors
-
-- Verify `DRIZZLE_DATABASE_URL` is correct
-- Check if database is running (for local PostgreSQL)
-- Ensure SSL mode is set: `?sslmode=require` for hosted databases (Neon, Supabase, Vercel)
-- Use the **pooled connection** (port 6543) for serverless compatibility
-- Test connection with: `psql "<your-database-url>"`
-
-### "JWT secret not configured" auth errors
-
-Generate a proper `BETTER_AUTH_SECRET`:
-```bash
-openssl rand -base64 32
-```
-
-### Webflow components not appearing
-
-1. Ensure `WEBFLOW_WORKSPACE_API_TOKEN` is set
-2. Run `pnpm webflow:bundle` to test bundling locally
-3. Deploy with `pnpm webflow:share`
-4. Check Webflow dashboard for component status
-
----
+**Solution:**
+1. Check `webpack.webflow.js` includes your env var in `DefinePlugin`
+2. Prefix public vars with `NEXT_PUBLIC_`
+3. Rebuild library after changing env vars
+4. Verify bundle contains correct URLs: `grep -r "localhost" dist/`
 
 ## Next Steps
 
-Once the app is running:
+- **Explore existing components** - See `src/libraries/*/components/` for examples
+- **Check the codebase** - Review component implementations to understand patterns
+- **Join discussions** - Use GitHub Discussions for questions
+- **Contribute** - Follow the Contributing guide in README.md
 
-1. **Create an account** - Visit http://localhost:3000 and register
-2. **Create a post** - Use the PostEditor component
-3. **View your posts** - Check the Dashboard component
-4. **Explore the code** - Check `CLAUDE.md` for project architecture
-5. **Read the docs** - See `docs/` folder for detailed guides
+For architecture details and advanced patterns, more comprehensive documentation is coming soon.
 
-## Available Commands
+## Getting Help
 
-```bash
-# Development
-pnpm dev                    # Start dev server (with Turbopack)
-pnpm build                  # Build for production
-pnpm start                  # Start production server
-pnpm lint                   # Run ESLint
-
-# Database
-pnpm db:generate            # Generate migration files (recommended)
-pnpm db:migrate             # Run migrations (recommended)
-pnpm db:push                # Push schema directly (⚠️ demos only, no migration history)
-pnpm db:studio              # Open Drizzle Studio
-
-# Webflow
-pnpm webflow:share          # Deploy components to Webflow
-pnpm webflow:bundle         # Bundle locally (test only)
-pnpm webflow:bundle:debug   # Bundle with debug output
-```
+- **Code Examples:** Check existing components in `src/libraries/`
+- **Issues:** [GitHub Issues](https://github.com/yourusername/flowcode/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/yourusername/flowcode/discussions)
 
 ---
 
-## Production Deployment
-
-### Deploy Backend to Vercel
-
-1. Push code to GitHub
-2. Import project on [Vercel](https://vercel.com)
-3. Add environment variables (all from `.env` except local URLs)
-4. Update URLs:
-   - `BETTER_AUTH_URL="https://your-app.vercel.app"`
-   - `NEXT_PUBLIC_API_URL="https://your-app.vercel.app"`
-5. Deploy
-
-### Deploy Components to Webflow
-
-1. Update `.env` with production API URL
-2. Run: `pnpm webflow:share`
-3. Add components to Webflow pages
-4. Publish site
-
----
-
-## Need Help?
-
-- Check `docs/` folder for detailed documentation
-- See `CLAUDE.md` for development guidance
-- Review `README.md` for architecture overview
-- Open an issue on GitHub
-
-Happy building!
+Happy coding! 🚀
